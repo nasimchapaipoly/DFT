@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
       const container = document.getElementById('teacherList');
+      container.innerHTML = '';
 
       data.forEach(t => {
         container.innerHTML += `
@@ -72,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// Theme
 function toggleTheme() {
   document.body.classList.toggle('light');
 }
