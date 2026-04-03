@@ -8,18 +8,16 @@
 body {
   background: #0f0f0f;
   color: #fff;
-  animation: fadeIn 0.8s ease;
 }
 
-/* HEADER GLASS */
+/* HEADER */
 header {
   position: fixed;
   width: 100%;
   top: 0;
   padding: 15px 20px;
   backdrop-filter: blur(12px);
-  background: rgba(0,0,0,0.5);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.6);
   z-index: 1000;
 }
 
@@ -56,25 +54,9 @@ header {
   align-items: center;
   text-align: center;
   background: radial-gradient(circle at top, #ff7a00, #000);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  background: #ff7a00;
-  filter: blur(120px);
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .hero-content {
-  position: relative;
-  z-index: 2;
   max-width: 400px;
 }
 
@@ -85,53 +67,55 @@ header {
   border: none;
   color: white;
   background: linear-gradient(45deg, #ff7a00, #ff9a3c);
-  box-shadow: 0 0 20px rgba(255,122,0,0.6);
-  transition: 0.3s;
-}
-
-.btn:hover {
-  box-shadow: 0 0 30px rgba(255,122,0,0.9);
-  transform: scale(1.05);
 }
 
 /* SECTION */
 .section {
-  padding: 60px 20px;
+  padding: 80px 20px;
   text-align: center;
 }
 
+.section h2 {
+  margin-bottom: 30px;
+}
+
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
+  margin-top: 30px;
 }
 
-/* GLASS CARD */
-.card,
+/* CARD */
 .teacher-card,
 .student-card {
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 25px;
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: 0.4s;
-  position: relative;
-  overflow: hidden;
+  border-radius: 15px;
+  padding: 20px;
+  transition: 0.3s;
 }
 
-.card:hover,
-.teacher-card:hover,
-.student-card:hover {
-  transform: translateY(-10px) scale(1.03);
-}
-
-/* IMAGE */
 .teacher-card img,
 .student-card img {
   width: 80px;
-  height: 80px;
   border-radius: 50%;
+}
+
+.teacher-card:hover,
+.student-card:hover {
+  transform: translateY(-8px);
+}
+
+/* INPUT */
+input {
+  padding: 12px;
+  width: 90%;
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 10px;
+  border: none;
 }
 
 /* SIDEBAR */
@@ -144,7 +128,6 @@ header {
   background: #111;
   padding: 20px;
   transition: 0.3s;
-  z-index: 2000;
 }
 
 .sidebar.active {
@@ -156,20 +139,4 @@ footer {
   text-align: center;
   padding: 20px;
   background: #000;
-}
-
-/* LIGHT MODE */
-body.light {
-  background: #fff;
-  color: #000;
-}
-
-body.light .card {
-  background: #eee;
-}
-
-/* ANIMATION */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
