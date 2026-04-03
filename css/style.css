@@ -157,3 +157,20 @@ footer {
   padding: 20px;
   background: #000;
 }
+body.light {
+  background: #ffffff;
+  color: #000;
+}
+
+body.light .card {
+  background: #f2f2f2;
+}
+
+body.light header {
+  background: #fff;
+  color: #000;
+}
+
+body.light .sidebar {
+  background: #eee;
+}
