@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department of Food Technology | CPI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Hind+Siliguri:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- --- PRELOADER (Added Here) --- -->
+    <div id="preloader">
+        <div class="loader">
+            <i class="fa-solid fa-seedling"></i>
+        </div>
+    </div>
+    <!-- ----------------------------- -->
+
+    <div class="menu-overlay" onclick="toggleMenu()"></div>
+
+    <header id="header">
+        <div class="top-bar">
+            <i class="fa-regular fa-clock"></i> <span id="current-datetime"></span>
+        </div>
+        
+        <div class="nav-container">
+            <a href="index.html" class="logo-area">
+                <i class="fa-solid fa-seedling"></i>
+                <div class="logo-text">
+                    <h1><span class="en">Food Technology</span><span class="bn">ফুড টেকনোলজি</span></h1>
+                    <p><span class="en">Chapainawabganj Polytechnic</span><span class="bn">চাঁপাইনবাবগঞ্জ পলিটেকনিক</span></p>
+                </div>
+            </a>
+            
+            <nav id="navbar">
+                <ul>
+                    <li><a href="index.html" onclick="closeMenu()"><span class="en">Home</span><span class="bn">হোম</span></a></li>
+                    <li><a href="about.html" onclick="closeMenu()"><span class="en">About Us</span><span class="bn">আমাদের সম্পর্কে</span></a></li>
+                    <li><a href="teachers.html" onclick="closeMenu()"><span class="en">Teachers</span><span class="bn">শিক্ষকবৃন্দ</span></a></li>
+                    <li><a href="staff.html" onclick="closeMenu()"><span class="en">Staff</span><span class="bn">স্টাফ</span></a></li>
+                    <li><a href="semester.html" onclick="closeMenu()"><span class="en">Syllabus</span><span class="bn">সিলেবাস</span></a></li>
+                    <li><a href="lab.html" onclick="closeMenu()"><span class="en">Labs</span><span class="bn">ল্যাব সমূহ</span></a></li>
+                    <li><a href="students.html" onclick="closeMenu()"><span class="en">Students</span><span class="bn">শিক্ষার্থীবৃন্দ</span></a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="lang-toggle" onclick="toggleLanguage()">EN / BN</button>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="en-block">Department of Food Technology</h1>
+            <h1 class="bn-block">ফুড টেকনোলজি ডিপার্টমেন্ট</h1>
+            <p class="en-block">Chapainawabganj Polytechnic Institute</p>
+            <p class="bn-block">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইন্সটিটিউট</p>
+            <a href="about.html" class="cta-btn"><span class="en">Explore More</span><span class="bn">আরও জানুন</span></a>
+        </div>
+    </section>
+
+    <div class="news-ticker">
+        <div class="ticker-title"><span class="en">Latest News</span><span class="bn">সর্বশেষ খবর</span></div>
+        <div class="ticker-wrap">
+            <div class="ticker-move">
+                <span class="en">🔹 Admission is open for the 2026 academic session. 🔹 Upcoming Food Festival next week! 🔹 Semester finals routine published.</span>
+                <span class="bn">🔹 ২০২৬ শিক্ষাবর্ষের ভর্তি চলছে। 🔹 আগামী সপ্তাহে ফুড ফেস্টিভ্যাল! 🔹 সেমিস্টার ফাইনালের রুটিন প্রকাশিত হয়েছে।</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+        <div class="layout-grid">
+            <div class="card about-section" id="about">
+                <h2><span class="en">About the Department</span><span class="bn">ডিপার্টমেন্ট সম্পর্কে</span></h2>
+                <br>
+                <p class="en-block">The Department of Food Technology at Chapainawabganj Polytechnic Institute is dedicated to providing world-class technical education. We focus on food processing, preservation, quality control, and modern food engineering to prepare students for the global industry.</p>
+                <p class="bn-block">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইন্সটিটিউটের ফুড টেকনোলজি ডিপার্টমেন্ট বিশ্বমানের কারিগরি শিক্ষা প্রদানে নিবেদিত। বৈশ্বিক শিল্পের জন্য শিক্ষার্থীদের প্রস্তুত করতে আমরা খাদ্য প্রক্রিয়াজাতকরণ, সংরক্ষণ, মান নিয়ন্ত্রণ এবং আধুনিক ফুড ইঞ্জিনিয়ারিংয়ের উপর জোর দিয়ে থাকি।</p>
+            </div>
+
+            <div class="card notice-board">
+                <h2><i class="fa-solid fa-thumbtack" style="color: var(--primary-green);"></i> <span class="en">Notice Board</span><span class="bn">নোটিশ বোর্ড</span></h2>
+                <ul class="notice-list">
+                    <li>
+                        <div class="notice-date">১৫<br>এপ্রিল</div>
+                        <div><a href="#" style="text-decoration: none; color: inherit;"><span class="en">Class Routine 2026 Updated</span><span class="bn">ক্লাস রুটিন ২০২৬ আপডেট করা হয়েছে</span></a></div>
+                    </li>
+                    <li>
+                        <div class="notice-date">১০<br>এপ্রিল</div>
+                        <div><a href="#" style="text-decoration: none; color: inherit;"><span class="en">Lab Exam Schedule</span><span class="bn">ল্যাব পরীক্ষার সময়সূচী</span></a></div>
+                    </li>
+                    <li>
+                        <div class="notice-date">০৫<br>এপ্রিল</div>
+                        <div><a href="#" style="text-decoration: none; color: inherit;"><span class="en">Stipend Form Submission</span><span class="bn">উপবৃত্তি ফরম জমাদান</span></a></div>
+                    </li>
+                </ul>
+                <br>
+                <a href="#" style="color: var(--primary-green); font-weight: 600;"><span class="en">View All Notices →</span><span class="bn">সব নোটিশ দেখুন →</span></a>
+            </div>
+        </div>
+
+        <h2 class="section-title"><span class="en">Academic Information</span><span class="bn">একাডেমিক তথ্য</span></h2>
+        <div class="info-grid">
+            <a href="teachers.html" class="info-box" style="text-decoration: none;">
+                <i class="fa-solid fa-users"></i>
+                <h3><span class="en">Teachers</span><span class="bn">শিক্ষকবৃন্দ</span></h3>
+                <p><span class="en">Meet our faculty.</span><span class="bn">আমাদের শিক্ষকদের সম্পর্কে জানুন।</span></p>
+            </a>
+            <a href="lab.html" class="info-box" style="text-decoration: none;">
+                <i class="fa-solid fa-flask"></i>
+                <h3><span class="en">Lab Facilities</span><span class="bn">ল্যাব সুবিধা</span></h3>
+                <p><span class="en">Modern practical equipment.</span><span class="bn">ব্যবহারিক শিক্ষার যন্ত্রপাতি।</span></p>
+            </a>
+            <a href="semester.html" class="info-box" style="text-decoration: none;">
+                <i class="fa-solid fa-book-open"></i>
+                <h3><span class="en">Syllabus</span><span class="bn">সিলেবাস</span></h3>
+                <p><span class="en">Download curriculum.</span><span class="bn">সিলেবাস ডাউনলোড করুন।</span></p>
+            </a>
+        </div>
+
+        <h2 class="section-title"><span class="en">Photo Gallery</span><span class="bn">ফটো গ্যালারি</span></h2>
+        <div class="gallery-grid">
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1576402187878-974f70c890a5?auto=format&fit=crop&q=80" alt="Lab Work"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1505935428862-770b6f24f629?auto=format&fit=crop&q=80" alt="Food Processing"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80" alt="Campus"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80" alt="Seminar"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3><i class="fa-solid fa-seedling"></i> <span class="en">Food Tech CPI</span><span class="bn">ফুড টেকনোলজি সিপিআই</span></h3>
+                <p style="color: #ccc; line-height: 1.6;"><span class="en">Empowering the next generation of Food Technology engineers with world-class education and practical skills.</span><span class="bn">বিশ্বমানের শিক্ষা এবং ব্যবহারিক দক্ষতার সাথে ফুড টেকনোলজি ইঞ্জিনিয়ারদের পরবর্তী প্রজন্মকে ক্ষমতায়ন করা।</span></p>
+            </div>
+            <div class="footer-col">
+                <h3><span class="en">Quick Links</span><span class="bn">প্রয়োজনীয় লিংক</span></h3>
+                <ul>
+                    <li><a href="https://bteb.gov.bd/" target="_blank"><i class="fa-solid fa-angle-right"></i> <span class="en">BTEB Official</span><span class="bn">কারিগরি শিক্ষা বোর্ড</span></a></li>
+                    <li><a href="staff.html"><i class="fa-solid fa-angle-right"></i> <span class="en">Office Staff</span><span class="bn">অফিস স্টাফ</span></a></li>
+                    <li><a href="http://chapainawabganjpoly.gov.bd/" target="_blank"><i class="fa-solid fa-angle-right"></i> <span class="en">CPI Main Website</span><span class="bn">সিপিআই মূল ওয়েবসাইট</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-angle-right"></i> <span class="en">Student Login</span><span class="bn">স্টুডেন্ট লগইন</span></a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3><span class="en">Contact Us</span><span class="bn">যোগাযোগ</span></h3>
+                <ul>
+                    <li style="color: #ccc;"><i class="fa-solid fa-location-dot"></i> Barghoria, Chapainawabganj</li>
+                    <li style="color: #ccc;"><i class="fa-solid fa-phone"></i> +880 1234-567890</li>
+                    <li style="color: #ccc;"><i class="fa-solid fa-envelope"></i> foodtech@cpi.edu.bd</li>
+                </ul>
+                <div class="social-links" style="margin-top: 20px;">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© <span id="year"></span> Department of Food Technology, CPI. All Rights Reserved. Designed with <i class="fa-solid fa-heart" style="color: var(--primary-yellow);"></i></p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
