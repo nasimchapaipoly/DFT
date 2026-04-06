@@ -1,41 +1,769 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Department</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department of Food Technology | CNPI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Hind+Siliguri:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary-green: #116530;
+            --primary-yellow: #F4D160;
+            --gradient: linear-gradient(135deg, var(--primary-green), var(--primary-yellow));
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --bg-light: #f8f9fa;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-  <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Hind Siliguri', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Language Classes */
+        .bn { display: none; }
+        .lang-bn-active .bn { display: inline-block; }
+        .lang-bn-active .en { display: none; }
+        .lang-bn-active .bn-block { display: block; }
+        .lang-bn-active .en-block { display: none; }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            z-index: 1002; /* Keep logo above mobile menu */
+        }
+
+        .logo-area i {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text h1 {
+            font-size: 1.2rem;
+            color: var(--primary-green);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gradient);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-green);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1002;
+        }
+
+        .lang-toggle {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .lang-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--primary-green);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        /* Mobile Overlay */
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(rgba(17, 101, 48, 0.8), rgba(244, 209, 96, 0.6)), url('https://images.unsplash.com/photo-1606859191214-25806e8e2423?auto=format&fit=crop&q=80') center/cover;
+            color: var(--text-light);
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            z-index: 2;
+            animation: fadeIn 1.5s ease-out;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            background: var(--text-light);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .cta-btn:hover {
+            background: var(--primary-yellow);
+            color: var(--text-dark);
+            transform: translateY(-3px);
+        }
+
+        /* --- LATEST NEWS TICKER --- */
+        .news-ticker {
+            background: var(--primary-green);
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker-title {
+            background: var(--primary-yellow);
+            color: var(--text-dark);
+            padding: 10px 20px;
+            font-weight: 700;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .ticker-wrap {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-move {
+            display: inline-block;
+            animation: ticker 20s linear infinite;
+        }
+
+        .ticker-move:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* --- MAIN LAYOUT (Grid) --- */
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: var(--gradient);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        /* --- CARDS & BOXES --- */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 5px solid var(--primary-green);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .notice-list {
+            list-style: none;
+        }
+
+        .notice-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notice-date {
+            background: var(--gradient);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 60px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .info-box {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .info-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            z-index: -1;
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .info-box:hover::before {
+            opacity: 1;
+        }
+
+        .info-box:hover {
+            color: white;
+            transform: translateY(-10px);
+        }
+
+        .info-box i {
+            font-size: 3rem;
+            color: var(--primary-green);
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .info-box:hover i {
+            color: white;
+        }
+
+        /* --- GALLERY --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            height: 200px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* --- MAP & FOOTER --- */
+        .map-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow);
+        }
+
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 20px 20px;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h3 {
+            color: var(--primary-yellow);
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-col a:hover {
+            color: var(--primary-yellow);
+            padding-left: 5px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: var(--primary-yellow);
+            color: var(--text-dark);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+        }
+
+        /* --- RESPONSIVE DESIGN & SIDE MENU --- */
+        @media (max-width: 992px) {
+            .layout-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            
+            /* Enable Menu Toggle Icon */
+            .menu-toggle { display: block; }
+            
+            /* Side Menu Styling */
+            nav {
+                position: fixed;
+                top: 0;
+                right: -300px; /* Hidden off-screen by default */
+                width: 250px;
+                height: 100vh;
+                background: white;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+                transition: right 0.4s ease;
+                z-index: 1001;
+                padding-top: 100px; /* Space for header */
+            }
+
+            nav.active {
+                right: 0; /* Slide in */
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+            }
+
+            nav ul li {
+                width: 100%;
+            }
+
+            nav ul li a {
+                display: block;
+                padding: 15px 25px;
+                border-bottom: 1px solid #f0f0f0;
+                font-size: 1.1rem;
+            }
+            
+            nav ul li a::after {
+                display: none; /* Remove hover underline on mobile */
+            }
+
+            nav ul li a:hover {
+                background: #f8f9fa;
+                padding-left: 30px; /* Slide effect on hover */
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="header"></div>
+    <div class="menu-overlay" onclick="toggleMenu()"></div>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>Food Technology Department</h1>
-    <p>Polytechnic Institute</p>
-    <button class="btn">Explore</button>
-  </div>
-</section>
+    <header id="header">
+        <div class="nav-container">
+            <a href="#" class="logo-area">
+                <i class="fa-solid fa-seedling"></i>
+                <div class="logo-text">
+                    <h1><span class="en">Food Technology</span><span class="bn">ফুড টেকনোলজি</span></h1>
+                    <p><span class="en">Chapainawabganj Polytechnic</span><span class="bn">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</span></p>
+                </div>
+            </a>
+            
+            <nav id="navbar">
+                <ul>
+                    <li><a href="#" onclick="closeMenu()"><span class="en">Home</span><span class="bn">হোম</span></a></li>
+                    <li><a href="#about" onclick="closeMenu()"><span class="en">About Us</span><span class="bn">আমাদের সম্পর্কে</span></a></li>
+                    <li><a href="#" onclick="closeMenu()"><span class="en">Department</span><span class="bn">ডিপার্টমেন্ট</span></a></li>
+                    <li><a href="#" onclick="closeMenu()"><span class="en">Teachers</span><span class="bn">শিক্ষকবৃন্দ</span></a></li>
+                    <li><a href="#" onclick="closeMenu()"><span class="en">Downloads</span><span class="bn">ডাউনলোড</span></a></li>
+                    <li><a href="#" onclick="closeMenu()"><span class="en">Gallery</span><span class="bn">গ্যালারি</span></a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="lang-toggle" onclick="toggleLanguage()">EN / BN</button>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-<!-- Teachers -->
-<section class="section">
-  <h2>Our Teachers</h2>
-  <div class="grid" id="teacherList"></div>
-</section>
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="en-block">Department of Food Technology</h1>
+            <h1 class="bn-block">ফুড টেকনোলজি ডিপার্টমেন্ট</h1>
+            <p class="en-block">Chapainawabganj Polytechnic Institute</p>
+            <p class="bn-block">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইন্সটিটিউট</p>
+            <a href="#about" class="cta-btn"><span class="en">Explore More</span><span class="bn">আরও জানুন</span></a>
+        </div>
+    </section>
 
-<!-- Students -->
-<section class="section">
-  <h2>Our Students</h2>
-  <input type="text" id="searchInput" placeholder="Search student...">
-  <div class="grid" id="studentList"></div>
-</section>
+    <div class="news-ticker">
+        <div class="ticker-title"><span class="en">Latest News</span><span class="bn">সর্বশেষ খবর</span></div>
+        <div class="ticker-wrap">
+            <div class="ticker-move">
+                <span class="en">🔹 Admission is open for the 2026 academic session. 🔹 Upcoming Food Festival next week! 🔹 Semester finals routine published.</span>
+                <span class="bn">🔹 ২০২৬ শিক্ষাবর্ষের ভর্তি চলছে। 🔹 আগামী সপ্তাহে ফুড ফেস্টিভ্যাল! 🔹 সেমিস্টার ফাইনালের রুটিন প্রকাশিত হয়েছে।</span>
+            </div>
+        </div>
+    </div>
 
-<div id="footer"></div>
+    <main class="container">
+        
+        <div class="layout-grid">
+            <div class="card about-section" id="about">
+                <h2><span class="en">About the Department</span><span class="bn">ডিপার্টমেন্ট সম্পর্কে</span></h2>
+                <br>
+                <p class="en-block">The Department of Food Technology at Chapainawabganj Polytechnic Institute is dedicated to providing world-class technical education. We focus on food processing, preservation, quality control, and modern food engineering to prepare students for the global industry.</p>
+                <p class="bn-block">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইন্সটিটিউটের ফুড টেকনোলজি ডিপার্টমেন্ট বিশ্বমানের কারিগরি শিক্ষা প্রদানে নিবেদিত। বৈশ্বিক শিল্পের জন্য শিক্ষার্থীদের প্রস্তুত করতে আমরা খাদ্য প্রক্রিয়াজাতকরণ, সংরক্ষণ, মান নিয়ন্ত্রণ এবং আধুনিক ফুড ইঞ্জিনিয়ারিংয়ের উপর জোর দিয়ে থাকি।</p>
+            </div>
 
-<script src="js/main.js"></script>
+            <div class="card notice-board">
+                <h2><i class="fa-solid fa-thumbtack" style="color: var(--primary-green);"></i> <span class="en">Notice Board</span><span class="bn">নোটিশ বোর্ড</span></h2>
+                <ul class="notice-list">
+                    <li>
+                        <div class="notice-date">15<br>Apr</div>
+                        <div><a href="#" style="text-decoration: none; color: inherit;"><span class="en">Class Routine 2026 Updated</span><span class="bn">ক্লাস রুটিন ২০২৬ আপডেট করা হয়েছে</span></a></div>
+                    </li>
+                    <li>
+                        <div class="notice-date">10<br>Apr</div>
+                        <div><a href="#" style="text-decoration: none; color: inherit;"><span class="en">Lab Exam Schedule</span><span class="bn">ল্যাব পরীক্ষার সময়সূচী</span></a></div>
+                    </li>
+                    <li>
+                        <div class="notice-date">05<br>Apr</div>
+                        <div><a href="#" style="text-decoration: none; color: inherit;"><span class="en">Stipend Form Submission</span><span class="bn">উপবৃত্তি ফরম জমাদান</span></a></div>
+                    </li>
+                </ul>
+                <br>
+                <a href="#" style="color: var(--primary-green); font-weight: 600;"><span class="en">View All Notices →</span><span class="bn">সব নোটিশ দেখুন →</span></a>
+            </div>
+        </div>
+
+        <h2 class="section-title"><span class="en">Academic Information</span><span class="bn">একাডেমিক তথ্য</span></h2>
+        <div class="info-grid">
+            <div class="info-box">
+                <i class="fa-solid fa-users"></i>
+                <h3><span class="en">Teachers & Employees</span><span class="bn">শিক্ষক ও স্টাফ</span></h3>
+                <p><span class="en">Meet our highly qualified faculty.</span><span class="bn">আমাদের দক্ষ শিক্ষকদের সম্পর্কে জানুন।</span></p>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-flask"></i>
+                <h3><span class="en">Lab Facilities</span><span class="bn">ল্যাব সুবিধা</span></h3>
+                <p><span class="en">Modern equipment for practical learning.</span><span class="bn">ব্যবহারিক শিক্ষার জন্য আধুনিক যন্ত্রপাতি।</span></p>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-book-open"></i>
+                <h3><span class="en">Syllabus</span><span class="bn">সিলেবাস</span></h3>
+                <p><span class="en">Download semester-wise curriculum.</span><span class="bn">সেমিস্টার অনুযায়ী সিলেবাস ডাউনলোড করুন।</span></p>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+                <h3><span class="en">Stipend Cell</span><span class="bn">স্টাইপেন্ড সেল</span></h3>
+                <p><span class="en">Information regarding student stipends.</span><span class="bn">শিক্ষার্থীদের উপবৃত্তি সংক্রান্ত তথ্য।</span></p>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-calendar-days"></i>
+                <h3><span class="en">Class Routine</span><span class="bn">ক্লাস রুটিন</span></h3>
+                <p><span class="en">Daily academic schedules.</span><span class="bn">দৈনন্দিন একাডেমিক সময়সূচী।</span></p>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h3><span class="en">Students</span><span class="bn">শিক্ষার্থীবৃন্দ</span></h3>
+                <p><span class="en">Student portal and activities.</span><span class="bn">শিক্ষার্থী পোর্টাল এবং কার্যক্রম।</span></p>
+            </div>
+        </div>
+
+        <h2 class="section-title"><span class="en">Photo Gallery</span><span class="bn">ফটো গ্যালারি</span></h2>
+        <div class="gallery-grid" style="margin-bottom: 50px;">
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1576402187878-974f70c890a5?auto=format&fit=crop&q=80" alt="Lab Work"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1505935428862-770b6f24f629?auto=format&fit=crop&q=80" alt="Food Processing"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80" alt="Campus"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80" alt="Seminar"></div>
+        </div>
+
+        <h2 class="section-title"><span class="en">Find Us</span><span class="bn">আমাদের অবস্থান</span></h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3623.513515082101!2d88.2711679!3d24.5956794!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39fbb7aa1fbda6a7%3A0xc3cf93ebecbe490e!2sChapainawabganj%20Polytechnic%20Institute!5e0!3m2!1sen!2sbd!4v1700000000000!5m2!1sen!2sbd" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3><i class="fa-solid fa-seedling"></i> <span class="en">Food Tech CPI</span><span class="bn">ফুড টেকনোলজি সিপিআই</span></h3>
+                <p style="color: #ccc; line-height: 1.6;"><span class="en">Empowering the next generation of Food Technology engineers with world-class education and practical skills.</span><span class="bn">বিশ্বমানের শিক্ষা এবং ব্যবহারিক দক্ষতার সাথে ফুড টেকনোলজি ইঞ্জিনিয়ারদের পরবর্তী প্রজন্মকে ক্ষমতায়ন করা।</span></p>
+            </div>
+            <div class="footer-col">
+                <h3><span class="en">Quick Links</span><span class="bn">প্রয়োজনীয় লিংক</span></h3>
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-angle-right"></i> <span class="en">BTEB Official</span><span class="bn">কারিগরি শিক্ষা বোর্ড</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-angle-right"></i> <span class="en">Directorate of Tech Edu</span><span class="bn">কারিগরি শিক্ষা অধিদপ্তর</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-angle-right"></i> <span class="en">CPI Main Website</span><span class="bn">সিপিআই মূল ওয়েবসাইট</span></a></li>
+                    <li><a href="#"><i class="fa-solid fa-angle-right"></i> <span class="en">Student Login</span><span class="bn">স্টুডেন্ট লগইন</span></a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3><span class="en">Contact Us</span><span class="bn">যোগাযোগ</span></h3>
+                <ul>
+                    <li style="color: #ccc;"><i class="fa-solid fa-location-dot"></i> Barghoria, Chapainawabganj</li>
+                    <li style="color: #ccc;"><i class="fa-solid fa-phone"></i>Coming Soon</li>
+                    <li style="color: #ccc;"><i class="fa-solid fa-envelope"></i> food.chapaipoly@gmail.com</li>
+                </ul>
+                <div class="social-links" style="margin-top: 20px;">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2026 Department of Food Technology, CNPI. All Rights Reserved. Designed by <a href="www.nasim.ami.bd">Nasim Al Masud</a> <i class="fa-solid fa-heart" style="color: var(--primary-yellow);"></i></p>
+        </div>
+    </footer>
+
+    <script>
+        // Language Toggle Logic
+        function toggleLanguage() {
+            document.body.classList.toggle('lang-bn-active');
+        }
+
+        // Mobile Menu Toggle Logic
+        function toggleMenu() {
+            const nav = document.getElementById('navbar');
+            const overlay = document.querySelector('.menu-overlay');
+            const icon = document.querySelector('.menu-toggle i');
+            
+            nav.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Switch icon between bars and X
+            if(nav.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // Close menu when clicking a link
+        function closeMenu() {
+            if (window.innerWidth <= 768) {
+                toggleMenu();
+            }
+        }
+
+        // Header Scroll Shadow Effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
+                header.style.padding = '10px 0';
+            } else {
+                header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                header.style.padding = '0';
+            }
+        });
+    </script>
 </body>
 </html>
