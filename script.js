@@ -222,22 +222,30 @@ async function loadComponents() {
 window.addEventListener('DOMContentLoaded', () => {
     loadComponents();
 });
-document.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("load", function () {
 
     // HEADER
-    fetch("/header.html")
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById("header-container").innerHTML = data;
+    fetch("header.html")
+        .then(res => {
+            if (!res.ok) throw new Error("Header not found");
+            return res.text();
         })
-        .catch(err => console.log("Header load error:", err));
+        .then(data => {
+            const header = document.getElementById("header-container");
+            if (header) header.innerHTML = data;
+        })
+        .catch(err => console.error("❌ Header error:", err));
 
     // FOOTER
-    fetch("/footer.html")
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById("footer-container").innerHTML = data;
+    fetch("footer.html")
+        .then(res => {
+            if (!res.ok) throw new Error("Footer not found");
+            return res.text();
         })
-        .catch(err => console.log("Footer load error:", err));
+        .then(data => {
+            const footer = document.getElementById("footer-container");
+            if (footer) footer.innerHTML = data;
+        })
+        .catch(err => console.error("❌ Footer error:", err));
 
 });
