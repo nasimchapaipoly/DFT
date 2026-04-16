@@ -222,3 +222,22 @@ async function loadComponents() {
 window.addEventListener('DOMContentLoaded', () => {
     loadComponents();
 });
+document.addEventListener("DOMContentLoaded", function () {
+
+    // HEADER
+    fetch("/header.html")
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("header-container").innerHTML = data;
+        })
+        .catch(err => console.log("Header load error:", err));
+
+    // FOOTER
+    fetch("/footer.html")
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("footer-container").innerHTML = data;
+        })
+        .catch(err => console.log("Footer load error:", err));
+
+});
