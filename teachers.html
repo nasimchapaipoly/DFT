@@ -54,13 +54,35 @@
 </header>
 
 <main class="container" style="margin-top: 120px; min-height: 60vh;">
+    
     <h2 class="section-title">
         <span class="en">Faculty Members</span>
         <span class="bn">শিক্ষকবৃন্দ</span>
     </h2>
 
-    <!-- 🔥 Dynamic Teacher Load -->
+    <!-- 🔍 SEARCH + FILTER -->
+    <div style="text-align:center; margin-bottom:20px;">
+        
+        <input type="text" id="search-input"
+        placeholder="🔍 Search teacher..."
+        style="padding:10px 15px; width:220px; border-radius:20px; border:1px solid #ccc; margin-right:10px;">
+
+        <select id="filter-select"
+        style="padding:10px; border-radius:10px; border:1px solid #ccc;">
+            <option value="">
+                <span class="en">All</span>
+                <span class="bn">সব</span>
+            </option>
+            <option value="Instructor">Instructor</option>
+            <option value="Head">Head</option>
+            <option value="Junior">Junior</option>
+        </select>
+
+    </div>
+
+    <!-- 👨‍🏫 TEACHERS -->
     <div class="info-grid" id="teacher-container"></div>
+
 </main>
 
 <footer>
