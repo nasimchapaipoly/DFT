@@ -1,0 +1,26 @@
+[
+  {
+    "name_en": "Md. Example Name",
+    "name_bn": "মো. উদাহরণ নাম",
+    "position_en": "Chief Instructor (Tech) & Head",
+    "position_bn": "চিফ ইন্সট্রাক্টর (টেক) ও বিভাগীয় প্রধান",
+    "email": "hod@cpi.edu.bd",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/d52e38490589425abe13bb4d445602d4.jpg"
+  },
+  {
+    "name_en": "Mr. Teacher Two",
+    "name_bn": "জনাব শিক্ষক দুই",
+    "position_en": "Instructor (Tech)",
+    "position_bn": "ইন্সট্রাক্টর (টেক)",
+    "email": "teacher2@cpi.edu.bd",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/18e1c659ec074337b9c9ef7f97b13b88.png"
+  },
+  {
+    "name_en": "Ms. Teacher Three",
+    "name_bn": "মিস শিক্ষক তিন",
+    "position_en": "Junior Instructor (Tech)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক)",
+    "email": "teacher3@cpi.edu.bd",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/a63a8e2c323a4506b4ac6b35d7f99788.jpg"
+  }
+]
