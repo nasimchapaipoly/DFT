@@ -202,21 +202,23 @@ function setupSearchAndFilter() {
     input.addEventListener('input', applyFilter);
     filter.addEventListener('change', applyFilter);
 }
-// --- LOAD HEADER & FOOTER (FIXED) ---
+// --- LOAD HEADER FOOTER (FINAL FIX) ---
 async function loadComponents() {
     try {
-        const header = await fetch('./header.html');
-        const headerData = await header.text();
-        document.getElementById('header-container').innerHTML = headerData;
+        const headerRes = await fetch('header.html');
+        const headerHtml = await headerRes.text();
+        document.getElementById('header-container').innerHTML = headerHtml;
 
-        const footer = await fetch('./footer.html');
-        const footerData = await footer.text();
-        document.getElementById('footer-container').innerHTML = footerData;
+        const footerRes = await fetch('footer.html');
+        const footerHtml = await footerRes.text();
+        document.getElementById('footer-container').innerHTML = footerHtml;
 
-    } catch (error) {
-        console.error("❌ Header/Footer load error:", error);
+    } catch (err) {
+        console.error("❌ Load error:", err);
     }
 }
 
-// Wait fully loaded
-window.addEventListener('load', loadComponents);
+// VERY IMPORTANT
+window.addEventListener('DOMContentLoaded', () => {
+    loadComponents();
+});
