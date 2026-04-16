@@ -87,3 +87,47 @@ window.addEventListener('scroll', () => {
         header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
     }
 });
+
+// --- LOAD TEACHERS FROM JSON (DESIGN SAFE) ---
+async function loadTeachers() {
+    try {
+        const response = await fetch('teachers.json');
+        const teachers = await response.json();
+
+        const container = document.getElementById('teacher-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        teachers.forEach(t => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.textAlign = 'center';
+
+            card.innerHTML = `
+                <img src="${t.image}" 
+                     style="width:120px;height:120px;border-radius:50%;margin:0 auto 15px;display:block;border:4px solid var(--primary-yellow);">
+
+                <h3 style="color: var(--primary-green);">
+                    <span class="en">${t.name_en}</span>
+                    <span class="bn">${t.name_bn}</span>
+                </h3>
+
+                <p style="font-weight:600;color:#666;margin-bottom:10px;">
+                    <span class="en">${t.position_en}</span>
+                    <span class="bn">${t.position_bn}</span>
+                </p>
+
+                <p><i class="fa-solid fa-envelope"></i> ${t.email}</p>
+            `;
+
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Error loading teachers:", error);
+    }
+}
+
+// Run only on teachers page
+loadTeachers();
