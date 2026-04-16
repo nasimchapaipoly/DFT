@@ -1,11 +1,21 @@
-// --- APPLY SAVED LANGUAGE ON LOAD ---
-window.addEventListener('DOMContentLoaded', () => {
+// ================================
+// ✅ FULL FIXED SCRIPT (SAFE)
+// ================================
+
+// --- RUN AFTER FULL LOAD ---
+window.addEventListener('load', () => {
+
     const savedLang = localStorage.getItem('lang');
 
     if (savedLang === 'en') {
         document.body.classList.add('lang-en-active');
     }
 
+    // ⏰ Start clock
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // 👨‍🏫 Teacher system
     loadTeachers();
     setupSearchAndFilter();
 });
@@ -13,19 +23,24 @@ window.addEventListener('DOMContentLoaded', () => {
 // --- PRELOADER ---
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
-    if (preloader) {
+    if (!preloader) return;
+
+    setTimeout(() => {
+        preloader.classList.add('preloader-hidden');
         setTimeout(() => {
-            preloader.classList.add('preloader-hidden');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 600);
-        }, 500);
-    }
+            preloader.style.display = 'none';
+        }, 600);
+    }, 500);
 });
 
 // --- CLOCK & DATE ---
 function updateDateTime() {
     const now = new Date();
+    const el = document.getElementById('current-datetime');
+    const yearEl = document.getElementById('year');
+
+    if (!el || !yearEl) return; // 🔥 prevent crash
+
     const isEnglish = document.body.classList.contains('lang-en-active');
 
     if (isEnglish) {
@@ -38,8 +53,8 @@ function updateDateTime() {
 
         const time = now.toLocaleTimeString('en-US');
 
-        document.getElementById('current-datetime').textContent = `${date} | ${time}`;
-        document.getElementById('year').textContent = now.getFullYear();
+        el.textContent = `${date} | ${time}`;
+        yearEl.textContent = now.getFullYear();
 
     } else {
         const date = new Intl.DateTimeFormat('bn-BD', {
@@ -49,21 +64,18 @@ function updateDateTime() {
             day: 'numeric'
         }).format(now);
 
-        const time = now.toLocaleTimeString('bn-BD', {
+        const time = new Intl.DateTimeFormat('bn-BD', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit'
-        });
+        }).format(now);
 
         const yearBn = new Intl.NumberFormat('bn-BD').format(now.getFullYear());
 
-        document.getElementById('current-datetime').textContent = `${date} | ${time}`;
-        document.getElementById('year').textContent = yearBn;
+        el.textContent = `${date} | ${time}`;
+        yearEl.textContent = yearBn;
     }
 }
-
-setInterval(updateDateTime, 1000);
-updateDateTime();
 
 // --- LANGUAGE TOGGLE ---
 function toggleLanguage() {
@@ -83,6 +95,8 @@ function toggleMenu() {
     const nav = document.getElementById('navbar');
     const overlay = document.querySelector('.menu-overlay');
     const icon = document.querySelector('.menu-toggle i');
+
+    if (!nav || !overlay || !icon) return;
 
     nav.classList.toggle('active');
     overlay.classList.toggle('active');
@@ -104,6 +118,8 @@ function closeMenu() {
 // --- HEADER SHADOW ---
 window.addEventListener('scroll', () => {
     const header = document.getElementById('header');
+    if (!header) return;
+
     if (window.scrollY > 50) {
         header.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
     } else {
@@ -112,7 +128,7 @@ window.addEventListener('scroll', () => {
 });
 
 // ================================
-// 🔥 TEACHER SYSTEM (UPDATED)
+// 👨‍🏫 TEACHER SYSTEM
 // ================================
 
 let allTeachers = [];
