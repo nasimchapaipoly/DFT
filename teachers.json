@@ -1,26 +1,164 @@
 [
   {
-    "name_en": "Md. Example Name",
-    "name_bn": "মো. উদাহরণ নাম",
-    "position_en": "Chief Instructor (Tech) & Head",
-    "position_bn": "চিফ ইন্সট্রাক্টর (টেক) ও বিভাগীয় প্রধান",
-    "email": "hod@cpi.edu.bd",
+    "name_en": "Dr. Md. Ariful Alam",
+    "name_bn": "ড. মো. আরিফুল আলম",
+    "position_en": "Chief Instructor (Tech/Food) & Department Head",
+    "position_bn": "চিফ ইন্সট্রাক্টর (টেক/ফুড) ও বিভাগীয় প্রধান",
+    "mobile": "০১৭২৯৪৫৮৫০৮",
+    "email": "arifuliuanft@yahoo.com",
     "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/d52e38490589425abe13bb4d445602d4.jpg"
   },
   {
-    "name_en": "Mr. Teacher Two",
-    "name_bn": "জনাব শিক্ষক দুই",
-    "position_en": "Instructor (Tech)",
-    "position_bn": "ইন্সট্রাক্টর (টেক)",
-    "email": "teacher2@cpi.edu.bd",
+    "name_en": "Md. Mokhlesur Rahman",
+    "name_bn": "মোঃ মোখলেছুর রহমান",
+    "position_en": "Instructor (Tech/Food) & Department Head",
+    "position_bn": "ইন্সট্রাক্টর (টেক/ফুড) ও বিভাগীয় প্রধান",
+    "mobile": "০১৯১৭৬৯২৩৬৬",
+    "email": "mokhlesur.cnpi66@gmail.com",
     "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/18e1c659ec074337b9c9ef7f97b13b88.png"
   },
   {
-    "name_en": "Ms. Teacher Three",
-    "name_bn": "মিস শিক্ষক তিন",
-    "position_en": "Junior Instructor (Tech)",
-    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক)",
-    "email": "teacher3@cpi.edu.bd",
+    "name_en": "Rownok Jahan",
+    "name_bn": "রওনক জাহান",
+    "position_en": "Instructor (Tech/Food)",
+    "position_bn": "ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "০১৭৯৩০০৯৬৬৭",
+    "email": "rownokjahan.fe@gmail.com",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/22fbfb45caca4250a5fceecf347729f8.jpg"
+  },
+  {
+    "name_en": "Probal Kumar Mandol",
+    "name_bn": "প্রবল কুমার মন্ডল",
+    "position_en": "Instructor (Tech/Food)",
+    "position_bn": "ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "০১৮২৭৬৬৪৩০৬",
+    "email": "probalofficial007@gmail.com",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/6984081c1dc34dfcafe4c04196934c71.jpg"
+  },
+  {
+    "name_en": "Protima Rani Ray",
+    "name_bn": "প্রতিমা রানী রায়",
+    "position_en": "Instructor (Tech/Food)",
+    "position_bn": "ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "০১৭৩১৯২৩০৯৬",
+    "email": "protimaroyinfs16@gmail.com",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/ba3a5ab35a134c0891e5b4e230b9c7b2.jpg"
+  },
+  {
+    "name_en": "Mozeda Khatun",
+    "name_bn": "মোজেদা খাতুন",
+    "position_en": "Instructor (Tech/Food)",
+    "position_bn": "ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "০১৭৩৯৪৯৯৯১৮",
+    "email": "bilkis1202@gmail.com",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/ad3a2991c43945448197b3d9cd897bb2.png"
+  },
+  {
+    "name_en": "Mst. Nazma Khatun",
+    "name_bn": "মোছাঃ নাজমা খাতুন",
+    "position_en": "Instructor (Tech/Food)",
+    "position_bn": "ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "০১৭২২৬৫৮৫৩৫",
+    "email": "chapaipoly@gmail.com",
+    "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/9cba164a033242588a42911e261833a2.png"
+  },
+  {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+  {
+    "name_en": "Nasim Al Masud",
+    "name_bn": "নাসিম আল মাসুদ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "০১৭৩৭২৫৬০৩০",
+    "email": "mdnamn4@gmail.com",
     "image": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/a63a8e2c323a4506b4ac6b35d7f99788.jpg"
-  }
+  },
+  {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+   {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
+    {
+    "name_en": "Md. ",
+    "name_bn": "মোঃ ",
+    "position_en": "Junior Instructor (Tech/Food)",
+    "position_bn": "জুনিয়র ইন্সট্রাক্টর (টেক/ফুড)",
+    "mobile": "",
+    "email": "",
+    "image": ""
+  },
 ]
