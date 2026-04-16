@@ -7,6 +7,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     loadTeachers();
+    setupSearchAndFilter();
 });
 
 // --- PRELOADER ---
@@ -48,7 +49,6 @@ function updateDateTime() {
             day: 'numeric'
         }).format(now);
 
-        // ✅ FIXED Bengali time (works everywhere)
         const time = now.toLocaleTimeString('bn-BD', {
             hour: '2-digit',
             minute: '2-digit',
@@ -111,40 +111,94 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// --- LOAD TEACHERS FROM JSON ---
+// ================================
+// 🔥 TEACHER SYSTEM (UPDATED)
+// ================================
+
+let allTeachers = [];
+
+// --- LOAD TEACHERS ---
 async function loadTeachers() {
     const container = document.getElementById('teacher-container');
     if (!container) return;
 
     try {
         const res = await fetch('./teachers.json');
-        const teachers = await res.json();
+        allTeachers = await res.json();
 
-        container.innerHTML = '';
-
-        teachers.forEach(t => {
-            container.innerHTML += `
-                <div class="card" style="text-align:center;">
-                    <img src="${t.image}" 
-                    style="width:120px;height:120px;border-radius:50%;margin:0 auto 15px;display:block;border:4px solid var(--primary-yellow);">
-
-                    <h3 style="color: var(--primary-green);">
-                        <span class="en">${t.name_en}</span>
-                        <span class="bn">${t.name_bn}</span>
-                    </h3>
-
-                    <p style="font-weight:600;color:#666;margin-bottom:10px;">
-                        <span class="en">${t.position_en}</span>
-                        <span class="bn">${t.position_bn}</span>
-                    </p>
-
-                    <p><i class="fa-solid fa-envelope"></i> ${t.email}</p>
-                </div>
-            `;
-        });
+        displayTeachers(allTeachers);
 
     } catch (error) {
         console.error("❌ Teacher load error:", error);
         container.innerHTML = "<p style='color:red;text-align:center;'>Failed to load teachers</p>";
     }
+}
+
+// --- HIGHLIGHT ---
+function highlight(text, keyword) {
+    if (!keyword) return text;
+
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return text.replace(regex, `<mark>$1</mark>`);
+}
+
+// --- DISPLAY ---
+function displayTeachers(list, keyword = '') {
+    const container = document.getElementById('teacher-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    list.forEach(t => {
+        container.innerHTML += `
+            <div class="card" style="text-align:center;">
+                <img src="${t.image}" 
+                style="width:120px;height:120px;border-radius:50%;margin:0 auto 15px;display:block;border:4px solid var(--primary-yellow);">
+
+                <h3 style="color: var(--primary-green);">
+                    <span class="en">${highlight(t.name_en, keyword)}</span>
+                    <span class="bn">${highlight(t.name_bn, keyword)}</span>
+                </h3>
+
+                <p style="font-weight:600;color:#666;margin-bottom:10px;">
+                    <span class="en">${highlight(t.position_en, keyword)}</span>
+                    <span class="bn">${highlight(t.position_bn, keyword)}</span>
+                </p>
+
+                <p><i class="fa-solid fa-envelope"></i> ${t.email}</p>
+            </div>
+        `;
+    });
+}
+
+// --- SEARCH + FILTER ---
+function setupSearchAndFilter() {
+    const input = document.getElementById('search-input');
+    const filter = document.getElementById('filter-select');
+
+    if (!input || !filter) return;
+
+    function applyFilter() {
+        const keyword = input.value.toLowerCase();
+        const selected = filter.value.toLowerCase();
+
+        const filtered = allTeachers.filter(t => {
+            const matchSearch =
+                t.name_en.toLowerCase().includes(keyword) ||
+                t.name_bn.includes(keyword) ||
+                t.position_en.toLowerCase().includes(keyword) ||
+                t.position_bn.includes(keyword);
+
+            const matchFilter =
+                selected === '' ||
+                t.position_en.toLowerCase().includes(selected);
+
+            return matchSearch && matchFilter;
+        });
+
+        displayTeachers(filtered, keyword);
+    }
+
+    input.addEventListener('input', applyFilter);
+    filter.addEventListener('change', applyFilter);
 }
