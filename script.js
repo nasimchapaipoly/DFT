@@ -230,29 +230,26 @@ window.addEventListener("load", function () {
 
     const headerContainer = document.getElementById("header-container");
     const footerContainer = document.getElementById("footer-container");
+document.addEventListener("DOMContentLoaded", function () {
+
 
     // HEADER
     fetch("header.html")
-        .then(res => {
-            console.log("Header status:", res.status);
-            return res.text();
-        })
+        .then(res => res.text())
         .then(data => {
-            console.log("Header loaded");
             headerContainer.innerHTML = data;
-        })
-        .catch(err => console.error("❌ Header error:", err));
+
+            // 🔥 RE-RUN FUNCTIONS AFTER LOAD
+            if (typeof updateDateTime === "function") {
+                updateDateTime();
+            }
+        });
 
     // FOOTER
     fetch("footer.html")
-        .then(res => {
-            console.log("Footer status:", res.status);
-            return res.text();
-        })
+        .then(res => res.text())
         .then(data => {
-            console.log("Footer loaded");
             footerContainer.innerHTML = data;
-        })
-        .catch(err => console.error("❌ Footer error:", err));
+        });
 
 });
