@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('lang-en-active');
     }
 
-    loadTeachers(); // run teacher loader
+    loadTeachers();
 });
 
 // --- PRELOADER ---
@@ -48,12 +48,12 @@ function updateDateTime() {
             day: 'numeric'
         }).format(now);
 
-        const time = new Intl.DateTimeFormat('bn-BD', {
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
-            hour12: true
-        }).format(now);
+        // ✅ FIXED Bengali time (works everywhere)
+        const time = now.toLocaleTimeString('bn-BD', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
 
         const yearBn = new Intl.NumberFormat('bn-BD').format(now.getFullYear());
 
