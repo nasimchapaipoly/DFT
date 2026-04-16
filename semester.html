@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syllabus | Food Technology CPI</title>
+    <title>Syllabus | Food Technology CNPI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Hind+Siliguri:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ===== HEADER START ===== -->
+    <!-- --- PRELOADER (Added Here) --- -->
+    <div id="preloader">
+        <div class="loader">
+            <i class="fa-solid fa-seedling"></i>
+        </div>
+    </div>
+    <!-- ----------------------------- -->
 
     <div class="menu-overlay" onclick="toggleMenu()"></div>
 
@@ -16,6 +25,7 @@
         <div class="top-bar">
             <i class="fa-regular fa-clock"></i> <span id="current-datetime"></span>
         </div>
+        
         <div class="nav-container">
             <a href="index.html" class="logo-area">
                 <i class="fa-solid fa-seedling"></i>
@@ -24,6 +34,7 @@
                     <p><span class="en">Chapainawabganj Polytechnic</span><span class="bn">চাঁপাইনবাবগঞ্জ পলিটেকনিক</span></p>
                 </div>
             </a>
+            
             <nav id="navbar">
                 <ul>
                     <li><a href="index.html" onclick="closeMenu()"><span class="en">Home</span><span class="bn">হোম</span></a></li>
@@ -35,12 +46,16 @@
                     <li><a href="students.html" onclick="closeMenu()"><span class="en">Students</span><span class="bn">শিক্ষার্থীবৃন্দ</span></a></li>
                 </ul>
             </nav>
+            
             <div class="header-actions">
                 <button class="lang-toggle" onclick="toggleLanguage()">EN / BN</button>
-                <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>
+<!-- ===== HEADER END ===== -->
 
     <main class="container" style="margin-top: 120px; min-height: 60vh;">
         <h2 class="section-title"><span class="en">Semester Wise Syllabus</span><span class="bn">সেমিস্টার ভিত্তিক সিলেবাস</span></h2>
