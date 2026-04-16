@@ -224,27 +224,34 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 window.addEventListener("load", function () {
 
+    document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("✅ JS RUNNING");
+
+    const headerContainer = document.getElementById("header-container");
+    const footerContainer = document.getElementById("footer-container");
+
     // HEADER
     fetch("header.html")
         .then(res => {
-            if (!res.ok) throw new Error("Header not found");
+            console.log("Header status:", res.status);
             return res.text();
         })
         .then(data => {
-            const header = document.getElementById("header-container");
-            if (header) header.innerHTML = data;
+            console.log("Header loaded");
+            headerContainer.innerHTML = data;
         })
         .catch(err => console.error("❌ Header error:", err));
 
     // FOOTER
     fetch("footer.html")
         .then(res => {
-            if (!res.ok) throw new Error("Footer not found");
+            console.log("Footer status:", res.status);
             return res.text();
         })
         .then(data => {
-            const footer = document.getElementById("footer-container");
-            if (footer) footer.innerHTML = data;
+            console.log("Footer loaded");
+            footerContainer.innerHTML = data;
         })
         .catch(err => console.error("❌ Footer error:", err));
 
