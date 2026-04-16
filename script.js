@@ -202,18 +202,21 @@ function setupSearchAndFilter() {
     input.addEventListener('input', applyFilter);
     filter.addEventListener('change', applyFilter);
 }
-function loadComponents() {
-    fetch('header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-container').innerHTML = data;
-        });
+// --- LOAD HEADER & FOOTER (FIXED) ---
+async function loadComponents() {
+    try {
+        const header = await fetch('./header.html');
+        const headerData = await header.text();
+        document.getElementById('header-container').innerHTML = headerData;
 
-    fetch('footer.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('footer-container').innerHTML = data;
-        });
+        const footer = await fetch('./footer.html');
+        const footerData = await footer.text();
+        document.getElementById('footer-container').innerHTML = footerData;
+
+    } catch (error) {
+        console.error("❌ Header/Footer load error:", error);
+    }
 }
 
-window.addEventListener('DOMContentLoaded', loadComponents);
+// Wait fully loaded
+window.addEventListener('load', loadComponents);
