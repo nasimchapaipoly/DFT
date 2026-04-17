@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Rahim Uddin",
+    "father": "Abdul Karim",
+    "mother": "Rokeya Begum",
+    "roll": "123456",
+    "registration": "987654321",
+    "semester": "1st",
+    "shift": "1st",
+    "group": "A",
+    "mobile": "01700000000",
+    "image": "https://i.pravatar.cc/150?img=1"
+  },
+    {
+    "name": "Rahim Uddin",
+    "father": "Abdul Karim",
+    "mother": "Rokeya Begum",
+    "roll": "123456",
+    "registration": "987654321",
+    "semester": "4th",
+    "shift": "1st",
+    "group": "A",
+    "mobile": "01700000000",
+    "image": "https://i.pravatar.cc/150?img=1"
+  },
+    {
+    "name": "Rahim Uddin",
+    "father": "Abdul Karim",
+    "mother": "Rokeya Begum",
+    "roll": "123456",
+    "registration": "987654321",
+    "semester": "7th",
+    "shift": "1st",
+    "group": "Group A",
+    "mobile": "01700000000",
+    "image": "https://i.pravatar.cc/150?img=1"
+  }, 
+    {
+    "name": "Rahim Uddin",
+    "father": "Abdul Karim",
+    "mother": "Rokeya Begum",
+    "roll": "123456",
+    "registration": "987654321",
+    "semester": "3rd",
+    "shift": "1st",
+    "group": "Group A",
+    "mobile": "01700000000",
+    "image": "https://i.pravatar.cc/150?img=1"
+  }
+]
