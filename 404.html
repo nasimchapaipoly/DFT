@@ -3,134 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 | Food Technology CNPI</title>
-
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>404 - Not Found</title>
 
 <style>
-
-/* ===== 404 PAGE CUSTOM ===== */
 body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    height: 100vh;
 }
 
-.error-container {
-    text-align: center;
+.box {
     background: white;
     padding: 40px 30px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    max-width: 500px;
-    width: 90%;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* 404 TEXT */
-.error-code {
-    font-size: 80px;
-    font-weight: 700;
-    color: var(--primary-color, #2563eb);
+h1 {
+    font-size: 70px;
+    color: #2563eb;
+    margin: 0;
 }
 
-/* TITLE */
-.error-title {
-    font-size: 22px;
-    margin: 10px 0;
+p {
+    color: #555;
 }
 
-/* TEXT */
-.error-text {
-    color: #666;
-    margin-bottom: 20px;
-}
-
-/* BUTTON */
-.home-btn {
+.btn {
     display: inline-block;
+    margin-top: 15px;
     padding: 10px 20px;
-    background: var(--primary-color, #2563eb);
+    background: #2563eb;
     color: white;
-    border-radius: 8px;
     text-decoration: none;
-    transition: 0.3s;
+    border-radius: 8px;
 }
 
-.home-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* COUNTDOWN */
-.countdown {
+.count {
     margin-top: 10px;
     font-size: 14px;
-    color: #777;
 }
-
-/* ANIMATION */
-.error-container {
-    animation: fadeIn 0.6s ease;
-}
-
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
-}
-
 </style>
 
 </head>
 <body>
 
-<div class="error-container">
+<div class="box">
+    <h1>404</h1>
+    <p>Page not found</p>
 
-    <div class="error-code">404</div>
+    <a href="/" class="btn">Go Home</a>
 
-    <h2 class="error-title">
-        <span class="en">Page Not Found</span>
-        <span class="bn">পৃষ্ঠা পাওয়া যায়নি</span>
-    </h2>
-
-    <p class="error-text">
-        <span class="en">The page you are looking for doesn't exist.</span>
-        <span class="bn">আপনি যে পৃষ্ঠাটি খুঁজছেন তা পাওয়া যায়নি।</span>
-    </p>
-
-    <a href="index.html" class="home-btn">
-        <i class="fa-solid fa-house"></i> 
-        <span class="en">Go Home</span>
-        <span class="bn">হোমে ফিরে যান</span>
-    </a>
-
-    <div class="countdown">
-        <span class="en">Redirecting in</span>
-        <span class="bn">রিডাইরেক্ট হচ্ছে</span>
-        <span id="timer">5</span> 
-        <span class="en">seconds...</span>
-        <span class="bn">সেকেন্ডের মধ্যে...</span>
+    <div class="count">
+        Redirecting in <span id="t">5</span>s
     </div>
-
 </div>
 
 <script>
-
-// ⏳ AUTO REDIRECT
-let time = 5;
-const timerEl = document.getElementById("timer");
+let t = 5;
+const el = document.getElementById("t");
 
 setInterval(() => {
-    time--;
-    timerEl.textContent = time;
+    t--;
+    el.textContent = t;
 
-    if (time <= 0) {
-        window.location.href = "index.html";
+    if (t <= 0) {
+        window.location.href = "/";
     }
 }, 1000);
-
 </script>
 
 </body>
