@@ -1,1 +1,762 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Attendance Form Generator — চাঁপাইনবাবগঞ্জ পলিটেকনিক</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+:root {
+  --ink:        #0d1117;
+  --ink-mid:    #374151;
+  --ink-soft:   #6b7280;
+  --surface:    #f8fafc;
+  --white:      #ffffff;
+  --border:     #e2e8f0;
+  --accent:     #1d4ed8;
+  --accent-h:   #1e40af;
+  --accent-bg:  #eff6ff;
+  --green:      #16a34a;
+  --green-bg:   #f0fdf4;
+  --red:        #dc2626;
+  --radius-lg:  16px;
+  --radius-md:  10px;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.09);
+  --shadow-lg:  0 10px 40px rgba(0,0,0,.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Tiro Bangla', Georgia, serif;
+  background: #eef1f7;
+  min-height: 100vh;
+  color: var(--ink);
+  padding: 24px 16px 60px;
+}
+
+/* ── LOCK SCREEN ── */
+#lockScreen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: 'Tiro Bangla', Georgia, serif;
+}
+.lock-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 44px 40px 38px;
+  width: 360px;
+  max-width: 92vw;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+.lock-icon { font-size: 52px; margin-bottom: 10px; display: block; animation: pulse-lock 2s ease-in-out infinite; }
+@keyframes pulse-lock { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+.lock-title { color: #f1f5f9; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.lock-sub   { color: #94a3b8; font-size: 13px; margin-bottom: 28px; }
+.lock-label { display: block; text-align: left; color: #94a3b8; font-size: 12px; font-weight: 700; letter-spacing: .5px; margin-bottom: 7px; text-transform: uppercase; }
+.lock-input-wrap { position: relative; margin-bottom: 16px; }
+#passcodeInput {
+  width: 100%; height: 50px; border-radius: 12px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08); color: #f1f5f9;
+  font-size: 16px; padding: 0 46px 0 16px; outline: none;
+  font-family: inherit; letter-spacing: 2px; transition: border-color .2s;
+}
+#passcodeInput::placeholder { color: #475569; letter-spacing: 0; }
+#passcodeInput:focus { border-color: #3b82f6; background: rgba(255,255,255,0.12); }
+.toggle-eye { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #64748b; padding: 0; line-height: 1; }
+.toggle-eye:hover { color: #94a3b8; }
+#lockError { font-size: 13px; color: #f87171; background: rgba(220,38,38,.12); border: 1px solid rgba(220,38,38,.3); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; display: none; }
+.lock-btn { width: 100%; height: 50px; border-radius: 12px; border: none; background: #2563eb; color: white; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .2s, transform .1s; }
+.lock-btn:hover  { background: #1d4ed8; }
+.lock-btn:active { transform: scale(.98); }
+.lock-footer { margin-top: 22px; color: #475569; font-size: 11px; }
+@keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);} }
+.shake { animation: shake .4s ease; }
+
+#logoutBtn {
+  position: fixed; top: 14px; right: 16px; z-index: 999;
+  background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+  border-radius: 8px; padding: 6px 14px; font-size: 12px;
+  font-family: inherit; cursor: pointer; display: none; transition: .2s;
+}
+#logoutBtn:hover { background: #0f172a; color: #f1f5f9; }
+
+/* ── CONTROLS ── */
+.controls {
+  max-width: 860px; margin: 0 auto 28px;
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 28px 28px 24px; box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+.controls-title { text-align: center; font-size: 26px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.controls-sub   { text-align: center; font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; }
+
+.tab-nav { display: flex; gap: 8px; border-bottom: 2px solid var(--border); margin-bottom: 22px; }
+.tab-btn { padding: 8px 18px; border: none; background: none; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink-soft); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; border-radius: 6px 6px 0 0; transition: .2s; }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-bg); }
+.tab-btn:hover:not(.active) { color: var(--ink-mid); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.upload-zone { border: 2px dashed #cbd5e1; border-radius: var(--radius-md); padding: 32px 20px; text-align: center; cursor: pointer; transition: .2s; background: var(--surface); position: relative; }
+.upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: var(--accent-bg); }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon  { font-size: 36px; margin-bottom: 8px; }
+.upload-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.upload-hint  { font-size: 13px; color: var(--ink-soft); }
+
+.template-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 12px 14px; background: var(--green-bg); border-radius: var(--radius-md); border: 1px solid #bbf7d0; font-size: 13px; color: var(--green); font-weight: 600; }
+.template-row button { margin-left: auto; padding: 6px 14px; background: var(--green); color: white; border: none; border-radius: 7px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.template-row button:hover { background: #15803d; }
+
+#uploadStatus { margin-top: 12px; font-size: 13px; font-weight: 600; padding: 9px 14px; border-radius: 8px; display: none; }
+#uploadStatus.ok  { display: block; background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
+#uploadStatus.err { display: block; background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
+
+.form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.form-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
+.form-field label { font-size: 12px; font-weight: 700; color: var(--ink-mid); letter-spacing: .3px; }
+
+select, .form-input {
+  height: 46px; border-radius: var(--radius-md); border: 1.5px solid var(--border);
+  font-size: 15px; padding: 0 13px; background: var(--surface);
+  font-family: inherit; color: var(--ink); outline: none; transition: border-color .15s;
+}
+select:focus, .form-input:focus { border-color: var(--accent); background: var(--white); }
+
+.btn { height: 46px; padding: 0 22px; border-radius: var(--radius-md); border: none; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: .2s; white-space: nowrap; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-h); }
+.btn-dark    { background: var(--ink);    color: white; }
+.btn-dark:hover   { background: #1a1a1a; }
+.btn-outline { background: white; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-outline:hover { background: var(--accent-bg); }
+
+.student-count { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-bg); padding: 3px 10px; border-radius: 20px; border: 1px solid #bfdbfe; }
+
+/* ── A4 PAGE ── */
+.a4-page { width: 210mm; min-height: 297mm; margin: 0 auto; background: white; padding: 8mm 9mm 10mm; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+
+.header { border: 1.5px solid #d1d9e6; border-radius: 10px; padding: 16px 18px; text-align: center; margin-bottom: 14px; background: #f9fbff; }
+.header h2 { font-size: 28px; color: #0f172a; margin-bottom: 3px; font-weight: 700; }
+.header h4 { font-size: 14px; color: #64748b; margin-bottom: 10px; font-weight: 400; }
+.header h3 { font-size: 20px; font-weight: 700; background: var(--ink); color: white; display: inline-block; padding: 3px 22px; border-radius: 6px; margin-bottom: 8px; }
+.header-meta { display: flex; justify-content: center; gap: 28px; font-size: 13px; color: #374151; margin-top: 8px; flex-wrap: wrap; }
+.header-meta span { font-weight: 700; }
+
+.table-wrapper { overflow: hidden; border-radius: 8px; border: 1.5px solid #c8d3de; }
+.attendance-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.attendance-table th, .attendance-table td { border: 1px solid #9aa8b6; padding: 7px 5px; text-align: center; }
+.attendance-table thead th { background: #e8edf5; color: #0f172a; font-weight: 700; font-size: 11.5px; }
+.name-col   { width: 240px; text-align: left !important; padding-left: 9px !important; }
+.serial-col { width: 32px; }
+.roll-col   { width: 68px; }
+.cgpa-col   { width: 50px; }
+.subj-col   { width: 50px; height: 40px; }
+.pct-col    { width: 56px; }
+.sign-col   { width: 56px; }
+.attendance-table tbody tr:nth-child(even) { background: #f8faff; }
+
+.signature { margin-top: 60px; display: flex; justify-content: space-around; }
+.signature-box { width: 200px; text-align: center; font-size: 13px; color: #374151; }
+.signature-line { border-top: 1.5px solid #555; margin-bottom: 7px; }
+
+@media print {
+  body { background: white; padding: 0; }
+  .controls, #logoutBtn { display: none !important; }
+  .a4-page { width: 100%; margin: 0; box-shadow: none; border-radius: 0; padding: 5mm 6mm; }
+  @page { size: A4; margin: 5mm; }
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <div class="lock-card">
+    <span class="lock-icon">🔐</span>
+    <div class="lock-title">চাঁপাইনবাবগঞ্জ পলিটেকনিক</div>
+    <div class="lock-sub">উপস্থিতি ফরম সিস্টেম — অনুমোদিত ব্যবহারকারী মাত্র</div>
+    <label class="lock-label" for="passcodeInput">পাসকোড</label>
+    <div id="lockError">❌ ভুল পাসকোড! আবার চেষ্টা করুন।</div>
+    <div class="lock-input-wrap">
+      <input type="password" id="passcodeInput" placeholder="পাসকোড লিখুন…"
+             onkeydown="if(event.key==='Enter') checkPasscode()">
+      <button class="toggle-eye" onclick="toggleEye()" id="eyeBtn">👁</button>
+    </div>
+    <button class="lock-btn" onclick="checkPasscode()">প্রবেশ করুন →</button>
+    <div class="lock-footer">© চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</div>
+  </div>
+</div>
+
+<button id="logoutBtn" onclick="logout()">🔒 লগ আউট</button>
+
+<div class="controls">
+  <div class="controls-title">উপস্থিতি ফরম জেনারেটর</div>
+  <div class="controls-sub">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('generate')">📋 ফরম জেনারেট</button>
+    <button class="tab-btn"        onclick="switchTab('upload')">📤 Excel আপলোড</button>
+    <button class="tab-btn"        onclick="switchTab('manage')">👥 স্টুডেন্ট ম্যানেজ</button>
+  </div>
+
+  <div id="tab-generate" class="tab-panel active">
+    <div class="form-row">
+      <div class="form-field">
+        <label>টেকনোলজি</label>
+        <select id="technology">
+          <option value="">নির্বাচন করুন</option>
+          <option value="Food Technology">ফুড টেকনোলজি</option>
+          <option value="Electrical Technology">ইলেকট্রিক্যাল টেকনোলজি</option>
+          <option value="Computer Technology">কম্পিউটার টেকনোলজি</option>
+          <option value="Mechatronics Technology">মেকাট্রনিক্স টেকনোলজি</option>
+          <option value="Electronics Technology">ইলেকট্রনিক্স টেকনোলজি</option>
+          <option value="RAC Technology">আরএসি টেকনোলজি</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>সেমিস্টার</label>
+        <select id="semester">
+          <option value="">নির্বাচন করুন</option>
+          <option value="1st">১ম সেমিস্টার</option>
+          <option value="2nd">২য় সেমিস্টার</option>
+          <option value="3rd">৩য় সেমিস্টার</option>
+          <option value="4th">৪র্থ সেমিস্টার</option>
+          <option value="5th">৫ম সেমিস্টার</option>
+          <option value="6th">৬ষ্ঠ সেমিস্টার</option>
+          <option value="7th">৭ম সেমিস্টার</option>
+          <option value="8th">৮ম সেমিস্টার</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>সেশন (ঐচ্ছিক)</label>
+        <input class="form-input" id="sessionYear" type="text" placeholder="যেমন: ২০২৩-২৪">
+      </div>
+      <button class="btn btn-primary" onclick="generateForm()">ফরম জেনারেট</button>
+      <button class="btn btn-dark"    onclick="window.print()">প্রিন্ট</button>
+    </div>
+  </div>
+
+  <div id="tab-upload" class="tab-panel">
+    <div class="template-row">
+      <span>📥 প্রথমে টেমপ্লেট ডাউনলোড করুন, তারপর ডেটা পূরণ করে আপলোড করুন</span>
+      <button onclick="downloadTemplate()">টেমপ্লেট ডাউনলোড</button>
+    </div>
+    <div style="margin-top:16px">
+      <div class="upload-zone" id="uploadZone"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <input type="file" accept=".xlsx,.xls,.csv" id="fileInput" onchange="handleFile(event)">
+        <div class="upload-icon">📊</div>
+        <div class="upload-title">Excel ফাইল এখানে ড্র্যাগ করুন অথবা ক্লিক করুন</div>
+        <div class="upload-hint">.xlsx / .xls / .csv সাপোর্ট করে</div>
+      </div>
+      <div id="uploadStatus"></div>
+    </div>
+  </div>
+
+  <div id="tab-manage" class="tab-panel">
+    <div id="summaryBoard" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:14px; padding:12px; background:var(--surface); border:1px solid var(--border); border-radius:8px;"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <select id="filterTech" style="height:38px;border-radius:8px;border:1.5px solid var(--border);padding:0 10px;font-family:inherit;font-size:13px;background:var(--surface);">
+        <option value="">সব টেকনোলজি</option>
+        <option value="Food Technology">ফুড টেকনোলজি</option>
+        <option value="Electrical Technology">ইলেকট্রিক্যাল টেকনোলজি</option>
+        <option value="Computer Technology">কম্পিউটার টেকনোলজি</option>
+        <option value="Mechatronics Technology">মেকাট্রনিক্স টেকনোলজি</option>
+        <option value="Electronics Technology">ইলেকট্রনিক্স টেকনোলজি</option>
+        <option value="RAC Technology">আরএসি টেকনোলজি</option>
+      </select>
+      <select id="filterSem" style="height:38px;border-radius:8px;border:1.5px solid var(--border);padding:0 10px;font-family:inherit;font-size:13px;background:var(--surface);">
+        <option value="">সব সেমিস্টার</option>
+        <option value="1st">১ম</option><option value="2nd">২য়</option>
+        <option value="3rd">৩য়</option><option value="4th">৪র্থ</option>
+        <option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option>
+        <option value="7th">৭ম</option><option value="8th">৮ম</option>
+      </select>
+      <button class="btn btn-outline" style="height:38px;font-size:13px;" onclick="renderManageTable()">ফিল্টার</button>
+      <button class="btn btn-dark"    style="height:38px;font-size:13px;" onclick="clearAllStudents()">সব মুছুন</button>
+      <span id="manageBadge" class="student-count" style="height:38px;display:inline-flex;">লোড হচ্ছে…</span>
+    </div>
+    <div id="manageTable" style="max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;font-size:12px;"></div>
+  </div>
+</div>
+
+<div class="a4-page" id="printArea" style="display:none;">
+  <div class="header">
+    <h2>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</h2>
+    <h4>বারঘরিয়া, চাঁপাইনবাবগঞ্জ</h4>
+    <h3>উপস্থিতি ফরম</h3>
+    <p id="titleText" style="font-size:16px;font-weight:700;color:#1e293b;margin-top:6px;"></p>
+    <div class="header-meta">
+      <div>সেশন: <span id="metaSession">—</span></div>
+      <div>মোট শিক্ষার্থী: <span id="metaCount">—</span></div>
+      <div>তারিখ: <span id="metaDate">—</span></div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="attendance-table">
+      <thead>
+        <tr>
+          <th rowspan="2" class="serial-col">ক্রম</th>
+          <th rowspan="2" class="roll-col">রোল</th>
+          <th rowspan="2" class="name-col">নাম</th>
+          <th rowspan="2" class="cgpa-col">CGPA</th>
+          <th colspan="8">বিষয় কোড/এই বিষয়ে উপস্থিত %</th>
+          <th rowspan="2" class="pct-col">গড় উপস্থিত %</th>
+          <th rowspan="2" class="sign-col">স্বাক্ষর</th>
+        </tr>
+        <tr id="subjectHeaderRow"></tr>
+      </thead>
+      <tbody id="studentTable"></tbody>
+    </table>
+  </div>
+
+  <div class="signature">
+    <div class="signature-box"><div class="signature-line"></div>ক্লাস শিক্ষক</div>
+    <div class="signature-box"><div class="signature-line"></div>বিভাগীয় প্রধান</div>
+  </div>
+</div>
+
+<script>
+/* ── Localised names ── */
+const TECH_NAMES = {
+  "Food Technology":        "ফুড টেকনোলজি",
+  "Electrical Technology":  "ইলেকট্রিক্যাল টেকনোলজি",
+  "Computer Technology":    "কম্পিউটার টেকনোলজি",
+  "Mechatronics Technology":"মেকাট্রনিক্স টেকনোলজি",
+  "Electronics Technology": "ইলেকট্রনিক্স টেকনোলজি",
+  "RAC Technology":         "আরএসি টেকনোলজি"
+};
+const SEM_NAMES = {
+  "1st":"১ম","2nd":"২য়","3rd":"৩য়","4th":"৪র্থ",
+  "5th":"৫ম","6th":"৬ষ্ঠ","7th":"৭ম","8th":"৮ম"
+};
+
+/* ── Subject Codes ── */
+const SUBJECT_CODES = {
+  "Food Technology": {
+    "1st":["21011","25711","25712","25812","25911","25913","26911","26912"],
+    "2nd":["25721","25722","25912","25921","26711","26921","26922","27011"],
+    "3rd":["25811","25922","25931","28511","26811","26931","26932"],
+    "4th":["25831","25841","26941","26942","26943","26944","26945","27041"],
+    "5th":["25852","26355","26951","26952","26953","26954","26955"],
+    "6th":["26364","26365","26961","26962","26963","26964","29041"],
+    "7th":["25851","25853","26971","26972","26973","26974","26975","26976"],
+    "8th":["26981"]
+  },
+  "Electrical Technology": {
+    "1st":["21011","25711","25712","25812","25911","25912","26711","26712"],
+    "2nd":["25721","25722","25921","25922","26721","26722","26811"],
+    "3rd":["25931","25913","28511","26731","26732","26833"],
+    "4th":["25811","25841","26741","26742","26743","26845","27044"],
+    "5th":["25851","25852","26751","26752","26753","26754","26853"],
+    "6th":["28567","26761","26762","26763","26842","29041"],
+    "7th":["25831","25853","26771","26772","26773","26774","26875"],
+    "8th":["26781"]
+  },
+  "Electronics Technology": {
+    "1st":["21011","25711","25712","25911","25912","26711","26811"],
+    "2nd":["25721","25722","25811","25812","25913","25921","26721","26821"],
+    "3rd":["25922","25931","28511","26731","26831","26832"],
+    "4th":["25841","26741","26742","26841","26842","26843","26844"],
+    "5th":["25851","25852","28567","26751","26752","26851","26852","28654"],
+    "6th":["26761","26764","26763","26861","26862","26863","29041"],
+    "7th":["25831","25853","26771","26871","26872","26873","26874"],
+    "8th":["26881"]
+  },
+  "RAC Technology": {
+    "1st":["21011","25711","25712","25811","25911","25912","27011","27211"],
+    "2nd":["25721","25722","25812","25913","25921","26711","27021","27031"],
+    "3rd":["25831","25922","25931","26211","26811","27131","27231"],
+    "4th":["25841","27012","27041","27241","27242","29041","28511"],
+    "5th":["25851","27043","27051","27052","27251","27252","28567"],
+    "6th":["25852","27055","27061","27063","27065","27261","27262"],
+    "7th":["25853","27075","27271","27272","27273","27274","29231"],
+    "8th":["27281"]
+  },
+  "Computer Technology": {
+    "1st":["21011","25711","25712","25911","25912","28511","26711"],
+    "2nd":["25721","25722","25812","25913","25921","28521","28522","26811"],
+    "3rd":["25811","25922","25931","28531","28532","28533","26831"],
+    "4th":["25831","28541","28542","28543","28544","26841","29041"],
+    "5th":["25841","28551","28552","28553","28554","28555","28556"],
+    "6th":["25851","25852","28561","28562","28563","28564","28565","28566"],
+    "7th":["25853","28571","28572","28573","28574","28575","28576"],
+    "8th":["28581"]
+  },
+  "Mechatronics Technology": {
+    "1st":["21011","25711","25712","25812","25911","25912","26711","27011"],
+    "2nd":["25721","25722","25921","25922","26811","27012","27021"],
+    "3rd":["25811","25831","25913","25931","28511","26821","27031","29232"],
+    "4th":["25841","28567","27032","27041","27131","29041","29241"],
+    "5th":["25851","25852","26845","27051","27055","27152","29251"],
+    "6th":["26833","27061","27062","27063","29261","29262"],
+    "7th":["25853","27071","27075","27172","29271","29272","29273","29274"],
+    "8th":["27081"]
+  }
+};
+
+/* ── Firebase Realtime Database ── */
+const firebaseConfig = {
+  apiKey:      "AIzaSyAUeWnciYUhVDDWqlWLXtchGzJ2PyWRAJk",
+  authDomain:  "dftprobd-f989c.firebaseapp.com",
+  databaseURL: "https://dftprobd-f989c-default-rtdb.firebaseio.com",
+  projectId:   "dftprobd-f989c",
+  appId:       "1:57798842819:web:e3b6b5156c51c20d6b0576"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const studentsRef = db.ref("cpi_students");
+
+let students = [];
+
+/* ── রিয়েল-টাইম লিসেনার ── */
+studentsRef.on("value", (snapshot) => {
+  students = [];
+  const data = snapshot.val();
+  if (data) {
+    Object.entries(data).forEach(([key, val]) => {
+      students.push({ ...val, id: key });
+    });
+  }
+  document.getElementById("manageBadge").textContent = `মোট ${students.length} জন`;
+  renderSummary();
+  renderManageTable();
+});
+
+/* ── Tabs ── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['generate','upload','manage'][i] === id);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (id === 'manage') renderManageTable();
+}
+
+/* ── Generate Form ── */
+function generateForm() {
+  const tech = document.getElementById("technology").value;
+  const sem  = document.getElementById("semester").value;
+  const sess = document.getElementById("sessionYear").value.trim();
+
+  if (!tech || !sem) { alert("টেকনোলজি ও সেমিস্টার নির্বাচন করুন"); return; }
+
+  const list = students.filter(s => s.technology === tech && s.semester === sem);
+
+  document.getElementById("printArea").style.display = "block";
+  document.getElementById("titleText").textContent =
+    (TECH_NAMES[tech] || tech) + " — " + SEM_NAMES[sem] + " সেমিস্টার";
+
+  const sessionParent = document.getElementById("metaSession").parentElement;
+  if (sess) {
+    document.getElementById("metaSession").textContent = sess;
+    sessionParent.style.display = "block";
+  } else {
+    sessionParent.style.display = "none";
+  }
+
+  document.getElementById("metaCount").textContent = list.length + " জন";
+  document.getElementById("metaDate").textContent   = new Date().toLocaleDateString('bn-BD');
+
+  const codes  = (SUBJECT_CODES[tech] && SUBJECT_CODES[tech][sem]) ? SUBJECT_CODES[tech][sem] : [];
+  const subHdr = document.getElementById("subjectHeaderRow");
+  let hdrHtml  = '';
+  for (let j = 0; j < 8; j++) {
+    hdrHtml += `<th class="subj-col">${codes[j] || ''}</th>`;
+  }
+  subHdr.innerHTML = hdrHtml;
+
+  const tbody = document.getElementById("studentTable");
+  tbody.innerHTML = "";
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="14" style="padding:18px;color:#888;">কোনো শিক্ষার্থী পাওয়া যায়নি</td></tr>`;
+    return;
+  }
+
+  list.sort((a, b) => parseInt(a.roll) - parseInt(b.roll));
+
+  list.forEach((s, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="serial-col">${i + 1}</td>
+        <td class="roll-col">${s.roll}</td>
+        <td class="name-col">${s.name}</td>
+        <td class="cgpa-col">${s.gpa || ''}</td>
+        ${Array(8).fill('<td class="subj-col"></td>').join('')}
+        <td class="pct-col"></td>
+        <td class="sign-col"></td>
+      </tr>`;
+  });
+
+  document.getElementById("printArea").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ── Excel Upload ── */
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById("uploadZone").classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (file) processExcel(file);
+}
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (file) processExcel(file);
+}
+
+function processExcel(file) {
+  const status = document.getElementById("uploadStatus");
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      let rows = [];
+
+      if (ext === 'csv') {
+        const text = new TextDecoder().decode(e.target.result);
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+          const obj = {};
+          headers.forEach((h, j) => { obj[h] = cols[j] || ''; });
+          rows.push(obj);
+        }
+      } else {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      }
+
+      const normalized = rows.map(r => {
+        const get = (...keys) => {
+          for (const k of keys) {
+            const match = Object.keys(r).find(
+              rk => rk.toLowerCase().replace(/[\s_]/g, '') === k.toLowerCase().replace(/[\s_]/g, '')
+            );
+            if (match && r[match] !== '') return String(r[match]).trim();
+          }
+          return '';
+        };
+        return {
+          roll:       get('roll','rollno','rollnumber','রোল'),
+          name:       get('name','studentname','নাম','fullname'),
+          gpa:        get('gpa','cgpa','grade','গ্রেড'),
+          technology: get('technology','tech','department','টেকনোলজি','বিভাগ'),
+          semester:   get('semester','sem','সেমিস্টার')
+        };
+      }).filter(s => s.roll || s.name);
+
+      if (!normalized.length)
+        throw new Error("কোনো ভ্যালিড ডেটা পাওয়া যায়নি। কলাম নাম চেক করুন।");
+
+      status.className = 'ok';
+      status.textContent = 'লোড হচ্ছে... ডেটা সেভ করা হচ্ছে...';
+      status.style.display = 'block';
+
+      /* Realtime Database-এ set() দিয়ে আপডেট */
+      const updates = {};
+      normalized.forEach(s => {
+        const key = s.roll
+          ? String(s.roll).replace(/[.#$/[\]]/g, '_')   // RTDB key-এ বিশেষ চিহ্ন নিষিদ্ধ
+          : "no_roll_" + Math.random().toString(36).substr(2, 9);
+        updates[key] = s;
+      });
+
+      studentsRef.update(updates)
+        .then(() => {
+          status.className = 'ok';
+          status.textContent = `✅ সফল! ${normalized.length} জনের ডেটা সেভ ও আপডেট হয়েছে।`;
+        })
+        .catch(err => {
+          status.className = 'err';
+          status.textContent = `❌ ত্রুটি: ${err.message}`;
+        });
+
+    } catch (err) {
+      status.className = 'err';
+      status.textContent = `❌ ত্রুটি: ${err.message}`;
+      status.style.display = 'block';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ── Template Download ── */
+function downloadTemplate() {
+  const wb = XLSX.utils.book_new();
+  const data = [
+    ["roll","name","gpa","technology","semester"],
+    ["213641","STUDENT NAME","3.50","Food Technology","2nd"],
+    ["","","","Electrical Technology","1st"],
+    ["","","","Computer Technology","3rd"],
+    ["","","","Mechatronics Technology","4th"],
+    ["","","","Electronics Technology","5th"],
+    ["","","","RAC Technology","6th"],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [{wch:10},{wch:30},{wch:8},{wch:25},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws, "Students");
+  XLSX.writeFile(wb, "student_template.xlsx");
+}
+
+/* ── Summary Board ── */
+function renderSummary() {
+  const summaryDiv = document.getElementById("summaryBoard");
+  if (!students.length) { summaryDiv.style.display = 'none'; return; }
+  summaryDiv.style.display = 'flex';
+
+  const counts = {};
+  students.forEach(s => {
+    const sem = s.semester || "অজানা";
+    counts[sem] = (counts[sem] || 0) + 1;
+  });
+
+  let html = `<div style="width:100%;font-size:13px;font-weight:700;color:var(--ink-mid);margin-bottom:4px;">সেমিস্টার ভিত্তিক আপলোড সারাংশ:</div>`;
+  for (const sem in counts) {
+    html += `<span style="font-size:12px;font-weight:700;color:#0f766e;background:#ccfbf1;padding:4px 12px;border-radius:20px;border:1px solid #99f6e4;">
+      ${SEM_NAMES[sem] || sem}: ${counts[sem]} জন
+    </span>`;
+  }
+  summaryDiv.innerHTML = html;
+}
+
+/* ── Manage Table ── */
+function renderManageTable() {
+  const tech = document.getElementById("filterTech").value;
+  const sem  = document.getElementById("filterSem").value;
+
+  const list = students.filter(s =>
+    (!tech || s.technology === tech) && (!sem || s.semester === sem)
+  );
+
+  document.getElementById("manageBadge").textContent =
+    `মোট ${students.length} জন | দেখাচ্ছে ${list.length} জন`;
+
+  if (!list.length) {
+    document.getElementById("manageTable").innerHTML =
+      `<div style="padding:20px;text-align:center;color:#888;">কোনো ডেটা নেই</div>`;
+    return;
+  }
+
+  let html = `<table style="width:100%;border-collapse:collapse;">
+    <thead><tr style="background:#f1f5f9;position:sticky;top:0;">
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;">ক্রম</th>
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;">রোল</th>
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;">নাম</th>
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;">GPA</th>
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;">টেকনোলজি</th>
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;">সেমিস্টার</th>
+      <th style="padding:8px 10px;border-bottom:1px solid #e2e8f0;">মুছুন</th>
+    </tr></thead><tbody>`;
+
+  list.forEach((s, i) => {
+    html += `<tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:7px 10px;">${i + 1}</td>
+      <td style="padding:7px 10px;font-family:monospace;">${s.roll}</td>
+      <td style="padding:7px 10px;">${s.name}</td>
+      <td style="padding:7px 10px;">${s.gpa || '—'}</td>
+      <td style="padding:7px 10px;">${TECH_NAMES[s.technology] || s.technology || '—'}</td>
+      <td style="padding:7px 10px;">${SEM_NAMES[s.semester] || s.semester || '—'}</td>
+      <td style="padding:7px 10px;text-align:center;">
+        <button onclick="deleteStudent('${s.id}')"
+          style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;font-family:inherit;">মুছুন</button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  document.getElementById("manageTable").innerHTML = html;
+}
+
+/* ── Delete / Clear ── */
+function deleteStudent(id) {
+  if (!confirm("এই শিক্ষার্থীকে মুছবেন?")) return;
+  studentsRef.child(id).remove()
+    .catch(err => alert("মুছতে সমস্যা হয়েছে: " + err.message));
+}
+
+function clearAllStudents() {
+  if (!confirm("সব শিক্ষার্থীর ডেটা মুছে ফেলবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।")) return;
+  document.getElementById("manageBadge").textContent = "মুছে ফেলা হচ্ছে...";
+  studentsRef.remove()
+    .then(() => alert("সব ডেটা মুছে ফেলা হয়েছে।"))
+    .catch(err => alert("ত্রুটি: " + err.message));
+}
+
+/* ── Passcode Auth ── */
+const PASSCODE    = "dft2026@Form";
+const SESSION_KEY = "cpi_auth_session";
+
+function checkPasscode() {
+  const input = document.getElementById("passcodeInput").value;
+  const errEl = document.getElementById("lockError");
+
+  if (input === PASSCODE) {
+    sessionStorage.setItem(SESSION_KEY, "1");
+    document.getElementById("lockScreen").style.display = "none";
+    document.getElementById("logoutBtn").style.display  = "block";
+    errEl.style.display = "none";
+  } else {
+    errEl.style.display = "block";
+    const card = document.querySelector(".lock-card");
+    card.classList.remove("shake");
+    void card.offsetWidth;
+    card.classList.add("shake");
+    document.getElementById("passcodeInput").value = "";
+    document.getElementById("passcodeInput").focus();
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById("lockScreen").style.display = "flex";
+  document.getElementById("logoutBtn").style.display  = "none";
+  document.getElementById("printArea").style.display  = "none";
+  document.getElementById("passcodeInput").value = "";
+  document.getElementById("lockError").style.display = "none";
+}
+
+function toggleEye() {
+  const inp = document.getElementById("passcodeInput");
+  const btn = document.getElementById("eyeBtn");
+  if (inp.type === "password") { inp.type = "text";     btn.textContent = "🙈"; }
+  else                         { inp.type = "password"; btn.textContent = "👁"; }
+}
+
+(function() {
+  if (sessionStorage.getItem(SESSION_KEY) === "1") {
+    document.getElementById("lockScreen").style.display = "none";
+    document.getElementById("logoutBtn").style.display  = "block";
+  } else {
+    document.getElementById("lockScreen").style.display = "flex";
+    setTimeout(() => document.getElementById("passcodeInput").focus(), 300);
+  }
+})();
+</script>
+</body>
+</html>
 
