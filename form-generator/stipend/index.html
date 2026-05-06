@@ -10,19 +10,30 @@
 <style>
 
 /* ========================= */
-/* বাংলা ফন্ট */
+/* SUTONNY MJ FONT FIX */
 /* ========================= */
 
+/*
+প্রজেক্ট ফোল্ডারে SutonnyMJ.ttf রাখুন
+*/
+
 @font-face{
+
     font-family:"SutonnyMJ";
-    src:local("SutonnyMJ");
+
+    src:url("SutonnyMJ.ttf") format("truetype");
+
 }
 
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:"SutonnyMJ", Arial, sans-serif;
+
+    font-family:
+    "SutonnyMJ",
+    Arial,
+    sans-serif;
 }
 
 body{
@@ -417,8 +428,6 @@ thead th{
 <!-- PRINT AREA -->
 <!-- ========================= -->
 
-<!-- শুরুতে hidden থাকবে -->
-
 <div class="a4-page" id="printArea" style="display:none;">
 
     <div class="header">
@@ -623,206 +632,6 @@ const students = [
     "gpa":"3.60",
     "technology":"Food Technology",
     "semester":"2nd"
-},
-
-{
-    "roll":"718356",
-    "name":"MD. RATUL HASAN",
-    "gpa":"2.92",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817574",
-    "name":"S. M. FAHIM HASAN",
-    "gpa":"3.22",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817589",
-    "name":"SATHI RANI DUS",
-    "gpa":"3.49",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817592",
-    "name":"MD. IBRAHIM",
-    "gpa":"3.24",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817616",
-    "name":"MD. TASFIN HOSSEN",
-    "gpa":"3.52",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817618",
-    "name":"MD. SAHID HASAN",
-    "gpa":"2.97",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817629",
-    "name":"MD. MEHEDI HASAN MOSTOFA",
-    "gpa":"3.80",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"817636",
-    "name":"MD. MEHEDI HASAN",
-    "gpa":"3.75",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"818197",
-    "name":"RONOBIR LAKRA",
-    "gpa":"3.68",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"818202",
-    "name":"MD. SABBIR HOSSAIN",
-    "gpa":"3.48",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"818207",
-    "name":"MD. JAKARYA ISLAM AROSH",
-    "gpa":"3.39",
-    "technology":"Food Technology",
-    "semester":"4th"
-},
-
-{
-    "roll":"618635",
-    "name":"MD. ABDUL MATIN",
-    "gpa":"3.57",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718309",
-    "name":"YOUNUS ALI",
-    "gpa":"3.36",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718311",
-    "name":"MD. SABBIR HOSEN",
-    "gpa":"3.86",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718312",
-    "name":"MD. RAKIB KHAN",
-    "gpa":"3.61",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718314",
-    "name":"MD. SABBIR HOSSAIN",
-    "gpa":"3.75",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718327",
-    "name":"MST. SADIA AFRIN MOU",
-    "gpa":"3.43",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718339",
-    "name":"MD. SHOFIKUL ISLAM",
-    "gpa":"3.29",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718347",
-    "name":"MD. RAFIUL ISLAM",
-    "gpa":"3.68",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718348",
-    "name":"MD. NAIM UDDIN",
-    "gpa":"3.54",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718353",
-    "name":"MD. ROKUNUZZAMAN RAJ",
-    "gpa":"3.36",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718416",
-    "name":"MD. SHAHIN ALOM",
-    "gpa":"3.46",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718438",
-    "name":"MD. MAFTAHUL JANNAT",
-    "gpa":"3.32",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"718449",
-    "name":"PAPPU KUMAR SARKER",
-    "gpa":"3.39",
-    "technology":"Food Technology",
-    "semester":"6th"
-},
-
-{
-    "roll":"790358",
-    "name":"MOST. PINGKI KHATUN",
-    "gpa":"3.25",
-    "technology":"Food Technology",
-    "semester":"6th"
 }
 
 ];
@@ -850,9 +659,7 @@ function generateForm(){
     }
 
 
-    /* ========================= */
     /* SHOW FORM */
-    /* ========================= */
 
     document.getElementById("printArea").style.display = "block";
 
