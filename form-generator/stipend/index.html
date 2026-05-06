@@ -732,7 +732,7 @@ function generateForm() {
   document.getElementById("printArea").style.display = "block";
   document.getElementById("titleText").textContent =
     (TECH_NAMES[tech]||tech) + " — " + SEM_NAMES[sem] + " সেমিস্টার";
-  document.getElementById("metaSession").textContent = sess || "—";
+  if (sess) {   document.getElementById("metaSession").textContent = sess;   document.getElementById("metaSession").parentElement.style.display = "block"; } else {   document.getElementById("metaSession").parentElement.style.display = "none"; }
   document.getElementById("metaCount").textContent   = list.length + " জন";
   document.getElementById("metaDate").textContent    = new Date().toLocaleDateString('bn-BD');
 
