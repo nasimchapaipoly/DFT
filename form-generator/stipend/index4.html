@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0"/>
+<meta name="theme-color" content="#1d4ed8"/>
+<meta name="description" content="চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট — উপস্থিতি ফরম সিস্টেম">
+<title>উপস্থিতি ফরম — চাঁপাইনবাবগঞ্জ পলিটেকনিক</title>
+
+<!-- PWA Manifest (inline) -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"CPI Attendance","short_name":"CPI","start_url":".","display":"standalone","background_color":"%23f0f2f8","theme_color":"%231d4ed8","icons":[{"src":"https://novellum-filestore-mcp.s3.us-east-2.amazonaws.com/atxp:atxp_acct_t6MNgm52vGCiSbesFGiA4/494369b0-0384-415d-9b4a-fb0e66e88369.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="icon" href="https://novellum-filestore-mcp.s3.us-east-2.amazonaws.com/atxp:atxp_acct_t6MNgm52vGCiSbesFGiA4/494369b0-0384-415d-9b4a-fb0e66e88369.png">
+<link rel="apple-touch-icon" href="https://novellum-filestore-mcp.s3.us-east-2.amazonaws.com/atxp:atxp_acct_t6MNgm52vGCiSbesFGiA4/494369b0-0384-415d-9b4a-fb0e66e88369.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<style>
+:root{
+  --bg:#f0f2f8;--white:#ffffff;--ink:#0d1117;--ink2:#374151;--ink3:#6b7280;
+  --border:#dde3ef;--blue:#1d4ed8;--blue-h:#1e40af;--blue-bg:#eff6ff;
+  --green:#16a34a;--green-bg:#f0fdf4;--red:#dc2626;--red-bg:#fef2f2;
+  --amber:#d97706;--amber-bg:#fffbeb;--purple:#7c3aed;--purple-bg:#f5f3ff;
+  --radius:14px;--radius-sm:8px;
+  --sh:0 2px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.05);
+  --sh-lg:0 8px 32px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.06);
+  --sh-xl:0 20px 60px rgba(0,0,0,.15);
+  --panel-bg:#ffffff;--card-hover:#fafbff;
+}
+[data-theme="dark"]{
+  --bg:#0a0e1a;--white:#151b2c;--ink:#f1f5f9;--ink2:#cbd5e1;--ink3:#94a3b8;
+  --border:#2a3349;--blue:#3b82f6;--blue-h:#60a5fa;--blue-bg:#1e293b;
+  --green:#22c55e;--green-bg:#14532d;--red:#ef4444;--red-bg:#7f1d1d;
+  --amber:#f59e0b;--amber-bg:#78350f;--purple:#a78bfa;--purple-bg:#4c1d95;
+  --panel-bg:#151b2c;--card-hover:#1e2538;
+  --sh:0 2px 12px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tiro Bangla',Georgia,serif;background:var(--bg);min-height:100vh;color:var(--ink);padding:0 0 80px;transition:background .3s,color .3s}
+body.lang-en{font-family:'Inter',system-ui,sans-serif}
+
+/* ── LOCK SCREEN ── */
+#lockScreen{
+  position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#0a1628 0%,#1a2f5e 50%,#0d2044 100%);
+}
+#lockScreen::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.lock-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(24px);border-radius:24px;padding:40px 36px 32px;
+  width:400px;max-width:92vw;text-align:center;
+  box-shadow:0 32px 80px rgba(0,0,0,.5);animation:fadeUp .5s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.lock-logo{width:86px;height:86px;border-radius:22px;margin:0 auto 16px;display:block;box-shadow:0 8px 24px rgba(37,99,235,.45);background:white;padding:6px}
+.lock-title{color:#f8fafc;font-size:22px;font-weight:700;margin-bottom:4px}
+.lock-sub{color:#94a3b8;font-size:13px;margin-bottom:24px;line-height:1.6}
+.lock-tabs{display:flex;background:rgba(255,255,255,.05);border-radius:10px;padding:4px;margin-bottom:18px}
+.lock-tab{flex:1;padding:8px;font-size:12px;font-weight:600;color:#94a3b8;background:transparent;border:none;border-radius:7px;cursor:pointer;transition:.15s;font-family:inherit}
+.lock-tab.active{background:rgba(37,99,235,.3);color:#f1f5f9}
+.lock-label{display:block;text-align:left;color:#64748b;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;margin-top:10px}
+#lockError{font-size:13px;color:#fca5a5;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:none;text-align:left}
+.lock-input-wrap{position:relative;margin-bottom:10px}
+.lock-input{
+  width:100%;height:48px;border-radius:11px;border:1.5px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.08);color:#f1f5f9;font-size:15px;padding:0 50px 0 16px;
+  outline:none;font-family:inherit;transition:.2s;
+}
+.lock-input::placeholder{color:#475569;font-size:13px}
+.lock-input:focus{border-color:#3b82f6;background:rgba(255,255,255,.12)}
+.lock-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#475569;padding:0;line-height:1}
+.lock-eye:hover{color:#94a3b8}
+.lock-btn{
+  width:100%;height:50px;border-radius:11px;border:none;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;
+  font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s;
+  box-shadow:0 4px 16px rgba(37,99,235,.35);margin-top:8px;
+}
+.lock-btn:hover{background:linear-gradient(135deg,#1d4ed8,#1e3a8a)}
+.lock-btn:active{transform:scale(.98)}
+.lock-btn:disabled{opacity:.6;cursor:not-allowed}
+.lock-footer{margin-top:20px;color:#334155;font-size:11px}
+.lock-status{margin-top:12px;font-size:12px;color:#64748b;display:flex;align-items:center;justify-content:center;gap:6px;min-height:20px}
+.lock-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;animation:pdot 2s ease infinite}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.shake{animation:shake .4s ease}
+
+/* ── TOP BAR ── */
+#topBar{
+  background:var(--ink);color:white;display:none;align-items:center;
+  padding:0 22px;height:60px;gap:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);
+  position:sticky;top:0;z-index:100;
+}
+[data-theme="dark"] #topBar{background:#000814;border-bottom:1px solid #1e293b}
+.topbar-brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.topbar-logo{width:38px;height:38px;border-radius:10px;background:white;padding:3px;flex-shrink:0}
+.topbar-logo img{width:100%;height:100%;object-fit:contain}
+.topbar-name{font-size:14px;font-weight:700;color:#f1f5f9;line-height:1.3;min-width:0}
+.topbar-name small{display:block;font-size:11px;color:#64748b;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-actions{display:flex;gap:6px;align-items:center}
+.topbar-sync{display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;padding:0 8px;border-right:1px solid #334155;height:22px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pdot 2s ease infinite}
+.sync-dot.offline{background:#ef4444}
+.topbar-btn{height:34px;padding:0 12px;border-radius:8px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;font-family:inherit;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.topbar-btn:hover{background:#1e293b;color:#f1f5f9}
+.topbar-btn.icon{padding:0;width:34px;justify-content:center;font-size:15px}
+.user-chip{font-size:11px;color:#94a3b8;padding:5px 10px;background:#1e293b;border-radius:20px;display:flex;align-items:center;gap:5px}
+.user-chip .role{color:#3b82f6;font-weight:700;text-transform:uppercase;font-size:10px}
+
+/* Mobile menu */
+.mobile-menu-btn{display:none;background:none;border:none;color:#f1f5f9;font-size:22px;cursor:pointer;padding:6px}
+
+/* ── WRAPPER ── */
+.app-wrap{max-width:1240px;margin:0 auto;padding:24px 18px 0}
+
+/* ── TAB NAV ── */
+.tab-nav{display:flex;gap:6px;background:var(--panel-bg);border:1px solid var(--border);padding:6px;border-radius:12px;margin-bottom:20px;box-shadow:var(--sh);overflow-x:auto}
+.tab-btn{flex:1;min-width:fit-content;padding:10px 14px;background:transparent;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink3);cursor:pointer;transition:.15s;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab-btn:hover{background:var(--card-hover);color:var(--ink2)}
+.tab-btn.active{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;box-shadow:0 2px 8px rgba(37,99,235,.3)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--panel-bg);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--sh);border:1px solid var(--border);display:flex;align-items:center;gap:12px;transition:.2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--sh-lg)}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.stat-icon.blue{background:#dbeafe;color:#1d4ed8}
+.stat-icon.green{background:#dcfce7;color:#16a34a}
+.stat-icon.amber{background:#fef3c7;color:#d97706}
+.stat-icon.purple{background:#f3e8ff;color:#7c3aed}
+[data-theme="dark"] .stat-icon.blue{background:#1e3a8a;color:#93c5fd}
+[data-theme="dark"] .stat-icon.green{background:#14532d;color:#86efac}
+[data-theme="dark"] .stat-icon.amber{background:#78350f;color:#fcd34d}
+[data-theme="dark"] .stat-icon.purple{background:#4c1d95;color:#c4b5fd}
+.stat-val{font-size:22px;font-weight:700;color:var(--ink);line-height:1}
+.stat-lbl{font-size:11.5px;color:var(--ink3);margin-top:3px}
+
+/* ── GRID ── */
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+
+/* ── PANEL ── */
+.panel{background:var(--panel-bg);border-radius:var(--radius);box-shadow:var(--sh);border:1px solid var(--border);overflow:hidden}
+.panel-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.panel-title{font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+.panel-title span{font-size:18px}
+.panel-body{padding:18px}
+
+/* ── FORM FIELDS ── */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+.field label{font-size:11px;font-weight:700;color:var(--ink2);letter-spacing:.4px;text-transform:uppercase}
+select,.finput{
+  height:42px;border-radius:var(--radius-sm);border:1.5px solid var(--border);
+  background:var(--bg);font-size:14px;padding:0 12px;font-family:inherit;
+  color:var(--ink);outline:none;transition:.15s;width:100%;
+}
+select:focus,.finput:focus{border-color:var(--blue);background:var(--panel-bg)}
+[data-theme="dark"] select,[data-theme="dark"] .finput{background:#0a0e1a;color:var(--ink)}
+.btn{
+  height:42px;padding:0 18px;border-radius:var(--radius-sm);border:none;
+  font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;
+}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.btn-primary:hover{background:linear-gradient(135deg,#1d4ed8,#1e3a8a)}
+.btn-ghost{background:var(--bg);color:var(--ink2);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--border)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1.5px solid #fecaca}
+.btn-danger:hover{background:#fee2e2}
+.btn-green{background:linear-gradient(135deg,#16a34a,#15803d);color:white}
+.btn-green:hover{background:linear-gradient(135deg,#15803d,#166534)}
+.btn-amber{background:linear-gradient(135deg,#f59e0b,#d97706);color:white}
+.btn-amber:hover{background:linear-gradient(135deg,#d97706,#b45309)}
+.btn-purple{background:linear-gradient(135deg,#a855f7,#7c3aed);color:white}
+.btn-purple:hover{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.btn-sm{height:32px;padding:0 13px;font-size:12px}
+.btn-xs{height:26px;padding:0 9px;font-size:11px}
+.btn-full{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── CODE CHIPS ── */
+.code-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);min-height:46px;align-items:center}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;background:var(--blue-bg);color:var(--blue);padding:3px 9px;border-radius:20px;border:1px solid #bfdbfe}
+[data-theme="dark"] .chip{border-color:#1e3a8a}
+.code-empty{font-size:12px;color:var(--ink3)}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed #cbd5e1;border-radius:var(--radius-sm);padding:24px 18px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg);position:relative;margin-bottom:14px}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--blue);background:var(--blue-bg)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:30px;margin-bottom:6px}
+.upload-t{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.upload-h{font-size:12px;color:var(--ink3)}
+#uploadStatus{font-size:13px;font-weight:600;padding:10px 14px;border-radius:var(--radius-sm);display:none;margin-bottom:14px}
+#uploadStatus.ok{display:block;background:var(--green-bg);color:var(--green);border:1px solid #bbf7d0}
+#uploadStatus.err{display:block;background:var(--red-bg);color:var(--red);border:1px solid #fecaca}
+
+/* ── PREVIEW ── */
+.preview-wrap{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;display:none;margin-bottom:14px}
+.preview-head{padding:9px 14px;background:var(--bg);font-size:12px;font-weight:700;color:var(--ink2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.preview-scroll{max-height:200px;overflow-y:auto}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px}
+.preview-table th{background:var(--bg);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);font-weight:700;color:var(--ink2);white-space:nowrap}
+.preview-table td{padding:5px 10px;border-bottom:1px solid var(--border);color:var(--ink2)}
+.preview-table tr:last-child td{border-bottom:none}
+.preview-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:12px;background:var(--blue-bg);color:var(--blue)}
+
+.tmpl-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--green-bg);border-radius:var(--radius-sm);border:1px solid #bbf7d0;font-size:13px;color:var(--green);font-weight:600;margin-bottom:14px}
+[data-theme="dark"] .tmpl-row{border-color:#15803d;color:#86efac}
+.tmpl-row button{margin-left:auto;padding:6px 14px;background:var(--green);color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.tmpl-row button:hover{background:#15803d}
+
+/* ── SUMMARY ── */
+.summary-bar{display:flex;flex-wrap:wrap;gap:8px;padding:13px 16px;border-bottom:1px solid var(--border);background:var(--card-hover);min-height:48px;align-items:center}
+.sum-chip{font-size:12px;font-weight:700;color:#0f766e;background:#ccfbf1;padding:4px 12px;border-radius:20px;border:1px solid #99f6e4}
+[data-theme="dark"] .sum-chip{background:#134e4a;color:#5eead4;border-color:#0f766e}
+
+/* ── MANAGE TABLE ── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filter-bar select{height:36px;border-radius:8px;border:1.5px solid var(--border);padding:0 10px;font-family:inherit;font-size:13px;background:var(--bg);flex:1;min-width:0;color:var(--ink)}
+.manage-scroll{max-height:520px;overflow-y:auto}
+.mtable{width:100%;border-collapse:collapse;font-size:12.5px}
+.mtable th{background:var(--bg);padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-weight:700;color:var(--ink2);position:sticky;top:0;white-space:nowrap;z-index:1}
+.mtable td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:middle}
+.mtable tr:hover td{background:var(--card-hover)}
+.mtable tr:last-child td{border-bottom:none}
+.mtable tr.selected td{background:var(--blue-bg)}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:12px}
+.badge-tech{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--amber-bg);color:var(--amber);white-space:nowrap}
+.badge-sem{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--blue-bg);color:var(--blue)}
+.tbl-empty{padding:32px;text-align:center;color:var(--ink3)}
+
+.bulk-bar{display:none;padding:12px 16px;background:var(--blue-bg);border-bottom:1px solid var(--border);align-items:center;gap:10px;flex-wrap:wrap}
+.bulk-bar.active{display:flex}
+.bulk-info{flex:1;font-size:13px;font-weight:700;color:var(--blue)}
+
+/* checkbox */
+.cb{width:16px;height:16px;cursor:pointer;accent-color:var(--blue)}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px}
+.modal-bg.open{display:flex;animation:fadeIn .2s ease}
+.modal{background:var(--panel-bg);border-radius:var(--radius);padding:24px;width:480px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-xl);animation:fadeUp .25s ease both;color:var(--ink)}
+.modal.lg{width:680px}
+.modal-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink3);padding:0;line-height:1;transition:.15s}
+.modal-close:hover{color:var(--red)}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-grid .field{margin-bottom:0}
+.modal-footer{margin-top:18px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+/* ── TOAST ── */
+#toastWrap{position:fixed;top:80px;right:20px;z-index:600;display:flex;flex-direction:column;gap:8px;max-width:340px;pointer-events:none}
+.toast{background:var(--panel-bg);border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:10px;padding:12px 16px;box-shadow:var(--sh-lg);font-size:13px;color:var(--ink);animation:slideIn .25s ease;display:flex;gap:10px;align-items:start;pointer-events:auto}
+.toast.success{border-left-color:var(--green)}
+.toast.error{border-left-color:var(--red)}
+.toast.warn{border-left-color:var(--amber)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── SETTINGS / SIGNATURES ── */
+.settings-section{padding:16px 18px;border-bottom:1px solid var(--border)}
+.settings-section h3{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sig-list{display:flex;flex-direction:column;gap:8px}
+.sig-row{display:flex;gap:8px;align-items:center;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.sig-row input{flex:1;height:34px;border:1px solid var(--border);border-radius:6px;padding:0 10px;font-family:inherit;font-size:13px;background:var(--panel-bg);color:var(--ink)}
+.sig-row .del-sig{background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:4px}
+
+/* ── ATTENDANCE TRACKER ── */
+.tracker-grid{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start}
+.daily-table{width:100%;border-collapse:collapse;font-size:13px}
+.daily-table th{background:var(--bg);padding:10px;text-align:left;border-bottom:1px solid var(--border);font-weight:700;color:var(--ink2);font-size:12px}
+.daily-table td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--ink2)}
+.attend-btn{padding:5px 12px;border:1.5px solid var(--border);background:var(--panel-bg);color:var(--ink2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin-right:4px;transition:.15s}
+.attend-btn.p.active{background:var(--green);color:white;border-color:var(--green)}
+.attend-btn.a.active{background:var(--red);color:white;border-color:var(--red)}
+.attend-btn.l.active{background:var(--amber);color:white;border-color:var(--amber)}
+
+/* ── DASHBOARD CHARTS ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.chart-card{background:var(--panel-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--sh);height:340px;display:flex;flex-direction:column}
+.chart-card h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px}
+.chart-card canvas{flex:1;max-height:280px}
+
+/* ═══════════════════════════════════════════════════════
+   A4 PRINT PAGE
+═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   A4 PRINT PAGE - Sample PDF style
+═══════════════════════════════════════════════════════ */
+.a4-page{
+  width:210mm;margin:24px auto 0;background:white;color:#0d1117;
+  padding:8mm 8mm 8mm;border-radius:var(--radius);box-shadow:var(--sh-lg);
+  display:none;
+}
+.print-header{
+  border:1.5px solid #b8c9d8;border-radius:8px;
+  padding:10px 14px 8px;text-align:center;margin-bottom:10px;background:#f9fbff;
+}
+.print-header h2{font-size:19px;color:#0f172a;font-weight:700;margin-bottom:2px;line-height:1.2}
+.print-header h4{font-size:11px;color:#64748b;margin-bottom:6px;font-weight:400}
+.print-badge{
+  display:inline-block;background:#0f172a;color:white;
+  font-size:12px;font-weight:700;padding:3px 18px;border-radius:5px;margin-bottom:4px;
+}
+.print-title{font-size:12.5px;font-weight:700;color:#1e293b;margin-top:3px}
+.print-meta{
+  display:flex;justify-content:center;gap:16px;
+  font-size:11px;color:#374151;margin-top:5px;flex-wrap:wrap;
+}
+.print-meta span{font-weight:700}
+
+.att-wrap{overflow:hidden;border-radius:5px;border:1.5px solid #9aa8b6}
+.att-table{width:100%;border-collapse:collapse;font-size:10.5px;table-layout:fixed}
+.att-table th,.att-table td{
+  border:1px solid #9aa8b6;padding:6px 4px;
+  text-align:center;word-break:break-word;line-height:1.3;color:#0d1117;
+}
+.att-table thead th{background:#d8e6f2;color:#0f172a;font-weight:700;font-size:10px;line-height:1.3}
+.att-table thead tr:first-child th{background:#c5d6e8}
+.att-table tbody tr:nth-child(even){background:#f4f8ff}
+.att-table tbody tr:nth-child(odd){background:#ffffff}
+
+/* column widths — NAME column wider like sample */
+.col-sl  {width:8%}
+.col-roll{width:9%}
+.col-name{
+  width:20%;text-align:left !important;
+  padding-left:8px !important;padding-right:6px !important;
+  font-size:11px;
+}
+.col-gpa {width:7%}
+.col-sub {width:5.5%;height:36px}
+.col-pct {width:8%}
+.col-sign{width:9%}
+
+/* ── DYNAMIC SIGNATURES (no logo, with top space) ── */
+.print-footer-row{
+  margin-top:35mm;
+  display:flex;justify-content:space-around;align-items:flex-end;gap:20px;flex-wrap:nowrap;
+  padding:0 10px;
+}
+.sig-box{flex:1;min-width:0;text-align:center;font-size:11px;color:#1e293b;font-weight:600}
+.sig-line{border-top:1.5px solid #333;margin:0 6px 5px}
+
+/* ═══════════════════════════════════════════════════════
+   PRINT MEDIA - matches sample PDF
+═══════════════════════════════════════════════════════ */
+@media print{
+  body{background:white;padding:0;color:#0d1117 !important}
+  body[data-theme="dark"]{background:white !important;color:#0d1117 !important}
+  #topBar,#lockScreen,.app-wrap>.tab-nav,.app-wrap>.stats-row,
+  .app-wrap>.main-grid,.modal-bg,#toastWrap,.tab-content{display:none!important}
+  .a4-page{
+    display:block !important;
+    width:100%;margin:0;box-shadow:none;border-radius:0;
+    padding:6mm 7mm 0;background:white;
+  }
+  @page{size:A4 portrait;margin:6mm 6mm 8mm 6mm}
+  .print-footer-row{
+    margin-top:30mm;
+    border-top:none;padding-top:0;background:white;
+    page-break-inside:avoid;
+  }
+  .att-table{page-break-inside:auto;font-size:10px}
+  .att-table thead{display:table-header-group}
+  .att-table tr{page-break-inside:avoid;page-break-after:auto}
+  .att-wrap{border:1.5px solid #9aa8b6}
+  .print-header{page-break-after:avoid}
+}
+
+/* column widths — name made wider */
+.col-sl  {width:22px}
+.col-roll{width:54px}
+.col-name{
+  width:auto;text-align:left !important;
+  padding-left:7px !important;padding-right:5px !important;
+  font-size:11px;
+}
+.col-gpa {width:36px}
+.col-sub {width:38px;height:34px}
+.col-pct {width:42px}
+.col-sign{width:46px}
+
+/* ── DYNAMIC SIGNATURES ── */
+.print-footer-row{
+  margin-top:14px;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:8px;flex-wrap:nowrap;
+}
+.sig-box{flex:1;min-width:0;text-align:center;font-size:10.5px;color:#374151}
+.sig-line{border-top:1.5px solid #555;margin-bottom:5px;padding-top:0;margin:0 8px 5px}
+.page-info-mid{font-size:10px;color:#94a3b8;text-align:center;align-self:flex-end;line-height:1.5;flex:0 0 auto;padding:0 8px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:980px){
+  .main-grid{grid-template-columns:1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .tracker-grid{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .topbar-name small{display:none}
+  .topbar-sync{display:none}
+  .topbar-actions .topbar-btn:not(.icon){display:none}
+  .mobile-menu-btn{display:block}
+}
+@media(max-width:480px){
+  #topBar{padding:0 12px;height:54px}
+  .app-wrap{padding:14px 10px 0}
+  .stat-card{padding:12px 14px;gap:10px}
+  .stat-icon{width:36px;height:36px;font-size:18px}
+  .stat-val{font-size:18px}
+  .stat-lbl{font-size:11px}
+  .modal{padding:18px}
+  .modal-grid{grid-template-columns:1fr}
+  .a4-page{width:100%;padding:6mm 4mm 8mm;font-size:9px}
+}
+</style>
+</head>
+<body data-theme="light" class="lang-bn">
+
+<!-- ══ LOCK ══ -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <img src="https://novellum-filestore-mcp.s3.us-east-2.amazonaws.com/atxp:atxp_acct_t6MNgm52vGCiSbesFGiA4/494369b0-0384-415d-9b4a-fb0e66e88369.png" alt="CPI Logo" class="lock-logo">
+    <div class="lock-title" data-bn="চাঁপাইনবাবগঞ্জ পলিটেকনিক" data-en="Chapainawabganj Polytechnic">চাঁপাইনবাবগঞ্জ পলিটেকনিক</div>
+    <div class="lock-sub" data-bn="উপস্থিতি ফরম সিস্টেম<br>অনুমোদিত ব্যবহারকারী মাত্র প্রবেশ করুন" data-en="Attendance Form System<br>Authorized users only">উপস্থিতি ফরম সিস্টেম<br>অনুমোদিত ব্যবহারকারী মাত্র প্রবেশ করুন</div>
+
+    <div class="lock-tabs">
+      <button class="lock-tab active" id="tabPasscode" onclick="switchAuthTab('pass')" data-bn="পাসকোড" data-en="Passcode">পাসকোড</button>
+      <button class="lock-tab" id="tabEmail" onclick="switchAuthTab('email')" data-bn="ইমেইল লগইন" data-en="Email Login">ইমেইল লগইন</button>
+    </div>
+
+    <div id="lockError"></div>
+
+    <!-- Passcode -->
+    <div id="authPass">
+      <label class="lock-label" data-bn="পাসকোড" data-en="Passcode">পাসকোড</label>
+      <div class="lock-input-wrap">
+        <input type="password" id="passcodeInput" class="lock-input" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter')checkPasscode()">
+        <button class="lock-eye" onclick="toggleEye('passcodeInput','eyeBtn1')" id="eyeBtn1">👁</button>
+      </div>
+      <button class="lock-btn" onclick="checkPasscode()" data-bn="প্রবেশ করুন →" data-en="Enter →">প্রবেশ করুন →</button>
+    </div>
+
+    <!-- Email -->
+    <div id="authEmail" style="display:none">
+      <label class="lock-label" data-bn="ইমেইল" data-en="Email">ইমেইল</label>
+      <div class="lock-input-wrap">
+        <input type="email" id="emailInput" class="lock-input" placeholder="user@cpi.edu.bd">
+      </div>
+      <label class="lock-label" data-bn="পাসওয়ার্ড" data-en="Password">পাসওয়ার্ড</label>
+      <div class="lock-input-wrap">
+        <input type="password" id="emailPass" class="lock-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')emailLogin()">
+        <button class="lock-eye" onclick="toggleEye('emailPass','eyeBtn2')" id="eyeBtn2">👁</button>
+      </div>
+      <button class="lock-btn" id="emailBtn" onclick="emailLogin()" data-bn="লগইন →" data-en="Login →">লগইন →</button>
+    </div>
+
+    <div class="lock-status" id="lockStatus">
+      <span style="font-size:11px;color:#475569" data-bn="সংযোগ যাচাই হচ্ছে…" data-en="Checking connection…">সংযোগ যাচাই হচ্ছে…</span>
+    </div>
+    <div class="lock-footer">© চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</div>
+  </div>
+</div>
+
+<!-- ══ TOP BAR ══ -->
+<div id="topBar">
+  <div class="topbar-brand">
+    <div class="topbar-logo"><img src="https://novellum-filestore-mcp.s3.us-east-2.amazonaws.com/atxp:atxp_acct_t6MNgm52vGCiSbesFGiA4/494369b0-0384-415d-9b4a-fb0e66e88369.png" alt="CPI"></div>
+    <div class="topbar-name">
+      <span data-bn="উপস্থিতি ফরম সিস্টেম" data-en="Attendance System">উপস্থিতি ফরম সিস্টেম</span>
+      <small data-bn="চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট" data-en="Chapainawabganj Polytechnic Institute">চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</small>
+    </div>
+  </div>
+  <div class="topbar-sync">
+    <span class="sync-dot" id="syncDot"></span>
+    <span id="syncText" data-bn="সংযুক্ত" data-en="Connected">সংযুক্ত</span>
+  </div>
+  <div class="user-chip" id="userChip" style="display:none">
+    <span id="userEmail">—</span> · <span class="role" id="userRole">user</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="topbar-btn icon" onclick="toggleTheme()" title="Theme" id="themeBtn">🌙</button>
+    <button class="topbar-btn icon" onclick="toggleLang()" title="Language" id="langBtn">EN</button>
+    <button class="topbar-btn" onclick="window.print()">🖨️ <span data-bn="প্রিন্ট" data-en="Print">প্রিন্ট</span></button>
+    <button class="topbar-btn" onclick="exportPDF()">📄 PDF</button>
+    <button class="topbar-btn" onclick="logout()">🔒 <span data-bn="লগ আউট" data-en="Logout">লগ আউট</span></button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app-wrap">
+
+  <!-- Tab Nav -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('forms')">📋 <span data-bn="ফরম" data-en="Forms">ফরম</span></button>
+    <button class="tab-btn" onclick="switchTab('students')">👥 <span data-bn="শিক্ষার্থী" data-en="Students">শিক্ষার্থী</span></button>
+    <button class="tab-btn" onclick="switchTab('tracker')">📅 <span data-bn="দৈনিক ট্র্যাকার" data-en="Daily Tracker">দৈনিক ট্র্যাকার</span></button>
+    <button class="tab-btn" onclick="switchTab('dashboard')">📊 <span data-bn="ড্যাশবোর্ড" data-en="Dashboard">ড্যাশবোর্ড</span></button>
+    <button class="tab-btn" onclick="switchTab('settings')">⚙️ <span data-bn="সেটিংস" data-en="Settings">সেটিংস</span></button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card"><div class="stat-icon blue">👥</div>
+      <div><div class="stat-val" id="stTotal">0</div><div class="stat-lbl" data-bn="মোট শিক্ষার্থী" data-en="Total Students">মোট শিক্ষার্থী</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">🏫</div>
+      <div><div class="stat-val" id="stTech">0</div><div class="stat-lbl" data-bn="টেকনোলজি বিভাগ" data-en="Technologies">টেকনোলজি বিভাগ</div></div></div>
+    <div class="stat-card"><div class="stat-icon amber">📚</div>
+      <div><div class="stat-val" id="stSem">0</div><div class="stat-lbl" data-bn="সক্রিয় সেমিস্টার" data-en="Active Semesters">সক্রিয় সেমিস্টার</div></div></div>
+    <div class="stat-card"><div class="stat-icon purple">📋</div>
+      <div><div class="stat-val" id="stForms">—</div><div class="stat-lbl" data-bn="নির্বাচিত গ্রুপ" data-en="Selected Group">নির্বাচিত গ্রুপ</div></div></div>
+  </div>
+
+  <!-- ═══ TAB: FORMS ═══ -->
+  <div class="tab-content active" id="tab-forms">
+    <div class="main-grid">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <!-- Generate -->
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span>📋</span> <span data-bn="ফরম জেনারেট" data-en="Generate Form">ফরম জেনারেট</span></div></div>
+          <div class="panel-body">
+            <div class="field">
+              <label data-bn="টেকনোলজি" data-en="Technology">টেকনোলজি</label>
+              <select id="technology" onchange="updateCodePreview()">
+                <option value="">— <span data-bn="নির্বাচন" data-en="Select">নির্বাচন</span> —</option>
+                <option value="Food Technology">Food Technology</option>
+                <option value="Electrical Technology">Electrical Technology</option>
+                <option value="Computer Technology">Computer Technology</option>
+                <option value="Mechatronics Technology">Mechatronics Technology</option>
+                <option value="Electronics Technology">Electronics Technology</option>
+                <option value="RAC Technology">RAC Technology</option>
+              </select>
+            </div>
+            <div class="field">
+              <label data-bn="সেমিস্টার" data-en="Semester">সেমিস্টার</label>
+              <select id="semester" onchange="updateCodePreview()">
+                <option value="">— Select —</option>
+                <option value="1st">1st</option><option value="2nd">2nd</option>
+                <option value="3rd">3rd</option><option value="4th">4th</option>
+                <option value="5th">5th</option><option value="6th">6th</option>
+                <option value="7th">7th</option><option value="8th">8th</option>
+              </select>
+            </div>
+            <div class="field">
+              <label data-bn="বিষয় কোড প্রিভিউ" data-en="Subject Codes">বিষয় কোড প্রিভিউ</label>
+              <div class="code-chips" id="codeChips">
+                <span class="code-empty" data-bn="টেকনোলজি ও সেমিস্টার নির্বাচন করুন" data-en="Select tech & semester">টেকনোলজি ও সেমিস্টার নির্বাচন করুন</span>
+              </div>
+            </div>
+            <div class="field">
+              <label data-bn="সেশন (ঐচ্ছিক)" data-en="Session (optional)">সেশন (ঐচ্ছিক)</label>
+              <input class="finput" id="sessionYear" type="text" placeholder="2023-24">
+            </div>
+            <button class="btn btn-primary btn-full" onclick="generateForm()">📋 <span data-bn="ফরম জেনারেট করুন" data-en="Generate Form">ফরম জেনারেট করুন</span></button>
+            <button class="btn btn-amber btn-full" style="margin-top:8px" onclick="exportPDF()">📄 <span data-bn="PDF ডাউনলোড" data-en="Download PDF">PDF ডাউনলোড</span></button>
+          </div>
+        </div>
+
+        <!-- Upload -->
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span>📤</span> Excel <span data-bn="আপলোড" data-en="Upload">আপলোড</span></div></div>
+          <div class="panel-body">
+            <div class="tmpl-row">
+              <span data-bn="📥 টেমপ্লেট ডাউনলোড করুন" data-en="📥 Download Template">📥 টেমপ্লেট ডাউনলোড করুন</span>
+              <button onclick="downloadTemplate()" data-bn="ডাউনলোড" data-en="Download">ডাউনলোড</button>
+            </div>
+            <div class="upload-zone" id="uploadZone"
+                 ondragover="event.preventDefault();this.classList.add('drag-over')"
+                 ondragleave="this.classList.remove('drag-over')"
+                 ondrop="handleDrop(event)">
+              <input type="file" accept=".xlsx,.xls,.csv" id="fileInput" onchange="handleFile(event)">
+              <div class="upload-icon">📊</div>
+              <div class="upload-t" data-bn="Excel / CSV আপলোড করুন" data-en="Upload Excel / CSV">Excel / CSV আপলোড করুন</div>
+              <div class="upload-h" data-bn="ড্র্যাগ করুন অথবা ক্লিক করুন" data-en="Drag or click">ড্র্যাগ করুন অথবা ক্লিক করুন</div>
+            </div>
+            <div id="uploadStatus"></div>
+            <div class="preview-wrap" id="previewWrap">
+              <div class="preview-head">
+                <span id="previewTitle">Preview</span>
+                <span class="preview-badge" id="previewCount"></span>
+              </div>
+              <div class="preview-scroll"><table class="preview-table" id="previewTable"></table></div>
+              <div style="padding:9px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--bg)">
+                <button class="btn btn-ghost btn-sm" onclick="cancelPreview()" data-bn="বাতিল" data-en="Cancel">বাতিল</button>
+                <button class="btn btn-green btn-sm" id="confirmUploadBtn" onclick="confirmUpload()">✅ <span data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- A4 Preview placeholder -->
+      <div class="panel" id="formPreviewPanel">
+        <div class="panel-head"><div class="panel-title"><span>📄</span> <span data-bn="ফরম প্রিভিউ" data-en="Form Preview">ফরম প্রিভিউ</span></div>
+          <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ <span data-bn="প্রিন্ট" data-en="Print">প্রিন্ট</span></button>
+        </div>
+        <div class="panel-body" id="formPreviewBody">
+          <div style="padding:48px 20px;text-align:center;color:var(--ink3)">
+            <div style="font-size:48px;margin-bottom:12px;opacity:.4">📋</div>
+            <div data-bn="বাম পাশ থেকে টেকনোলজি ও সেমিস্টার নির্বাচন করে ফরম জেনারেট করুন" data-en="Select technology & semester from left to generate form">
+              বাম পাশ থেকে টেকনোলজি ও সেমিস্টার নির্বাচন করে ফরম জেনারেট করুন
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: STUDENTS ═══ -->
+  <div class="tab-content" id="tab-students">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span>👥</span> <span data-bn="শিক্ষার্থী তালিকা" data-en="Student List">শিক্ষার্থী তালিকা</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-green btn-sm" onclick="openAddModal()">➕ <span data-bn="যোগ" data-en="Add">যোগ</span></button>
+          <button class="btn btn-amber btn-sm" onclick="exportStudentsExcel()">📥 Excel</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAllStudents()">🗑️ <span data-bn="সব মুছুন" data-en="Clear All">সব মুছুন</span></button>
+        </div>
+      </div>
+      <div class="summary-bar" id="summaryBar"><span style="font-size:12px;color:var(--ink3)">…</span></div>
+
+      <div class="bulk-bar" id="bulkBar">
+        <span class="bulk-info" id="bulkInfo">0 selected</span>
+        <button class="btn btn-amber btn-sm" onclick="bulkEdit()">✏️ <span data-bn="বাল্ক এডিট" data-en="Bulk Edit">বাল্ক এডিট</span></button>
+        <button class="btn btn-danger btn-sm" onclick="bulkDelete()">🗑️ <span data-bn="মুছুন" data-en="Delete">মুছুন</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="clearSelection()" data-bn="বাতিল" data-en="Cancel">বাতিল</button>
+      </div>
+
+      <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border)">
+        <div class="filter-bar">
+          <select id="filterTech" onchange="renderManageTable()">
+            <option value="">All Tech</option>
+            <option value="Food Technology">Food</option>
+            <option value="Electrical Technology">Electrical</option>
+            <option value="Computer Technology">Computer</option>
+            <option value="Mechatronics Technology">Mechatronics</option>
+            <option value="Electronics Technology">Electronics</option>
+            <option value="RAC Technology">RAC</option>
+          </select>
+          <select id="filterSem" onchange="renderManageTable()">
+            <option value="">All Sem</option>
+            <option value="1st">1st</option><option value="2nd">2nd</option>
+            <option value="3rd">3rd</option><option value="4th">4th</option>
+            <option value="5th">5th</option><option value="6th">6th</option>
+            <option value="7th">7th</option><option value="8th">8th</option>
+          </select>
+        </div>
+        <input class="finput" id="searchInput" type="text" placeholder="🔍 Search by name or roll…"
+               oninput="renderManageTable()" style="height:38px;font-size:13px;margin-bottom:8px">
+        <div style="font-size:12px;color:var(--ink3)" id="manageBadge">…</div>
+      </div>
+      <div class="manage-scroll"><div id="manageTable"><div class="tbl-empty">…</div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: TRACKER ═══ -->
+  <div class="tab-content" id="tab-tracker">
+    <div class="tracker-grid">
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title"><span>📅</span> <span data-bn="ফিল্টার" data-en="Filter">ফিল্টার</span></div></div>
+        <div class="panel-body">
+          <div class="field">
+            <label data-bn="তারিখ" data-en="Date">তারিখ</label>
+            <input class="finput" id="trackDate" type="date" onchange="renderTracker()">
+          </div>
+          <div class="field">
+            <label data-bn="টেকনোলজি" data-en="Technology">টেকনোলজি</label>
+            <select id="trackTech" onchange="renderTracker()">
+              <option value="">— Select —</option>
+              <option value="Food Technology">Food</option>
+              <option value="Electrical Technology">Electrical</option>
+              <option value="Computer Technology">Computer</option>
+              <option value="Mechatronics Technology">Mechatronics</option>
+              <option value="Electronics Technology">Electronics</option>
+              <option value="RAC Technology">RAC</option>
+            </select>
+          </div>
+          <div class="field">
+            <label data-bn="সেমিস্টার" data-en="Semester">সেমিস্টার</label>
+            <select id="trackSem" onchange="renderTracker()">
+              <option value="">— Select —</option>
+              <option value="1st">1st</option><option value="2nd">2nd</option>
+              <option value="3rd">3rd</option><option value="4th">4th</option>
+              <option value="5th">5th</option><option value="6th">6th</option>
+              <option value="7th">7th</option><option value="8th">8th</option>
+            </select>
+          </div>
+          <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
+          <div class="field">
+            <label data-bn="রিপোর্ট রেঞ্জ (শুরু)" data-en="Range Start">রিপোর্ট রেঞ্জ (শুরু)</label>
+            <input class="finput" id="rangeStart" type="date">
+          </div>
+          <div class="field">
+            <label data-bn="রিপোর্ট রেঞ্জ (শেষ)" data-en="Range End">রিপোর্ট রেঞ্জ (শেষ)</label>
+            <input class="finput" id="rangeEnd" type="date">
+          </div>
+          <button class="btn btn-purple btn-full" onclick="generateRangeReport()">📊 <span data-bn="রিপোর্ট" data-en="Report">রিপোর্ট</span></button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title"><span>✍️</span> <span data-bn="দৈনিক উপস্থিতি" data-en="Daily Attendance">দৈনিক উপস্থিতি</span></div>
+          <button class="btn btn-green btn-sm" onclick="markAllPresent()" data-bn="সবাই উপস্থিত" data-en="All Present">সবাই উপস্থিত</button>
+        </div>
+        <div id="trackerBody" style="max-height:560px;overflow-y:auto">
+          <div class="tbl-empty" data-bn="তারিখ, টেকনোলজি ও সেমিস্টার নির্বাচন করুন" data-en="Select date, tech & sem">তারিখ, টেকনোলজি ও সেমিস্টার নির্বাচন করুন</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: DASHBOARD ═══ -->
+  <div class="tab-content" id="tab-dashboard">
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3 data-bn="টেকনোলজি অনুযায়ী শিক্ষার্থী" data-en="Students by Technology">টেকনোলজি অনুযায়ী শিক্ষার্থী</h3>
+        <canvas id="chartTech"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 data-bn="সেমিস্টার অনুযায়ী শিক্ষার্থী" data-en="Students by Semester">সেমিস্টার অনুযায়ী শিক্ষার্থী</h3>
+        <canvas id="chartSem"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 data-bn="GPA বন্টন" data-en="GPA Distribution">GPA বন্টন</h3>
+        <canvas id="chartGpa"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 data-bn="উপস্থিতির প্রবণতা (গত ৩০ দিন)" data-en="Attendance Trend (30 days)">উপস্থিতির প্রবণতা (গত ৩০ দিন)</h3>
+        <canvas id="chartAttend"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: SETTINGS ═══ -->
+  <div class="tab-content" id="tab-settings">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title"><span>⚙️</span> <span data-bn="সিস্টেম সেটিংস" data-en="System Settings">সিস্টেম সেটিংস</span></div></div>
+
+      <div class="settings-section">
+        <h3>✍️ <span data-bn="স্বাক্ষরের ঘর (প্রিন্ট ফরম)" data-en="Signature Boxes (Print Form)">স্বাক্ষরের ঘর (প্রিন্ট ফরম)</span></h3>
+        <p style="font-size:12px;color:var(--ink3);margin-bottom:10px" data-bn="যত খুশি স্বাক্ষরের ঘর যোগ করুন" data-en="Add as many signature boxes as you need">যত খুশি স্বাক্ষরের ঘর যোগ করুন</p>
+        <div class="sig-list" id="sigList"></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addSignature()">➕ <span data-bn="স্বাক্ষর যোগ করুন" data-en="Add Signature">স্বাক্ষর যোগ করুন</span></button>
+        <button class="btn btn-green btn-sm" style="margin-top:10px;margin-left:6px" onclick="saveSignatures()">💾 <span data-bn="সংরক্ষণ" data-en="Save">সংরক্ষণ</span></button>
+      </div>
+
+      <div class="settings-section">
+        <h3>🎨 <span data-bn="থিম" data-en="Theme">থিম</span></h3>
+        <button class="btn btn-ghost" onclick="toggleTheme()">🌓 <span data-bn="থিম পরিবর্তন" data-en="Toggle Theme">থিম পরিবর্তন</span></button>
+        <button class="btn btn-ghost" style="margin-left:6px" onclick="toggleLang()">🌐 <span data-bn="ভাষা পরিবর্তন" data-en="Switch Language">ভাষা পরিবর্তন</span></button>
+      </div>
+
+      <div class="settings-section">
+        <h3>🔒 <span data-bn="পাসকোড পরিবর্তন (অ্যাডমিন)" data-en="Change Passcode (Admin)">পাসকোড পরিবর্তন (অ্যাডমিন)</span></h3>
+        <div style="display:flex;gap:8px;max-width:400px;flex-wrap:wrap">
+          <input class="finput" id="newPasscode" type="password" placeholder="New passcode" style="flex:1;min-width:180px">
+          <button class="btn btn-amber" onclick="changePasscode()" data-bn="পরিবর্তন" data-en="Change">পরিবর্তন</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>📱 PWA</h3>
+        <button class="btn btn-purple" id="installBtn" onclick="installPWA()" style="display:none">📲 <span data-bn="অ্যাপ ইনস্টল করুন" data-en="Install App">অ্যাপ ইনস্টল করুন</span></button>
+        <div id="pwaStatus" style="font-size:13px;color:var(--ink3);margin-top:8px"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3>ℹ️ <span data-bn="সম্পর্কে" data-en="About">সম্পর্কে</span></h3>
+        <p style="font-size:13px;color:var(--ink2);line-height:1.7">
+          <strong>CPI Attendance System v2.0</strong><br>
+          চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট<br>
+          বারঘরিয়া, চাঁপাইনবাবগঞ্জ<br>
+          <span style="color:var(--ink3);font-size:11px">Built with Firebase Realtime DB · Chart.js · html2pdf · PWA-ready</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- A4 Print Page -->
+  <!-- A4 Print Page (Logo removed, Name column wider) -->
+<div class="a4-page" id="printArea">
+  <div class="print-header">
+    <h2>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</h2>
+    <h4>বারঘরিয়া, চাঁপাইনবাবগঞ্জ</h4>
+    <div class="print-badge">উপস্থিতি ফরম</div>
+    <div class="print-title" id="printTitle"></div>
+    <div class="print-meta">
+      <div id="metaSessionWrap" style="display:none">সেশন: <span id="metaSession"></span></div>
+      <div>মোট শিক্ষার্থী: <span id="metaCount"></span></div>
+      <div>তারিখ: <span id="metaDate"></span></div>
+    </div>
+  </div>
+
+  <div class="att-wrap">
+    <table class="att-table">
+      <thead>
+        <tr>
+          <th rowspan="2" class="col-sl">ক্রম</th>
+          <th rowspan="2" class="col-roll">রোল নং</th>
+          <th rowspan="2" class="col-name">শিক্ষার্থীর নাম</th>
+          <th rowspan="2" class="col-gpa">CGPA</th>
+          <th colspan="8" style="background:#b8d0e8">বিষয় কোড ও উপস্থিতি %</th>
+          <th rowspan="2" class="col-pct">গড়<br>উপস্থিতি<br>%</th>
+          <th rowspan="2" class="col-sign">স্বাক্ষর</th>
+        </tr>
+        <tr id="subjectHeaderRow"></tr>
+      </thead>
+      <tbody id="studentTable"></tbody>
+    </table>
+  </div>
+
+  <div class="print-footer-row" id="printFooter"></div>
+</div>
+  
+  <!-- /app-wrap -->
+
+<!-- ══ TOAST ══ -->
+<div id="toastWrap"></div>
+
+<!-- ══ EDIT MODAL ══ -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="editModalTitle">✏️ Edit Student</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <input type="hidden" id="editId">
+    <div class="modal-grid">
+      <div class="field" style="grid-column:1/-1">
+        <label>Roll Number</label>
+        <input class="finput" id="editRoll" type="text" placeholder="e.g. 213641">
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label>Full Name</label>
+        <input class="finput" id="editName" type="text" placeholder="Student name">
+      </div>
+      <div class="field"><label>CGPA</label><input class="finput" id="editGpa" type="text" placeholder="3.50"></div>
+      <div class="field"><label>Father's Name</label><input class="finput" id="editFather" type="text" placeholder="(optional)"></div>
+      <div class="field"><label>Mobile</label><input class="finput" id="editMobile" type="text" placeholder="(optional)"></div>
+      <div class="field"><label>Session</label><input class="finput" id="editSession" type="text" placeholder="2023-24"></div>
+      <div class="field">
+        <label>Technology</label>
+        <select id="editTech">
+          <option value="">— Select —</option>
+          <option value="Food Technology">Food</option>
+          <option value="Electrical Technology">Electrical</option>
+          <option value="Computer Technology">Computer</option>
+          <option value="Mechatronics Technology">Mechatronics</option>
+          <option value="Electronics Technology">Electronics</option>
+          <option value="RAC Technology">RAC</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Semester</label>
+        <select id="editSem">
+          <option value="">— Select —</option>
+          <option value="1st">1st</option><option value="2nd">2nd</option>
+          <option value="3rd">3rd</option><option value="4th">4th</option>
+          <option value="5th">5th</option><option value="6th">6th</option>
+          <option value="7th">7th</option><option value="8th">8th</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BULK EDIT MODAL ══ -->
+<div class="modal-bg" id="bulkModal">
+  <div class="modal">
+    <div class="modal-title">
+      ✏️ Bulk Edit (<span id="bulkCount">0</span> students)
+      <button class="modal-close" onclick="closeBulkModal()">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--ink3);margin-bottom:14px">Only filled fields will be updated for all selected students.</p>
+    <div class="modal-grid">
+      <div class="field">
+        <label>Technology</label>
+        <select id="bulkTech">
+          <option value="">— No change —</option>
+          <option value="Food Technology">Food</option>
+          <option value="Electrical Technology">Electrical</option>
+          <option value="Computer Technology">Computer</option>
+          <option value="Mechatronics Technology">Mechatronics</option>
+          <option value="Electronics Technology">Electronics</option>
+          <option value="RAC Technology">RAC</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Semester</label>
+        <select id="bulkSem">
+          <option value="">— No change —</option>
+          <option value="1st">1st</option><option value="2nd">2nd</option>
+          <option value="3rd">3rd</option><option value="4th">4th</option>
+          <option value="5th">5th</option><option value="6th">6th</option>
+          <option value="7th">7th</option><option value="8th">8th</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:1/-1"><label>Session</label><input class="finput" id="bulkSession" type="text" placeholder="(leave blank to skip)"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeBulkModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="applyBulkEdit()">💾 Apply to All</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═════════════════════════════════════════════
+   DATA
+═════════════════════════════════════════════ */
+const TECH_NAMES_BN={
+  "Food Technology":"ফুড টেকনোলজি","Electrical Technology":"ইলেকট্রিক্যাল টেকনোলজি",
+  "Computer Technology":"কম্পিউটার টেকনোলজি","Mechatronics Technology":"মেকাট্রনিক্স টেকনোলজি",
+  "Electronics Technology":"ইলেকট্রনিক্স টেকনোলজি","RAC Technology":"আরএসি টেকনোলজি"
+};
+const SEM_NAMES_BN={"1st":"১ম","2nd":"২য়","3rd":"৩য়","4th":"৪র্থ","5th":"৫ম","6th":"৬ষ্ঠ","7th":"৭ম","8th":"৮ম"};
+function techName(t){return currentLang==='bn'?(TECH_NAMES_BN[t]||t):t;}
+function semName(s){return currentLang==='bn'?(SEM_NAMES_BN[s]||s):s;}
+
+const SUBJECT_CODES={
+  "Food Technology":{"1st":["21011","25711","25712","25812","25911","25913","26911","26912"],"2nd":["25721","25722","25912","25921","26711","26921","26922","27011"],"3rd":["25811","25922","25931","28511","26811","26931","26932"],"4th":["25831","25841","26941","26942","26943","26944","26945","27041"],"5th":["25852","26355","26951","26952","26953","26954","26955"],"6th":["26364","26365","26961","26962","26963","26964","29041"],"7th":["25851","25853","26971","26972","26973","26974","26975","26976"],"8th":["26981"]},
+  "Electrical Technology":{"1st":["21011","25711","25712","25812","25911","25912","26711","26712"],"2nd":["25721","25722","25921","25922","26721","26722","26811"],"3rd":["25931","25913","28511","26731","26732","26833"],"4th":["25811","25841","26741","26742","26743","26845","27044"],"5th":["25851","25852","26751","26752","26753","26754","26853"],"6th":["28567","26761","26762","26763","26842","29041"],"7th":["25831","25853","26771","26772","26773","26774","26875"],"8th":["26781"]},
+  "Electronics Technology":{"1st":["21011","25711","25712","25911","25912","26711","26811"],"2nd":["25721","25722","25811","25812","25913","25921","26721","26821"],"3rd":["25922","25931","28511","26731","26831","26832"],"4th":["25841","26741","26742","26841","26842","26843","26844"],"5th":["25851","25852","28567","26751","26752","26851","26852","28654"],"6th":["26761","26764","26763","26861","26862","26863","29041"],"7th":["25831","25853","26771","26871","26872","26873","26874"],"8th":["26881"]},
+  "RAC Technology":{"1st":["21011","25711","25712","25811","25911","25912","27011","27211"],"2nd":["25721","25722","25812","25913","25921","26711","27021","27031"],"3rd":["25831","25922","25931","26211","26811","27131","27231"],"4th":["25841","27012","27041","27241","27242","29041","28511"],"5th":["25851","27043","27051","27052","27251","27252","28567"],"6th":["25852","27055","27061","27063","27065","27261","27262"],"7th":["25853","27075","27271","27272","27273","27274","29231"],"8th":["27281"]},
+  "Computer Technology":{"1st":["21011","25711","25712","25911","25912","28511","26711"],"2nd":["25721","25722","25812","25913","25921","28521","28522","26811"],"3rd":["25811","25922","25931","28531","28532","28533","26831"],"4th":["25831","28541","28542","28543","28544","26841","29041"],"5th":["25841","28551","28552","28553","28554","28555","28556"],"6th":["25851","25852","28561","28562","28563","28564","28565","28566"],"7th":["25853","28571","28572","28573","28574","28575","28576"],"8th":["28581"]},
+  "Mechatronics Technology":{"1st":["21011","25711","25712","25812","25911","25912","26711","27011"],"2nd":["25721","25722","25921","25922","26811","27012","27021"],"3rd":["25811","25831","25913","25931","28511","26821","27031","29232"],"4th":["25841","28567","27032","27041","27131","29041","29241"],"5th":["25851","25852","26845","27051","27055","27152","29251"],"6th":["26833","27061","27062","27063","29261","29262"],"7th":["25853","27071","27075","27172","29271","29272","29273","29274"],"8th":["27081"]}
+};
+
+/* ═════════════════════════════════════════════
+   FIREBASE
+═════════════════════════════════════════════ */
+const firebaseConfig={
+  apiKey:"AIzaSyAUeWnciYUhVDDWqlWLXtchGzJ2PyWRAJk",
+  authDomain:"dftprobd-f989c.firebaseapp.com",
+  databaseURL:"https://dftprobd-f989c-default-rtdb.firebaseio.com",
+  projectId:"dftprobd-f989c",
+  appId:"1:57798842819:web:e3b6b5156c51c20d6b0576"
+};
+firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+const auth=firebase.auth();
+const studentsRef=rtdb.ref("cpi_students");
+const settingsRef=rtdb.ref("cpi_settings");
+const attendanceRef=rtdb.ref("cpi_attendance"); // by date/tech/sem/roll
+
+/* connection state */
+rtdb.ref(".info/connected").on("value",(snap)=>{
+  const dot=document.getElementById("syncDot");
+  const txt=document.getElementById("syncText");
+  if(snap.val()===true){dot.classList.remove("offline");txt.textContent=currentLang==='bn'?"সংযুক্ত":"Connected";}
+  else{dot.classList.add("offline");txt.textContent=currentLang==='bn'?"অফলাইন":"Offline";}
+});
+
+let students=[];
+let pendingUpload=null;
+let savedPasscode=null;
+let signatures=[
+  {label:"ক্লাস শিক্ষক",enabled:true},
+  {label:"বিভাগীয় প্রধান",enabled:true}
+];
+let selectedIds=new Set();
+let currentTheme=localStorage.getItem("cpi_theme")||"light";
+let currentLang=localStorage.getItem("cpi_lang")||"bn";
+let currentRole="user";
+let currentUser=null;
+
+/* ═════════════════════════════════════════════
+   INIT
+═════════════════════════════════════════════ */
+applyTheme();applyLang();
+
+settingsRef.once("value",(snap)=>{
+  const d=snap.val()||{};
+  savedPasscode=d.passcode||"dft2026@Form";
+  if(Array.isArray(d.signatures)&&d.signatures.length) signatures=d.signatures;
+  document.getElementById("lockStatus").innerHTML=
+    '<span class="lock-dot"></span> <span style="font-size:11px;color:#64748b">'+(currentLang==='bn'?'ডেটাবেইজ সংযুক্ত':'Database connected')+'</span>';
+  renderSignatureSettings();
+}).catch(()=>{
+  savedPasscode="dft2026@Form";
+  document.getElementById("lockStatus").innerHTML=
+    '<span style="font-size:11px;color:#dc2626">⚠️ Offline mode</span>';
+});
+
+studentsRef.on("value",(snap)=>{
+  students=[];
+  const d=snap.val();
+  if(d) Object.entries(d).forEach(([k,v])=>students.push({...v,id:k}));
+  updateStats();renderSummary();renderManageTable();
+  if(currentTab==='dashboard') renderCharts();
+});
+
+/* ═════════════════════════════════════════════
+   AUTH
+═════════════════════════════════════════════ */
+const SESSION_KEY="cpi_auth_v3";
+function switchAuthTab(t){
+  document.getElementById("tabPasscode").classList.toggle("active",t==="pass");
+  document.getElementById("tabEmail").classList.toggle("active",t==="email");
+  document.getElementById("authPass").style.display=t==="pass"?"block":"none";
+  document.getElementById("authEmail").style.display=t==="email"?"block":"none";
+  document.getElementById("lockError").style.display="none";
+}
+function showLockErr(msg){
+  const e=document.getElementById("lockError");
+  e.textContent="❌ "+msg;e.style.display="block";
+  const c=document.querySelector(".lock-card");
+  c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake");
+}
+function checkPasscode(){
+  const inp=document.getElementById("passcodeInput").value;
+  if(inp===(savedPasscode||"dft2026@Form")){
+    currentRole="user";
+    sessionStorage.setItem(SESSION_KEY,JSON.stringify({mode:"passcode",role:"user"}));
+    enterApp();
+  } else {
+    showLockErr(currentLang==='bn'?"ভুল পাসকোড":"Wrong passcode");
+    document.getElementById("passcodeInput").value="";
+    document.getElementById("passcodeInput").focus();
+  }
+}
+function emailLogin(){
+  const email=document.getElementById("emailInput").value.trim();
+  const pass=document.getElementById("emailPass").value;
+  if(!email||!pass){showLockErr("Email & password required");return;}
+  const btn=document.getElementById("emailBtn");
+  btn.disabled=true;btn.textContent="…";
+  auth.signInWithEmailAndPassword(email,pass).then((cred)=>{
+    currentUser=cred.user;
+    // role lookup
+    rtdb.ref("cpi_roles/"+cred.user.uid).once("value").then(s=>{
+      currentRole=s.val()||"user";
+      sessionStorage.setItem(SESSION_KEY,JSON.stringify({mode:"email",role:currentRole,email:cred.user.email}));
+      enterApp();
+      btn.disabled=false;btn.textContent=currentLang==='bn'?"লগইন →":"Login →";
+    });
+  }).catch(err=>{
+    showLockErr(err.message.replace("Firebase: ",""));
+    btn.disabled=false;btn.textContent=currentLang==='bn'?"লগইন →":"Login →";
+  });
+}
+function enterApp(){
+  document.getElementById("lockScreen").style.display="none";
+  document.getElementById("topBar").style.display="flex";
+  // role chip
+  const sess=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"{}");
+  if(sess.email){
+    document.getElementById("userChip").style.display="flex";
+    document.getElementById("userEmail").textContent=sess.email.split("@")[0];
+    document.getElementById("userRole").textContent=sess.role||"user";
+  }
+  document.getElementById("lockError").style.display="none";
+  toast("success",currentLang==='bn'?"স্বাগতম! 🎉":"Welcome! 🎉");
+}
+function logout(){
+  sessionStorage.removeItem(SESSION_KEY);
+  if(auth.currentUser) auth.signOut();
+  document.getElementById("lockScreen").style.display="flex";
+  document.getElementById("topBar").style.display="none";
+  document.getElementById("printArea").style.display="none";
+  document.getElementById("userChip").style.display="none";
+  document.getElementById("passcodeInput").value="";
+  document.getElementById("emailPass").value="";
+}
+function toggleEye(inputId,btnId){
+  const inp=document.getElementById(inputId),btn=document.getElementById(btnId);
+  inp.type=inp.type==="password"?"text":"password";
+  btn.textContent=inp.type==="password"?"👁":"🙈";
+}
+(function(){
+  const sess=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null");
+  if(sess){currentRole=sess.role||"user";enterApp();}
+  else setTimeout(()=>document.getElementById("passcodeInput").focus(),400);
+})();
+
+/* ═════════════════════════════════════════════
+   THEME / LANG
+═════════════════════════════════════════════ */
+function applyTheme(){
+  document.body.setAttribute("data-theme",currentTheme);
+  document.getElementById("themeBtn").textContent=currentTheme==="dark"?"☀️":"🌙";
+}
+function toggleTheme(){
+  currentTheme=currentTheme==="dark"?"light":"dark";
+  localStorage.setItem("cpi_theme",currentTheme);
+  applyTheme();
+  if(currentTab==='dashboard') renderCharts();
+}
+function applyLang(){
+  document.body.classList.toggle("lang-en",currentLang==="en");
+  document.body.classList.toggle("lang-bn",currentLang==="bn");
+  document.querySelectorAll("[data-bn]").forEach(el=>{
+    el.innerHTML=currentLang==='bn'?el.getAttribute("data-bn"):el.getAttribute("data-en");
+  });
+  document.getElementById("langBtn").textContent=currentLang==="bn"?"EN":"বাং";
+}
+function toggleLang(){
+  currentLang=currentLang==="bn"?"en":"bn";
+  localStorage.setItem("cpi_lang",currentLang);
+  applyLang();renderManageTable();renderSummary();
+}
+
+/* ═════════════════════════════════════════════
+   TABS
+═════════════════════════════════════════════ */
+let currentTab="forms";
+function switchTab(t){
+  currentTab=t;
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+  event.currentTarget.classList.add("active");
+  document.getElementById("tab-"+t).classList.add("active");
+  if(t==='dashboard') setTimeout(renderCharts,100);
+  if(t==='tracker'&&!document.getElementById("trackDate").value){
+    document.getElementById("trackDate").value=new Date().toISOString().split("T")[0];
+  }
+}
+
+/* ═════════════════════════════════════════════
+   STATS
+═════════════════════════════════════════════ */
+function updateStats(){
+  document.getElementById("stTotal").textContent=students.length;
+  document.getElementById("stTech").textContent=new Set(students.map(s=>s.technology).filter(Boolean)).size;
+  document.getElementById("stSem").textContent=new Set(students.map(s=>s.semester).filter(Boolean)).size;
+  const tech=document.getElementById("technology").value;
+  const sem=document.getElementById("semester").value;
+  if(tech&&sem){
+    const n=students.filter(s=>s.technology===tech&&s.semester===sem).length;
+    document.getElementById("stForms").textContent=n+(currentLang==='bn'?" জন":"");
+  } else document.getElementById("stForms").textContent="—";
+}
+
+/* ═════════════════════════════════════════════
+   CODE PREVIEW
+═════════════════════════════════════════════ */
+function updateCodePreview(){
+  const tech=document.getElementById("technology").value;
+  const sem=document.getElementById("semester").value;
+  const el=document.getElementById("codeChips");
+  if(!tech||!sem){el.innerHTML='<span class="code-empty">'+(currentLang==='bn'?'টেকনোলজি ও সেমিস্টার নির্বাচন করুন':'Select technology & semester')+'</span>';updateStats();return}
+  const codes=(SUBJECT_CODES[tech]&&SUBJECT_CODES[tech][sem])||[];
+  el.innerHTML=codes.length?codes.map(c=>`<span class="chip">${c}</span>`).join('')
+    :'<span class="code-empty">No codes</span>';
+  updateStats();
+}
+
+/* ═════════════════════════════════════════════
+   GENERATE FORM
+═════════════════════════════════════════════ */
+function generateForm(){
+  const tech=document.getElementById("technology").value;
+  const sem=document.getElementById("semester").value;
+  const sess=document.getElementById("sessionYear").value.trim();
+  if(!tech||!sem){toast("warn",currentLang==='bn'?"টেকনোলজি ও সেমিস্টার নির্বাচন করুন":"Select tech & semester");return}
+
+  const list=students.filter(s=>s.technology===tech&&s.semester===sem);
+  const codes=(SUBJECT_CODES[tech]&&SUBJECT_CODES[tech][sem])||[];
+
+  document.getElementById("printArea").style.display="block";
+  document.getElementById("printTitle").textContent=
+    techName(tech)+" — "+semName(sem)+(currentLang==='bn'?" সেমিস্টার":" Semester");
+
+  const sw=document.getElementById("metaSessionWrap");
+  if(sess){document.getElementById("metaSession").textContent=sess;sw.style.display="inline";}
+  else sw.style.display="none";
+  document.getElementById("metaCount").textContent=list.length+(currentLang==='bn'?" জন":"");
+  document.getElementById("metaDate").textContent=new Date().toLocaleDateString(currentLang==='bn'?'bn-BD':'en-GB');
+
+  let hdr='';
+  for(let j=0;j<8;j++) hdr+=`<th class="col-sub">${codes[j]||''}</th>`;
+  document.getElementById("subjectHeaderRow").innerHTML=hdr;
+
+  const tbody=document.getElementById("studentTable");
+  tbody.innerHTML="";
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="14" class="tbl-empty">${currentLang==='bn'?'এই বিভাগ/সেমিস্টারে কোনো শিক্ষার্থী নেই':'No students in this group'}</td></tr>`;
+  } else {
+    list.sort((a,b)=>parseInt(a.roll)-parseInt(b.roll));
+    list.forEach((s,i)=>{
+      tbody.innerHTML+=`<tr>
+        <td class="col-sl">${i+1}</td>
+        <td class="col-roll mono">${s.roll||''}</td>
+        <td class="col-name">${s.name||''}</td>
+        <td class="col-gpa">${s.gpa||''}</td>
+        ${Array(8).fill('<td class="col-sub"></td>').join('')}
+        <td class="col-pct"></td>
+        <td class="col-sign"></td>
+      </tr>`;
+    });
+  }
+
+  // SIGNATURES
+  
+  renderPrintSignatures();
+
+  document.getElementById("stForms").textContent=list.length+(currentLang==='bn'?" জন":"");
+  document.getElementById("printArea").scrollIntoView({behavior:"smooth",block:"start"});
+  toast("success",currentLang==='bn'?"ফরম তৈরি হয়েছে ✅":"Form generated ✅");
+}
+
+function renderPrintSignatures(){
+  const enabled=signatures.filter(s=>s.enabled&&s.label.trim());
+  const footer=document.getElementById("printFooter");
+  if(!enabled.length){
+    footer.innerHTML='';
+    return;
+  }
+  let html='';
+  enabled.forEach(s=>{
+    html+=`<div class="sig-box"><div class="sig-line"></div>${s.label}</div>`;
+  });
+  footer.innerHTML=html;
+}
+
+/* ═════════════════════════════════════════════
+   PDF EXPORT
+═════════════════════════════════════════════ */
+function exportPDF(){
+  const area=document.getElementById("printArea");
+  if(area.style.display==="none"||!area.style.display){
+    toast("warn",currentLang==='bn'?"আগে ফরম জেনারেট করুন":"Generate form first");
+    return;
+  }
+  toast("info",currentLang==='bn'?"PDF তৈরি হচ্ছে…":"Generating PDF…");
+  
+  const tech=document.getElementById("technology").value||'form';
+  const sem=document.getElementById("semester").value||'';
+  
+  const opt={
+    margin:[6,6,8,6],
+    filename:`CPI_Attendance_${tech}_${sem}_${Date.now()}.pdf`,
+    image:{type:'jpeg',quality:0.98},
+    html2canvas:{
+      scale:2,
+      useCORS:true,
+      backgroundColor:'#ffffff',
+      letterRendering:true,
+      logging:false,
+      windowWidth:area.scrollWidth
+    },
+    jsPDF:{
+      unit:'mm',
+      format:'a4',
+      orientation:'portrait',
+      compress:true
+    },
+    pagebreak:{
+      mode:['avoid-all','css','legacy'],
+      before:'.page-break-before',
+      avoid:['tr','.print-header','.print-footer-row']
+    }
+  };
+  
+  html2pdf().set(opt).from(area).save().then(()=>{
+    toast("success","PDF "+(currentLang==='bn'?"ডাউনলোড সম্পন্ন":"downloaded"));
+  }).catch(err=>{
+    toast("error","PDF error: "+err.message);
+  });
+}
+
+
+/* ═════════════════════════════════════════════
+   EXCEL UPLOAD
+═════════════════════════════════════════════ */
+function handleDrop(e){e.preventDefault();document.getElementById("uploadZone").classList.remove("drag-over");const f=e.dataTransfer.files[0];if(f)processExcel(f);}
+function handleFile(e){const f=e.target.files[0];if(f)processExcel(f);}
+
+function processExcel(file){
+  const status=document.getElementById("uploadStatus");
+  status.style.display="none";
+  document.getElementById("previewWrap").style.display="none";
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const ext=file.name.split('.').pop().toLowerCase();
+      let rows=[];
+      if(ext==='csv'){
+        const text=new TextDecoder().decode(ev.target.result);
+        const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+        const headers=lines[0].split(',').map(h=>h.trim().toLowerCase());
+        for(let i=1;i<lines.length;i++){
+          const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+          const obj={};headers.forEach((h,j)=>{obj[h]=cols[j]||'';});rows.push(obj);
+        }
+      } else {
+        const wb=XLSX.read(ev.target.result,{type:'array'});
+        rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+      }
+      const get=(r,...keys)=>{
+        for(const k of keys){
+          const m=Object.keys(r).find(rk=>rk.toLowerCase().replace(/[\s_]/g,'')===k.toLowerCase().replace(/[\s_]/g,''));
+          if(m&&r[m]!=='')return String(r[m]).trim();
+        }return'';
+      };
+      pendingUpload=rows.map(r=>({
+        roll:get(r,'roll','rollno','rollnumber'),
+        name:get(r,'name','studentname','fullname'),
+        gpa:get(r,'gpa','cgpa','grade'),
+        father:get(r,'father','fathername'),
+        mobile:get(r,'mobile','phone'),
+        session:get(r,'session','year'),
+        technology:get(r,'technology','tech','department'),
+        semester:get(r,'semester','sem')
+      })).filter(s=>s.roll||s.name);
+      if(!pendingUpload.length) throw new Error("No valid data found.");
+      showPreview(file.name,pendingUpload);
+    } catch(err){
+      status.className='err';status.textContent='❌ '+err.message;status.style.display='block';
+      pendingUpload=null;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function showPreview(filename,rows){
+  document.getElementById("previewTitle").textContent='📄 '+filename;
+  document.getElementById("previewCount").textContent=rows.length+' records';
+  const preview=rows.slice(0,8);
+  let html=`<thead><tr><th>Roll</th><th>Name</th><th>GPA</th><th>Tech</th><th>Sem</th></tr></thead><tbody>`;
+  preview.forEach(r=>{
+    html+=`<tr><td class="mono">${r.roll||'—'}</td><td>${r.name||'—'}</td><td>${r.gpa||'—'}</td><td>${r.technology||'—'}</td><td>${r.semester||'—'}</td></tr>`;
+  });
+  if(rows.length>8) html+=`<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:8px;font-size:11px">… +${rows.length-8} more</td></tr>`;
+  html+='</tbody>';
+  document.getElementById("previewTable").innerHTML=html;
+  document.getElementById("previewWrap").style.display="block";
+}
+function cancelPreview(){
+  document.getElementById("previewWrap").style.display="none";
+  pendingUpload=null;document.getElementById("fileInput").value="";
+}
+function confirmUpload(){
+  if(!pendingUpload||!pendingUpload.length)return;
+  const btn=document.getElementById("confirmUploadBtn");
+  btn.textContent="…";btn.disabled=true;
+  const updates={};
+  pendingUpload.forEach(s=>{
+    const key=s.roll?String(s.roll).replace(/[.#$/[\]\s]/g,'_'):"no_roll_"+Math.random().toString(36).substr(2,9);
+    updates[key]=s;
+  });
+  studentsRef.update(updates).then(()=>{
+    const st=document.getElementById("uploadStatus");
+    st.className='ok';st.textContent=`✅ ${pendingUpload.length} students saved.`;st.style.display='block';
+    document.getElementById("previewWrap").style.display="none";
+    pendingUpload=null;document.getElementById("fileInput").value="";
+    btn.textContent="✅ Save";btn.disabled=false;
+    toast("success",`${pendingUpload?pendingUpload.length:''} ✅`);
+  }).catch(err=>{
+    const st=document.getElementById("uploadStatus");
+    st.className='err';st.textContent='❌ '+err.message;st.style.display='block';
+    btn.textContent="✅ Save";btn.disabled=false;
+  });
+}
+function downloadTemplate(){
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([
+    ["roll","name","gpa","father","mobile","session","technology","semester"],
+    ["213641","STUDENT NAME","3.50","FATHER NAME","01700000000","2023-24","Food Technology","2nd"]
+  ]);
+  ws['!cols']=[{wch:10},{wch:30},{wch:8},{wch:25},{wch:14},{wch:10},{wch:25},{wch:8}];
+  XLSX.utils.book_append_sheet(wb,ws,"Students");
+  XLSX.writeFile(wb,"student_template.xlsx");
+}
+function exportStudentsExcel(){
+  const data=students.map(s=>({roll:s.roll||'',name:s.name||'',gpa:s.gpa||'',father:s.father||'',mobile:s.mobile||'',session:s.session||'',technology:s.technology||'',semester:s.semester||''}));
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Students");
+  XLSX.writeFile(wb,`CPI_Students_${Date.now()}.xlsx`);
+  toast("success","Excel exported ✅");
+}
+
+/* ═════════════════════════════════════════════
+   SUMMARY + MANAGE TABLE
+═════════════════════════════════════════════ */
+function renderSummary(){
+  const bar=document.getElementById("summaryBar");
+  if(!students.length){bar.innerHTML='<span style="font-size:12px;color:var(--ink3)">No data</span>';return}
+  const counts={};
+  students.forEach(s=>{const sem=s.semester||"unk";counts[sem]=(counts[sem]||0)+1;});
+  bar.innerHTML=Object.entries(counts).sort().map(([sem,n])=>
+    `<span class="sum-chip">${semName(sem)}: ${n}</span>`).join('');
+}
+
+function renderManageTable(){
+  const tech=document.getElementById("filterTech").value;
+  const sem=document.getElementById("filterSem").value;
+  const q=(document.getElementById("searchInput")?document.getElementById("searchInput").value||"":"").toLowerCase().trim();
+  const list=students.filter(s=>
+    (!tech||s.technology===tech)&&(!sem||s.semester===sem)&&
+    (!q||(s.name||"").toLowerCase().includes(q)||(s.roll||"").toLowerCase().includes(q))
+  ).sort((a,b)=>parseInt(a.roll)-parseInt(b.roll));
+
+  document.getElementById("manageBadge").textContent=
+    `Total ${students.length} · Showing ${list.length}`;
+
+  if(!list.length){
+    document.getElementById("manageTable").innerHTML='<div class="tbl-empty">No data</div>';
+    return;
+  }
+  let html=`<table class="mtable"><thead><tr>
+    <th><input type="checkbox" class="cb" id="selAll" onchange="toggleSelectAll(this)"></th>
+    <th>#</th><th>Roll</th><th>Name</th><th>GPA</th><th>Tech</th><th>Sem</th><th>Action</th>
+  </tr></thead><tbody>`;
+  list.forEach((s,i)=>{
+    const sJson=JSON.stringify(s).replace(/'/g,"&#39;");
+    const checked=selectedIds.has(s.id)?"checked":"";
+    const selCls=selectedIds.has(s.id)?"selected":"";
+    html+=`<tr class="${selCls}">
+      <td><input type="checkbox" class="cb" ${checked} onchange="toggleSelect('${s.id}',this)"></td>
+      <td style="color:var(--ink3);font-size:11px">${i+1}</td>
+      <td class="mono">${s.roll||'—'}</td>
+      <td>${s.name||'—'}</td>
+      <td>${s.gpa||'—'}</td>
+      <td><span class="badge-tech">${techName(s.technology)||'—'}</span></td>
+      <td><span class="badge-sem">${semName(s.semester)||'—'}</span></td>
+      <td><div style="display:flex;gap:5px">
+        <button onclick='openEditModal(${sJson})' class="btn btn-xs" style="background:var(--blue-bg);color:var(--blue)">✏️</button>
+        <button onclick="deleteStudent('${s.id}')" class="btn btn-xs btn-danger">🗑️</button>
+      </div></td>
+    </tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById("manageTable").innerHTML=html;
+  updateBulkBar();
+}
+function toggleSelect(id,cb){
+  if(cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+  cb.closest("tr").classList.toggle("selected",cb.checked);
+  updateBulkBar();
+}
+function toggleSelectAll(cb){
+  document.querySelectorAll("#manageTable tbody tr").forEach(tr=>{
+    const c=tr.querySelector("td input.cb");if(!c)return;
+    c.checked=cb.checked;
+    const id=c.getAttribute("onchange").match(/'([^']+)'/)[1];
+    if(cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+    tr.classList.toggle("selected",cb.checked);
+  });
+  updateBulkBar();
+}
+function clearSelection(){selectedIds.clear();renderManageTable();}
+function updateBulkBar(){
+  const n=selectedIds.size;
+  const bar=document.getElementById("bulkBar");
+  bar.classList.toggle("active",n>0);
+  document.getElementById("bulkInfo").textContent=`${n} selected`;
+}
+
+function deleteStudent(id){
+  if(!confirm("Delete this student?"))return;
+  studentsRef.child(id).remove().then(()=>toast("success","Deleted")).catch(e=>toast("error",e.message));
+}
+function clearAllStudents(){
+  if(!confirm("Delete ALL students permanently?\nThis cannot be undone!"))return;
+  studentsRef.remove().then(()=>toast("success","All cleared")).catch(e=>toast("error",e.message));
+}
+function bulkDelete(){
+  if(!selectedIds.size)return;
+  if(!confirm(`Delete ${selectedIds.size} students?`))return;
+  const updates={};selectedIds.forEach(id=>updates[id]=null);
+  studentsRef.update(updates).then(()=>{selectedIds.clear();toast("success","Bulk deleted");});
+}
+function bulkEdit(){
+  if(!selectedIds.size)return;
+  document.getElementById("bulkCount").textContent=selectedIds.size;
+  document.getElementById("bulkTech").value="";
+  document.getElementById("bulkSem").value="";
+  document.getElementById("bulkSession").value="";
+  document.getElementById("bulkModal").classList.add("open");
+}
+function closeBulkModal(){document.getElementById("bulkModal").classList.remove("open");}
+function applyBulkEdit(){
+  const tech=document.getElementById("bulkTech").value;
+  const sem=document.getElementById("bulkSem").value;
+  const sess=document.getElementById("bulkSession").value.trim();
+  if(!tech&&!sem&&!sess){toast("warn","Nothing to update");return;}
+  const updates={};
+  selectedIds.forEach(id=>{
+    if(tech)updates[`${id}/technology`]=tech;
+    if(sem)updates[`${id}/semester`]=sem;
+    if(sess)updates[`${id}/session`]=sess;
+  });
+  studentsRef.update(updates).then(()=>{
+    closeBulkModal();selectedIds.clear();toast("success","Bulk updated ✅");
+  }).catch(e=>toast("error",e.message));
+}
+
+/* ═════════════════════════════════════════════
+   EDIT / ADD
+═════════════════════════════════════════════ */
+function openAddModal(){
+  document.getElementById("editModalTitle").textContent="➕ Add Student";
+  document.getElementById("editId").value="";
+  ["editRoll","editName","editGpa","editFather","editMobile","editSession"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("editTech").value="";document.getElementById("editSem").value="";
+  document.getElementById("editModal").classList.add("open");
+}
+function openEditModal(s){
+  document.getElementById("editModalTitle").textContent="✏️ Edit Student";
+  document.getElementById("editId").value=s.id;
+  document.getElementById("editRoll").value=s.roll||'';
+  document.getElementById("editName").value=s.name||'';
+  document.getElementById("editGpa").value=s.gpa||'';
+  document.getElementById("editFather").value=s.father||'';
+  document.getElementById("editMobile").value=s.mobile||'';
+  document.getElementById("editSession").value=s.session||'';
+  document.getElementById("editTech").value=s.technology||'';
+  document.getElementById("editSem").value=s.semester||'';
+  document.getElementById("editModal").classList.add("open");
+}
+function closeEditModal(){document.getElementById("editModal").classList.remove("open")}
+document.getElementById("editModal").addEventListener("click",function(e){if(e.target===this)closeEditModal()});
+document.getElementById("bulkModal").addEventListener("click",function(e){if(e.target===this)closeBulkModal()});
+
+function saveEdit(){
+  const id=document.getElementById("editId").value;
+  const data={
+    roll:document.getElementById("editRoll").value.trim(),
+    name:document.getElementById("editName").value.trim(),
+    gpa:document.getElementById("editGpa").value.trim(),
+    father:document.getElementById("editFather").value.trim(),
+    mobile:document.getElementById("editMobile").value.trim(),
+    session:document.getElementById("editSession").value.trim(),
+    technology:document.getElementById("editTech").value,
+    semester:document.getElementById("editSem").value
+  };
+  if(!data.name||!data.technology||!data.semester){toast("warn","Name, tech & sem required");return;}
+  const promise=id?studentsRef.child(id).update(data)
+    :studentsRef.child(data.roll?data.roll.replace(/[.#$/[\]\s]/g,'_'):"r_"+Date.now()).set(data);
+  promise.then(()=>{closeEditModal();toast("success","Saved ✅");}).catch(e=>toast("error",e.message));
+}
+
+/* ═════════════════════════════════════════════
+   SIGNATURES
+═════════════════════════════════════════════ */
+function renderSignatureSettings(){
+  const list=document.getElementById("sigList");
+  list.innerHTML="";
+  signatures.forEach((s,i)=>{
+    const div=document.createElement("div");
+    div.className="sig-row";
+    div.innerHTML=`
+      <input type="checkbox" class="cb" ${s.enabled?'checked':''} onchange="signatures[${i}].enabled=this.checked">
+      <input type="text" value="${(s.label||'').replace(/"/g,'&quot;')}" placeholder="Label" oninput="signatures[${i}].label=this.value">
+      <button class="del-sig" onclick="signatures.splice(${i},1);renderSignatureSettings()">🗑️</button>`;
+    list.appendChild(div);
+  });
+}
+function addSignature(){signatures.push({label:"",enabled:true});renderSignatureSettings();}
+function saveSignatures(){
+  const clean=signatures.filter(s=>s.label.trim());
+  signatures=clean.length?clean:signatures;
+  settingsRef.child("signatures").set(signatures).then(()=>{
+    toast("success","Signatures saved ✅");renderSignatureSettings();
+  }).catch(e=>toast("error",e.message));
+}
+
+/* ═════════════════════════════════════════════
+   PASSCODE CHANGE
+═════════════════════════════════════════════ */
+function changePasscode(){
+  const np=document.getElementById("newPasscode").value.trim();
+  if(np.length<4){toast("warn","Min 4 chars");return;}
+  if(!confirm("Change passcode?"))return;
+  settingsRef.child("passcode").set(np).then(()=>{
+    savedPasscode=np;
+    document.getElementById("newPasscode").value="";
+    toast("success","Passcode changed ✅");
+  }).catch(e=>toast("error",e.message));
+}
+
+/* ═════════════════════════════════════════════
+   ATTENDANCE TRACKER
+═════════════════════════════════════════════ */
+function renderTracker(){
+  const date=document.getElementById("trackDate").value;
+  const tech=document.getElementById("trackTech").value;
+  const sem=document.getElementById("trackSem").value;
+  const body=document.getElementById("trackerBody");
+  if(!date||!tech||!sem){body.innerHTML='<div class="tbl-empty">'+(currentLang==='bn'?'তারিখ, টেকনোলজি ও সেমিস্টার নির্বাচন করুন':'Select date, tech & sem')+'</div>';return;}
+  const list=students.filter(s=>s.technology===tech&&s.semester===sem).sort((a,b)=>parseInt(a.roll)-parseInt(b.roll));
+  if(!list.length){body.innerHTML='<div class="tbl-empty">No students</div>';return;}
+  attendanceRef.child(`${date}/${tech.replace(/\s/g,'_')}/${sem}`).once("value").then(snap=>{
+    const att=snap.val()||{};
+    let html=`<table class="daily-table"><thead><tr><th>#</th><th>Roll</th><th>Name</th><th>Status</th></tr></thead><tbody>`;
+    list.forEach((s,i)=>{
+      const cur=att[s.roll]||'';
+      html+=`<tr>
+        <td>${i+1}</td>
+        <td class="mono">${s.roll}</td>
+        <td>${s.name}</td>
+        <td>
+          <button class="attend-btn p ${cur==='P'?'active':''}" onclick="markAttend('${date}','${tech}','${sem}','${s.roll}','P',this)">P</button>
+          <button class="attend-btn a ${cur==='A'?'active':''}" onclick="markAttend('${date}','${tech}','${sem}','${s.roll}','A',this)">A</button>
+          <button class="attend-btn l ${cur==='L'?'active':''}" onclick="markAttend('${date}','${tech}','${sem}','${s.roll}','L',this)">L</button>
+        </td>
+      </tr>`;
+    });
+    html+='</tbody></table>';
+    body.innerHTML=html;
+  });
+}
+function markAttend(date,tech,sem,roll,status,btn){
+  attendanceRef.child(`${date}/${tech.replace(/\s/g,'_')}/${sem}/${roll}`).set(status).then(()=>{
+    btn.parentElement.querySelectorAll(".attend-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+}
+function markAllPresent(){
+  const date=document.getElementById("trackDate").value;
+  const tech=document.getElementById("trackTech").value;
+  const sem=document.getElementById("trackSem").value;
+  if(!date||!tech||!sem)return;
+  const list=students.filter(s=>s.technology===tech&&s.semester===sem);
+  const updates={};list.forEach(s=>{updates[s.roll]='P';});
+  attendanceRef.child(`${date}/${tech.replace(/\s/g,'_')}/${sem}`).update(updates).then(()=>{
+    renderTracker();toast("success","All marked present ✅");
+  });
+}
+
+function generateRangeReport(){
+  const start=document.getElementById("rangeStart").value;
+  const end=document.getElementById("rangeEnd").value;
+  const tech=document.getElementById("trackTech").value;
+  const sem=document.getElementById("trackSem").value;
+  if(!start||!end||!tech||!sem){toast("warn","Select date range, tech & sem");return;}
+  const list=students.filter(s=>s.technology===tech&&s.semester===sem);
+  if(!list.length){toast("warn","No students");return;}
+  toast("info","Loading…");
+  attendanceRef.once("value").then(snap=>{
+    const all=snap.val()||{};
+    const dates=Object.keys(all).filter(d=>d>=start&&d<=end).sort();
+    const stats={};list.forEach(s=>{stats[s.roll]={P:0,A:0,L:0,total:0};});
+    dates.forEach(d=>{
+      const dayData=(all[d]&&all[d][tech.replace(/\s/g,'_')]&&all[d][tech.replace(/\s/g,'_')][sem])||{};
+      list.forEach(s=>{
+        const v=dayData[s.roll];
+        if(v){stats[s.roll][v]++;stats[s.roll].total++;}
+      });
+    });
+    // download as Excel
+    const data=list.map(s=>{
+      const st=stats[s.roll];
+      const pct=st.total?((st.P/st.total)*100).toFixed(1)+'%':'—';
+      return {Roll:s.roll,Name:s.name,Present:st.P,Absent:st.A,Leave:st.L,Total:st.total,'Attendance %':pct};
+    });
+    const ws=XLSX.utils.json_to_sheet(data);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Report");
+    XLSX.writeFile(wb,`CPI_Attendance_${tech}_${sem}_${start}_to_${end}.xlsx`);
+    toast("success","Report downloaded ✅");
+  });
+}
+
+/* ═════════════════════════════════════════════
+   DASHBOARD CHARTS
+═════════════════════════════════════════════ */
+let chartInstances={};
+function renderCharts(){
+  Object.values(chartInstances).forEach(c=>c&&c.destroy());
+  const isDark=currentTheme==='dark';
+  const tColor=isDark?'#cbd5e1':'#374151';
+  const gColor=isDark?'#1e293b':'#e5e7eb';
+  Chart.defaults.color=tColor;
+  Chart.defaults.borderColor=gColor;
+  Chart.defaults.font.family=currentLang==='bn'?"'Tiro Bangla',serif":"'Inter',sans-serif";
+
+  // Tech chart
+  const techCount={};
+  students.forEach(s=>{if(s.technology)techCount[s.technology]=(techCount[s.technology]||0)+1;});
+  chartInstances.tech=new Chart(document.getElementById("chartTech"),{
+    type:'doughnut',
+    data:{labels:Object.keys(techCount).map(t=>techName(t)),
+      datasets:[{data:Object.values(techCount),backgroundColor:['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4'],borderWidth:2,borderColor:isDark?'#0a0e1a':'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:11}}}}}
+  });
+
+  // Sem chart
+  const semCount={};
+  students.forEach(s=>{if(s.semester)semCount[s.semester]=(semCount[s.semester]||0)+1;});
+  const semOrder=['1st','2nd','3rd','4th','5th','6th','7th','8th'];
+  chartInstances.sem=new Chart(document.getElementById("chartSem"),{
+    type:'bar',
+    data:{labels:semOrder.filter(s=>semCount[s]).map(s=>semName(s)),
+      datasets:[{label:'Students',data:semOrder.filter(s=>semCount[s]).map(s=>semCount[s]),backgroundColor:'#3b82f6',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  // GPA chart
+  const buckets={"<2.0":0,"2.0-2.5":0,"2.5-3.0":0,"3.0-3.5":0,"3.5-4.0":0};
+  students.forEach(s=>{
+    const g=parseFloat(s.gpa);if(isNaN(g))return;
+    if(g<2.0)buckets["<2.0"]++;else if(g<2.5)buckets["2.0-2.5"]++;
+    else if(g<3.0)buckets["2.5-3.0"]++;else if(g<3.5)buckets["3.0-3.5"]++;
+    else buckets["3.5-4.0"]++;
+  });
+  chartInstances.gpa=new Chart(document.getElementById("chartGpa"),{
+    type:'bar',
+    data:{labels:Object.keys(buckets),
+      datasets:[{label:'Students',data:Object.values(buckets),backgroundColor:['#ef4444','#f59e0b','#3b82f6','#10b981','#8b5cf6'],borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  // Attendance trend
+  attendanceRef.once("value").then(snap=>{
+    const data=snap.val()||{};
+    const today=new Date();
+    const labels=[],values=[];
+    for(let i=29;i>=0;i--){
+      const d=new Date(today);d.setDate(d.getDate()-i);
+      const ds=d.toISOString().split("T")[0];
+      labels.push(ds.slice(5));
+      let p=0,total=0;
+      const dayData=data[ds]||{};
+      Object.values(dayData).forEach(tD=>Object.values(tD).forEach(sD=>Object.values(sD).forEach(v=>{
+        if(v==='P')p++;total++;
+      })));
+      values.push(total?Math.round(p/total*100):0);
+    }
+    chartInstances.attend=new Chart(document.getElementById("chartAttend"),{
+      type:'line',
+      data:{labels,datasets:[{label:'Attendance %',data:values,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.3,borderWidth:2,pointRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}
+    });
+  });
+}
+
+/* ═════════════════════════════════════════════
+   TOAST
+═════════════════════════════════════════════ */
+function toast(type,msg){
+  const wrap=document.getElementById("toastWrap");
+  const t=document.createElement("div");
+  t.className="toast "+(type||'');
+  const icons={success:'✅',error:'❌',warn:'⚠️',info:'ℹ️'};
+  t.innerHTML=`<span style="font-size:16px">${icons[type]||'ℹ️'}</span><div>${msg}</div>`;
+  wrap.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transform="translateX(20px)";t.style.transition=".3s";setTimeout(()=>t.remove(),300);},3000);
+}
+
+/* ═════════════════════════════════════════════
+   PWA
+═════════════════════════════════════════════ */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById("installBtn").style.display="inline-flex";
+  document.getElementById("pwaStatus").textContent="ℹ️ App can be installed on this device";
+});
+function installPWA(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(c=>{
+    if(c.outcome==='accepted'){toast("success","App installed ✅");document.getElementById("installBtn").style.display="none";}
+    deferredPrompt=null;
+  });
+}
+// Service worker (inline data URL won't cache, but we register basic SW for offline shell)
+if('serviceWorker' in navigator){
+  const swCode=`
+    const CACHE='cpi-v2';
+    self.addEventListener('install',e=>self.skipWaiting());
+    self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+    self.addEventListener('fetch',e=>{
+      if(e.request.method!=='GET')return;
+      e.respondWith(caches.open(CACHE).then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(resp=>{c.put(e.request,resp.clone());return resp;}).catch(()=>r))));
+    });`;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).then(()=>{
+    document.getElementById("pwaStatus").textContent="✅ Offline mode enabled";
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>
