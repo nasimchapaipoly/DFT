@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>CPI — চাঁপাইনবাবগঞ্জ পলিটেকনিক</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root{
+  --ink:#0c1220; --ink2:#1a2540; --ink3:#2e3f5c; --ink4:#4a5f7a; --ink5:#6b7f99;
+  --ink6:#8fa4bb; --ink7:#b8cad8; --ink8:#d8e6f0; --ink9:#edf4fa; --ink10:#f6fafd;
+  --blue:#1e5fd4; --blue-h:#1548b0; --blue-s:#4d86f0; --blue-bg:#eaf2ff; --blue-lt:#c0d9ff;
+  --green:#0f9b5a; --green-bg:#e6f9f1; --green-lt:#a3e6c8;
+  --red:#d42b2b; --red-bg:#fdf0f0; --red-lt:#f5b8b8;
+  --amber:#c97d0a; --amber-bg:#fdf7e6; --amber-lt:#f5d88a;
+  --purple:#6b32d4; --purple-bg:#f3eeff; --purple-lt:#ceb8f5;
+  --teal:#0a8a7a; --teal-bg:#e4f9f6; --teal-lt:#8ae0d4;
+  --sidebar-w:248px; --topbar-h:56px; --botbar-h:60px;
+  --r:14px; --r-sm:9px; --r-xs:5px;
+  --surface:#ffffff; --bg:#eef3fa;
+  --shadow-xs:0 1px 2px rgba(12,18,32,.05);
+  --shadow-sm:0 2px 8px rgba(12,18,32,.07),0 1px 3px rgba(12,18,32,.05);
+  --shadow:0 4px 16px rgba(12,18,32,.10),0 2px 6px rgba(12,18,32,.06);
+  --shadow-md:0 8px 28px rgba(12,18,32,.12),0 3px 8px rgba(12,18,32,.07);
+  --shadow-lg:0 16px 48px rgba(12,18,32,.15),0 6px 14px rgba(12,18,32,.08);
+  --shadow-xl:0 28px 72px rgba(12,18,32,.22);
+  --tr:.17s cubic-bezier(.4,0,.2,1);
+  --font:'Tiro Bangla',Georgia,serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ═══════════════════════════════════════
+   ULTRA PREMIUM LOGIN UI
+   Cyberpunk + Apple Glass + Fluent
+═══════════════════════════════════════ */
+
+#lock{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at top left,#10203f 0%,transparent 35%),
+    radial-gradient(circle at bottom right,#26114a 0%,transparent 35%),
+    linear-gradient(135deg,#050816,#0c1220 45%,#090f1f 100%);
+}
+
+/* animated gradient fog */
+#lock::before{
+  content:'';
+  position:absolute;
+  inset:-20%;
+
+  background:
+    radial-gradient(circle at 20% 30%,rgba(0,140,255,.18),transparent 28%),
+    radial-gradient(circle at 80% 70%,rgba(168,85,247,.16),transparent 30%),
+    radial-gradient(circle at 60% 20%,rgba(0,255,170,.10),transparent 22%);
+
+  filter:blur(50px);
+
+  animation:ambientMove 18s ease-in-out infinite alternate;
+}
+
+/* cursor spotlight */
+#lock::after{
+  content:'';
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at var(--mx,50%) var(--my,50%),
+      rgba(255,255,255,.07),
+      transparent 240px
+    );
+
+  pointer-events:none;
+}
+
+@keyframes ambientMove{
+  0%{
+    transform:translate(-20px,-10px) scale(1);
+  }
+
+  100%{
+    transform:translate(20px,20px) scale(1.08);
+  }
+}
+
+/* floating neon orbs */
+.l-orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(70px);
+  mix-blend-mode:screen;
+  pointer-events:none;
+}
+
+.l-orb:nth-child(1){
+  width:380px;
+  height:380px;
+
+  background:rgba(0,140,255,.20);
+
+  top:-100px;
+  left:-80px;
+
+  animation:floatOrb 12s ease-in-out infinite;
+}
+
+.l-orb:nth-child(2){
+  width:300px;
+  height:300px;
+
+  background:rgba(168,85,247,.16);
+
+  bottom:-100px;
+  right:-80px;
+
+  animation:floatOrb 16s ease-in-out infinite reverse;
+}
+
+.l-orb:nth-child(3){
+  width:220px;
+  height:220px;
+
+  background:rgba(0,255,170,.10);
+
+  top:40%;
+  right:20%;
+
+  animation:floatOrb 10s ease-in-out infinite;
+}
+
+@keyframes floatOrb{
+  0%,100%{
+    transform:translate(0,0) scale(1);
+  }
+
+  50%{
+    transform:translate(30px,-25px) scale(1.08);
+  }
+}
+
+/* glass card */
+.l-card{
+  position:relative;
+  z-index:5;
+
+  width:420px;
+  max-width:92vw;
+
+  padding:48px 42px 40px;
+
+  border-radius:30px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.10),
+      rgba(255,255,255,.03)
+    );
+
+  border:1px solid rgba(255,255,255,.12);
+
+  backdrop-filter:
+    blur(40px)
+    saturate(180%);
+
+  -webkit-backdrop-filter:
+    blur(40px)
+    saturate(180%);
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.04) inset,
+    0 20px 80px rgba(0,0,0,.65),
+    0 0 60px rgba(0,140,255,.12);
+
+  overflow:hidden;
+
+  animation:cardEnter .7s cubic-bezier(.22,.68,0,1.15);
+}
+
+/* glowing border */
+.l-card::before{
+  content:'';
+
+  position:absolute;
+  inset:0;
+
+  border-radius:30px;
+  padding:1px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0,140,255,.7),
+      rgba(168,85,247,.5),
+      rgba(0,255,170,.3)
+    );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+
+  pointer-events:none;
+}
+
+@keyframes cardEnter{
+  from{
+    opacity:0;
+    transform:
+      translateY(40px)
+      scale(.94);
+  }
+
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+/* badge */
+.l-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+
+  padding:5px 14px;
+
+  border-radius:999px;
+
+  background:rgba(0,140,255,.14);
+
+  border:1px solid rgba(0,140,255,.24);
+
+  color:#8fc8ff;
+
+  font-size:10px;
+  font-weight:700;
+
+  letter-spacing:1px;
+  text-transform:uppercase;
+
+  margin-bottom:22px;
+}
+
+/* logo ring */
+.l-ring-wrap{
+  position:relative;
+
+  width:88px;
+  height:88px;
+
+  margin:0 auto 18px;
+}
+
+.l-ring{
+  position:absolute;
+  inset:0;
+
+  border-radius:50%;
+
+  border:1px solid rgba(0,140,255,.24);
+
+  animation:ringPulse 2.8s linear infinite;
+}
+
+.l-ring:nth-child(2){
+  animation-delay:.8s;
+}
+
+.l-ring:nth-child(3){
+  animation-delay:1.5s;
+}
+
+@keyframes ringPulse{
+  0%{
+    transform:scale(1);
+    opacity:.7;
+  }
+
+  100%{
+    transform:scale(2.4);
+    opacity:0;
+  }
+}
+
+.l-core{
+  position:relative;
+  z-index:2;
+
+  width:76px;
+  height:76px;
+
+  margin:auto;
+
+  border-radius:24px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0078ff,
+      #5b5dff
+    );
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:34px;
+
+  box-shadow:
+    0 10px 35px rgba(0,120,255,.45),
+    0 0 20px rgba(0,120,255,.35);
+}
+
+/* title */
+.l-title{
+  color:#fff;
+
+  font-size:28px;
+  font-weight:700;
+
+  letter-spacing:.3px;
+
+  margin-bottom:5px;
+
+  text-shadow:
+    0 3px 16px rgba(0,0,0,.35);
+}
+
+.l-sub{
+  color:#7e91b0;
+
+  font-size:13px;
+
+  line-height:1.8;
+
+  margin-bottom:30px;
+}
+
+/* label */
+.l-lbl{
+  display:block;
+
+  text-align:left;
+
+  margin-bottom:8px;
+
+  color:#7d8ea9;
+
+  font-size:10px;
+  font-weight:700;
+
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+/* input */
+.l-inp-wrap{
+  position:relative;
+  margin-bottom:15px;
+}
+
+#l-inp{
+  width:100%;
+  height:58px;
+
+  padding:0 56px 0 18px;
+
+  border-radius:16px;
+
+  border:1px solid rgba(255,255,255,.10);
+
+  background:rgba(255,255,255,.06);
+
+  color:#fff;
+
+  font-size:16px;
+
+  letter-spacing:3px;
+
+  outline:none;
+
+  transition:.25s ease;
+
+  font-family:var(--font);
+}
+
+#l-inp::placeholder{
+  color:#51637d;
+  letter-spacing:0;
+}
+
+#l-inp:focus{
+  border-color:#3b82f6;
+
+  background:rgba(255,255,255,.10);
+
+  box-shadow:
+    0 0 0 4px rgba(59,130,246,.10),
+    0 0 25px rgba(59,130,246,.22);
+
+  transform:translateY(-1px);
+}
+
+/* eye */
+.l-eye{
+  position:absolute;
+
+  top:50%;
+  right:16px;
+
+  transform:translateY(-50%);
+
+  background:none;
+  border:none;
+
+  color:#7388a8;
+
+  font-size:20px;
+
+  cursor:pointer;
+
+  transition:.2s ease;
+}
+
+.l-eye:hover{
+  color:#fff;
+}
+
+/* button */
+.l-btn{
+  width:100%;
+  height:56px;
+
+  border:none;
+  border-radius:16px;
+
+  cursor:pointer;
+
+  color:white;
+
+  font-size:15px;
+  font-weight:700;
+
+  font-family:var(--font);
+
+  background:
+    linear-gradient(
+      135deg,
+      #0078ff,
+      #4f46e5
+    );
+
+  transition:.25s ease;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  box-shadow:
+    0 12px 30px rgba(0,120,255,.35);
+}
+
+.l-btn:hover{
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 18px 40px rgba(0,120,255,.45),
+    0 0 22px rgba(0,120,255,.25);
+}
+
+.l-btn:active{
+  transform:scale(.98);
+}
+
+/* spinner */
+.l-spin{
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  border:2px solid rgba(255,255,255,.30);
+  border-top-color:#fff;
+
+  animation:spin .6s linear infinite;
+
+  display:none;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+/* status */
+.l-stat{
+  margin-top:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  font-size:11px;
+
+  color:#70839f;
+}
+
+.l-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+}
+
+.l-dot.loading{
+  background:#ffb020;
+  animation:pulse 1s infinite;
+}
+
+.l-dot.ok{
+  background:#00d26a;
+  animation:pulse 2s infinite;
+}
+
+.l-dot.err{
+  background:#ff4b4b;
+}
+
+@keyframes pulse{
+  0%,100%{
+    opacity:1;
+  }
+
+  50%{
+    opacity:.25;
+  }
+}
+
+/* footer */
+.l-footer{
+  margin-top:18px;
+
+  font-size:10px;
+
+  color:#4d607d;
+}
+
+/* error */
+#l-err{
+  display:none;
+
+  margin-bottom:12px;
+
+  padding:11px 14px;
+
+  border-radius:12px;
+
+  background:rgba(255,80,80,.10);
+
+  border:1px solid rgba(255,80,80,.20);
+
+  color:#ff8f8f;
+
+  text-align:left;
+
+  font-size:12px;
+}
+
+/* shake */
+@keyframes shake{
+  0%,100%{
+    transform:translateX(0);
+  }
+
+  20%{
+    transform:translateX(-8px);
+  }
+
+  40%{
+    transform:translateX(8px);
+  }
+
+  60%{
+    transform:translateX(-5px);
+  }
+
+  80%{
+    transform:translateX(5px);
+  }
+}
+
+.shake{
+  animation:shake .4s ease;
+}
+
+/* mobile */
+@media(max-width:480px){
+
+  .l-card{
+    padding:34px 24px;
+    border-radius:24px;
+  }
+
+  .l-title{
+    font-size:22px;
+  }
+
+  .l-sub{
+    font-size:12px;
+  }
+
+  #l-inp{
+    height:52px;
+    font-size:15px;
+  }
+
+  .l-btn{
+    height:52px;
+    font-size:14px;
+  }
+
+}}
+
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
+#app{display:none;min-height:100vh}
+
+/* ── Sidebar ── */
+#sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;z-index:300;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,var(--ink) 0%,#121d35 100%);
+  box-shadow:2px 0 20px rgba(12,18,32,.25),4px 0 40px rgba(12,18,32,.12);
+  transition:transform var(--tr)
+}
+.sb-top{padding:20px 18px 15px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-brand{display:flex;align-items:center;gap:11px}
+.sb-logo{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(145deg,#2563eb,#1645c4);
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+  box-shadow:0 4px 14px rgba(30,95,212,.45)
+}
+.sb-name{font-size:13.5px;font-weight:700;color:#dce8ff;line-height:1.3}
+.sb-name small{display:block;font-size:9.5px;color:#3d5070;font-weight:400;margin-top:1px;letter-spacing:.2px}
+.sb-live{display:flex;align-items:center;gap:5px;margin-top:11px;font-size:10.5px;color:#2a3d58}
+.sb-live-dot{width:6px;height:6px;border-radius:50%;background:#18c47a;animation:pulse 2.5s infinite;flex-shrink:0}
+
+.sb-scroll{flex:1;overflow-y:auto;padding:10px 10px;scrollbar-width:none}
+.sb-scroll::-webkit-scrollbar{display:none}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1e2e45;padding:12px 8px 5px;display:block}
+.nb{
+  display:flex;align-items:center;gap:10px;width:100%;padding:10px 10px;
+  border:none;background:transparent;cursor:pointer;
+  border-radius:var(--r-sm);font-family:var(--font);font-size:13.5px;font-weight:600;
+  color:#3d5070;transition:var(--tr);text-align:left;margin-bottom:2px;
+  position:relative
+}
+.nb:hover{background:rgba(255,255,255,.06);color:#8fb0d0}
+.nb.active{
+  background:linear-gradient(90deg,rgba(30,95,212,.22),rgba(30,95,212,.08));
+  color:#93b8f5;
+  border-left:2.5px solid #2563eb;
+  padding-left:calc(10px - 2.5px)
+}
+.nb.active .nb-ico{background:#1e5fd4;box-shadow:0 3px 10px rgba(30,95,212,.4)}
+.nb-ico{
+  width:33px;height:33px;border-radius:9px;
+  background:rgba(255,255,255,.05);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;transition:var(--tr)
+}
+.nb-badge{
+  margin-left:auto;background:rgba(30,95,212,.28);color:#7aa8e8;
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;
+  font-family:var(--mono)
+}
+
+.sb-bot{padding:12px 12px 18px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-logout{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:10px 11px;border:none;
+  background:rgba(212,43,43,.08);color:#e87878;
+  border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:600;
+  cursor:pointer;transition:var(--tr)
+}
+.sb-logout:hover{background:rgba(212,43,43,.16);color:#f59999}
+
+/* ── Main ── */
+#main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+  height:var(--topbar-h);background:var(--surface);
+  border-bottom:1px solid var(--ink9);
+  display:flex;align-items:center;padding:0 24px;gap:14px;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 1px 0 var(--ink8),var(--shadow-xs)
+}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:9px;flex:1}
+.tb-ico{font-size:21px;line-height:1}
+.prt-btn{
+  height:34px;padding:0 15px;border-radius:var(--r-sm);
+  border:1.5px solid var(--ink8);background:var(--surface);
+  color:var(--ink4);font-size:12.5px;font-family:var(--font);
+  cursor:pointer;font-weight:600;transition:var(--tr);
+  display:flex;align-items:center;gap:6px
+}
+.prt-btn:hover{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 2px 8px rgba(30,95,212,.3)}
+
+/* ── Mobile topbar ── */
+#m-top{
+  display:none;height:52px;
+  background:linear-gradient(135deg,var(--ink),#1a2540);
+  align-items:center;padding:0 15px;gap:11px;
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  box-shadow:0 2px 12px rgba(12,18,32,.3)
+}
+.m-menu{background:none;border:none;color:#8fb0d0;font-size:23px;cursor:pointer;padding:4px;line-height:1;transition:var(--tr)}
+.m-menu:hover{color:white}
+.m-brand{font-size:14px;font-weight:700;color:#dce8ff;flex:1}
+.m-brand small{display:block;font-size:9px;color:#3d5070;font-weight:400}
+
+/* ── Mobile bottom nav ── */
+#m-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:var(--surface);border-top:1px solid var(--ink8);
+  height:var(--botbar-h);
+  box-shadow:0 -4px 24px rgba(12,18,32,.10);
+  grid-template-columns:repeat(5,1fr)
+}
+.mn-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:none;background:none;cursor:pointer;
+  font-family:var(--font);font-size:9px;font-weight:700;color:var(--ink6);
+  padding:7px 2px;transition:var(--tr)
+}
+.mn-btn.active{color:var(--blue)}
+.mn-ico{font-size:20px;line-height:1}
+.mn-btn.active .mn-ico{
+  background:var(--blue-bg);border-radius:9px;padding:3px 10px;margin:-2px 0
+}
+
+/* ── Overlay ── */
+#sb-ov{display:none;position:fixed;inset:0;background:rgba(12,18,32,.6);z-index:400;backdrop-filter:blur(3px)}
+
+/* ── Page body ── */
+.page{flex:1;padding:22px 24px;overflow-y:auto}
+@media(min-width:768px){.page{max-height:calc(100vh - var(--topbar-h))}}
+
+/* ═══════════════════════════════════════
+   TABS
+═══════════════════════════════════════ */
+.tab-view{display:none;animation:fade-in .2s ease}
+.tab-view.active{display:block}
+@keyframes fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ═══════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.sc{
+  background:var(--surface);border:1px solid var(--ink9);
+  border-radius:var(--r);padding:17px 18px;
+  box-shadow:var(--shadow-xs);
+  display:flex;align-items:center;gap:13px;transition:var(--tr)
+}
+.sc:hover{box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.sc-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ico-b{background:linear-gradient(135deg,#dbeafe,#c0d9ff)}
+.ico-g{background:linear-gradient(135deg,#dcfce7,#a8f0c8)}
+.ico-a{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.ico-p{background:linear-gradient(135deg,#f3e8ff,#ddd6fe)}
+.sc-val{font-size:28px;font-weight:700;color:var(--ink);line-height:1;font-family:var(--mono)}
+.sc-lbl{font-size:11.5px;color:var(--ink5);margin-top:3px}
+
+/* ═══════════════════════════════════════
+   CARD COMPONENT
+═══════════════════════════════════════ */
+.card{
+  background:var(--surface);border:1px solid var(--ink9);
+  border-radius:var(--r);box-shadow:var(--shadow-sm);
+  overflow:hidden;margin-bottom:18px
+}
+.card-hd{
+  padding:14px 20px;border-bottom:1px solid var(--ink9);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(135deg,var(--surface),var(--ink10))
+}
+.card-title{font-size:14.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+.card-ico{font-size:20px}
+.card-bd{padding:20px}
+
+/* ═══════════════════════════════════════
+   FORM CONTROLS
+═══════════════════════════════════════ */
+.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fld:last-child{margin-bottom:0}
+.fld>label{font-size:9.5px;font-weight:700;color:var(--ink5);letter-spacing:.6px;text-transform:uppercase}
+.ctrl{
+  height:43px;border-radius:var(--r-sm);
+  border:1.5px solid var(--ink8);background:var(--ink10);
+  font-size:14px;padding:0 12px;
+  font-family:var(--font);color:var(--ink);
+  outline:none;width:100%;transition:var(--tr)
+}
+.ctrl:focus{
+  border-color:var(--blue);background:var(--surface);
+  box-shadow:0 0 0 3px rgba(30,95,212,.09)
+}
+select.ctrl{
+  appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23788fa8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center
+}
+textarea.ctrl{height:auto;padding:10px 12px;resize:vertical;min-height:80px;line-height:1.6}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sp2{grid-column:1/-1}
+@media(max-width:700px){.g2,.g3,.g4{grid-template-columns:1fr}}
+@media(max-width:1000px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn{
+  height:43px;padding:0 19px;border-radius:var(--r-sm);border:none;
+  font-family:var(--font);font-size:14px;font-weight:700;
+  cursor:pointer;transition:var(--tr);
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap
+}
+.btn-full{width:100%}
+.btn-blue{
+  background:linear-gradient(135deg,#2563eb,#1645c4);color:white;
+  box-shadow:0 2px 10px rgba(30,95,212,.3)
+}
+.btn-blue:hover{background:linear-gradient(135deg,#1d4ed8,#1040b0);transform:translateY(-1px);box-shadow:0 4px 16px rgba(30,95,212,.42)}
+.btn-blue:active{transform:none}
+.btn-ghost{background:var(--surface);color:var(--ink3);border:1.5px solid var(--ink8)}
+.btn-ghost:hover{background:var(--ink10);border-color:var(--ink7)}
+.btn-red{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-lt)}
+.btn-red:hover{background:#fde0e0}
+.btn-green{background:linear-gradient(135deg,#12a860,#0d8a4e);color:white;box-shadow:0 2px 10px rgba(15,155,90,.28)}
+.btn-green:hover{background:linear-gradient(135deg,#0d8a4e,#0a6e3e)}
+.btn-amber{background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-lt)}
+.btn-amber:hover{background:#fdf2d0}
+.btn-purple{background:var(--purple-bg);color:var(--purple);border:1.5px solid var(--purple-lt)}
+.btn-purple:hover{background:#ede0ff}
+.btn-sm{height:34px;font-size:12.5px;padding:0 14px}
+.btn-xs{height:28px;font-size:11.5px;padding:0 10px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+
+/* ═══════════════════════════════════════
+   TABLE
+═══════════════════════════════════════ */
+.tbl-wrap{overflow:auto;border-radius:var(--r-sm);border:1px solid var(--ink9)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{
+  background:linear-gradient(135deg,var(--ink10),var(--ink9));
+  padding:10px 13px;text-align:left;
+  border-bottom:1.5px solid var(--ink8);font-weight:700;
+  color:var(--ink2);white-space:nowrap;font-size:12px;
+  position:sticky;top:0;z-index:1
+}
+.tbl td{padding:9px 13px;border-bottom:1px solid var(--ink10);color:var(--ink2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--blue-bg)}
+.tbl-scroll{max-height:420px;overflow-y:auto}
+.tbl-empty{padding:38px;text-align:center;color:var(--ink6);font-size:13px}
+.mono{font-family:var(--mono);font-size:12px}
+
+/* badges */
+.bdg{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px;white-space:nowrap}
+.bdg-blue{background:var(--blue-bg);color:var(--blue-h)}
+.bdg-green{background:var(--green-bg);color:var(--green)}
+.bdg-amber{background:var(--amber-bg);color:var(--amber)}
+.bdg-purple{background:var(--purple-bg);color:var(--purple)}
+.bdg-teal{background:var(--teal-bg);color:var(--teal)}
+
+/* ═══════════════════════════════════════
+   CHIP ROW
+═══════════════════════════════════════ */
+.chip-row{
+  display:flex;flex-wrap:wrap;gap:5px;padding:10px 11px;
+  background:var(--ink10);border-radius:var(--r-xs);
+  border:1.5px solid var(--ink8);min-height:43px;align-items:center
+}
+.chip{
+  font-family:var(--mono);font-size:10.5px;font-weight:600;
+  background:var(--blue-bg);color:var(--blue-h);
+  padding:3px 9px;border-radius:10px;border:1px solid var(--blue-lt)
+}
+.chip-hint{font-size:12px;color:var(--ink6)}
+
+/* ═══════════════════════════════════════
+   UPLOAD
+═══════════════════════════════════════ */
+.drop{
+  border:2px dashed var(--ink7);border-radius:var(--r);
+  padding:32px 18px;text-align:center;cursor:pointer;
+  transition:var(--tr);background:var(--ink10);position:relative;
+  background-image:radial-gradient(var(--ink8) 1px,transparent 1px);
+  background-size:20px 20px
+}
+.drop:hover,.drop.over{border-color:var(--blue);background:var(--blue-bg);background-image:none}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-ico{font-size:36px;margin-bottom:9px}
+.drop-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.drop-hint{font-size:12px;color:var(--ink5)}
+
+.statusbar{font-size:13px;font-weight:600;padding:10px 14px;border-radius:var(--r-sm);display:none;margin-top:11px}
+.statusbar.ok{display:block;background:var(--green-bg);color:var(--green);border:1px solid var(--green-lt)}
+.statusbar.err{display:block;background:var(--red-bg);color:var(--red);border:1px solid var(--red-lt)}
+
+/* template hint */
+.tmpl-hint{
+  display:flex;align-items:center;gap:9px;padding:10px 14px;
+  background:var(--green-bg);border:1px solid var(--green-lt);
+  border-radius:var(--r-sm);font-size:12.5px;color:var(--green);font-weight:600;margin-bottom:14px
+}
+.tmpl-hint button{margin-left:auto;padding:5px 13px;background:var(--green);color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)}
+.tmpl-hint button:hover{background:#0a7a48}
+
+/* summary bar */
+.sumbar{display:flex;flex-wrap:wrap;gap:7px;padding:12px 18px;border-bottom:1px solid var(--ink9);background:var(--ink10);min-height:47px;align-items:center}
+.sum-chip{font-size:11px;font-weight:700;color:var(--teal);background:var(--teal-bg);padding:3px 11px;border-radius:11px;border:1px solid var(--teal-lt)}
+
+/* filter bar */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.fbar select{
+  height:36px;border-radius:var(--r-sm);border:1.5px solid var(--ink8);
+  padding:0 28px 0 10px;font-family:var(--font);font-size:13px;background:var(--surface);
+  outline:none;appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23788fa8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;cursor:pointer;flex:1;min-width:0;transition:var(--tr)
+}
+.fbar select:focus{border-color:var(--blue)}
+.search-inp{
+  height:38px;border-radius:var(--r-sm);border:1.5px solid var(--ink8);
+  padding:0 12px;font-size:13px;font-family:var(--font);background:var(--surface);
+  outline:none;width:100%;transition:var(--tr);margin-bottom:10px
+}
+.search-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,95,212,.08)}
+.count-lbl{font-size:12px;color:var(--ink5);padding:0 2px 10px}
+
+/* ═══════════════════════════════════════
+   SUB-TABS
+═══════════════════════════════════════ */
+.sub-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.st-btn{
+  padding:7px 16px;border:1.5px solid var(--ink8);border-radius:20px;
+  background:var(--surface);font-family:var(--font);font-size:12.5px;font-weight:700;
+  color:var(--ink5);cursor:pointer;transition:var(--tr)
+}
+.st-btn:hover{background:var(--blue-bg);color:var(--blue-h);border-color:var(--blue-lt)}
+.st-btn.active{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 2px 10px rgba(30,95,212,.32)}
+.sub-view{display:none}.sub-view.active{display:block}
+
+/* routine card */
+.rc{
+  background:var(--surface);border:1px solid var(--ink9);
+  border-radius:var(--r-sm);padding:14px 17px;margin-bottom:9px;
+  display:flex;align-items:center;gap:12px;transition:var(--tr)
+}
+.rc:hover{box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.rc-ico{width:43px;height:43px;border-radius:11px;background:linear-gradient(135deg,var(--purple-bg),var(--purple-lt));display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.rc-info{flex:1;min-width:0}
+.rc-title{font-size:13.5px;font-weight:700;color:var(--ink)}
+.rc-sub{font-size:11.5px;color:var(--ink5);margin-top:2px}
+.rc-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ═══════════════════════════════════════
+   QUESTION PAPER
+═══════════════════════════════════════ */
+.q-sec{background:var(--surface);border:1px solid var(--ink9);border-radius:var(--r-sm);overflow:hidden;margin-bottom:14px}
+.q-sec-hd{
+  padding:12px 16px;background:linear-gradient(135deg,var(--ink10),var(--ink9));
+  border-bottom:1px solid var(--ink9);
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+.q-sec-lbl{font-size:13px;font-weight:700;color:var(--ink2)}
+.q-sec-ctrl{display:flex;align-items:center;gap:8px}
+.marks-inp{
+  width:64px;height:30px;border-radius:6px;border:1.5px solid var(--ink8);
+  font-size:13px;padding:0 8px;font-family:var(--font);outline:none;text-align:center;background:var(--surface)
+}
+.marks-inp:focus{border-color:var(--blue)}
+.q-bd{padding:13px 16px}
+.q-item{
+  background:var(--ink10);border:1px solid var(--ink8);
+  border-radius:var(--r-xs);padding:10px 12px;margin-bottom:8px;
+  display:flex;align-items:flex-start;gap:9px;transition:var(--tr)
+}
+.q-item:hover{border-color:var(--blue-lt);background:var(--blue-bg)}
+.q-n{background:var(--blue-bg);color:var(--blue-h);font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;flex-shrink:0;margin-top:2px}
+.q-inp{flex:1;border:none;background:transparent;font-family:var(--font);font-size:13px;color:var(--ink);outline:none;line-height:1.65;resize:none;min-height:24px}
+.q-mbdg{background:var(--green-bg);color:var(--green);font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:8px;flex-shrink:0;margin-top:2px}
+.q-del{background:var(--red-bg);color:var(--red);border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--tr)}
+.q-del:hover{background:#fdd0d0}
+.q-empty{font-size:12px;color:var(--ink6);text-align:center;padding:12px 0}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.modal-ov{
+  position:fixed;inset:0;background:rgba(12,18,32,.55);z-index:800;
+  display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);padding:16px
+}
+.modal-ov.open{display:flex}
+.modal{
+  background:var(--surface);border-radius:var(--r);padding:26px;
+  width:520px;max-width:100%;max-height:92vh;overflow-y:auto;
+  box-shadow:var(--shadow-xl);animation:fade-up .26s ease both;
+  border:1px solid var(--ink8)
+}
+.modal-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.modal-x{background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink6);padding:0;line-height:1;transition:var(--tr)}
+.modal-x:hover{color:var(--red)}
+.modal-foot{margin-top:20px;display:flex;gap:9px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--ink9)}
+
+/* ═══════════════════════════════════════
+   A4 ATTENDANCE PRINT
+═══════════════════════════════════════ */
+.a4{
+  width:210mm;margin:20px auto 0;background:white;
+  padding:9mm 11mm 8mm;
+  border-radius:var(--r);box-shadow:var(--shadow-lg);display:none
+}
+.a4.visible{display:block}
+
+/* print header */
+.ph{border:1.5px solid #b8ccd8;border-radius:8px;padding:11px 16px 10px;text-align:center;margin-bottom:11px;background:#f5faff}
+.ph h2{font-size:20px;color:#0c1220;font-weight:700;margin-bottom:2px;line-height:1.3}
+.ph h4{font-size:11px;color:#5a7080;font-weight:400;margin-bottom:8px}
+.ph-badge{display:inline-block;background:#0c1220;color:white;font-size:12.5px;font-weight:700;padding:3px 20px;border-radius:5px;margin-bottom:6px}
+.ph-title{font-size:13.5px;font-weight:700;color:#1a2540;margin-top:3px}
+.ph-meta{display:flex;justify-content:center;gap:22px;font-size:11px;color:#374151;margin-top:5px;flex-wrap:wrap}
+.ph-meta strong{font-weight:700}
+
+/* attendance table */
+.att-wrap{overflow:hidden;border-radius:5px;border:1.5px solid #7090a8}
+.att-tbl{width:100%;border-collapse:collapse;font-size:10.5px;table-layout:fixed}
+.att-tbl th,.att-tbl td{border:1px solid #7090a8;padding:5px 4px;text-align:center;word-break:break-word;line-height:1.35;vertical-align:middle}
+.att-tbl thead th{background:#c8d8e8;color:#0c1220;font-weight:700;font-size:10px}
+.att-tbl thead tr:first-child th{background:#aec0d4}
+.att-tbl tbody tr:nth-child(even){background:#f0f6fc}
+.att-tbl tbody tr:nth-child(odd){background:white}
+.c-sl{width:22px} .c-roll{width:54px}
+.c-name{   width:160px!important;   min-width:160px!important;   max-width:160px!important;    text-align:left!important;    padding-left:8px!important;   padding-right:6px!important;    white-space:normal!important;   word-break:keep-all!important;   overflow-wrap:break-word!important;    line-height:1.4!important; }
+.c-gpa{width:34px} .c-sub{width:42px;height:32px} .c-pct{width:42px} .c-sign{width:50px}
+
+/* signature — generous spacing */
+.sig-wrap{
+  margin-top:48px;padding-top:0;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  page-break-inside:avoid
+}
+.sig-box{width:175px;text-align:center;font-size:11px;color:#374151}
+.sig-line{border-top:1.5px solid #2e3f5c;margin-bottom:8px}
+
+/* ═══════════════════════════════════════
+   QUESTION PAPER PRINT
+═══════════════════════════════════════ */
+.qp-page{
+  width:210mm;margin:20px auto;background:white;
+  padding:10mm 13mm;border-radius:var(--r);box-shadow:var(--shadow-lg);display:none
+}
+.qp-ph{text-align:center;border-bottom:2px solid #0c1220;margin-bottom:11px;padding-bottom:11px}
+.qp-ph h2{font-size:19px;font-weight:700;margin-bottom:2px}
+.qp-ph h4{font-size:11px;color:#5a7080;font-weight:400;margin-bottom:6px}
+.qp-info{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-top:8px;border-top:1px solid #e0e8f0;padding-top:7px}
+.qp-stitle{font-size:13px;font-weight:700;text-align:center;margin:15px 0 9px;text-decoration:underline;text-underline-offset:3px}
+.qp-q{font-size:12.5px;margin-bottom:8px;display:flex;gap:8px;line-height:1.65}
+.qp-qn{font-weight:700;flex-shrink:0;min-width:28px}
+.qp-qt{flex:1}
+.qp-qm{font-weight:700;text-align:right;flex-shrink:0;min-width:52px}
+
+/* ═══════════════════════════════════════
+   ROUTINE PRINT
+═══════════════════════════════════════ */
+.rp-page{
+  width:210mm;margin:20px auto;background:white;
+  padding:9mm 10mm;border-radius:var(--r);box-shadow:var(--shadow-lg);display:none
+}
+.rp-hd{text-align:center;border:1.5px solid #b8ccd8;border-radius:6px;padding:9px 14px 8px;margin-bottom:10px;background:#f5faff}
+.rp-hd h2{font-size:18px;font-weight:700;margin-bottom:2px}
+.rp-hd h4{font-size:10.5px;color:#5a7080;font-weight:400}
+.rp-badge{display:inline-block;background:#0c1220;color:white;font-size:11.5px;font-weight:700;padding:2px 16px;border-radius:4px;margin:5px 0 4px}
+.rp-meta{display:flex;justify-content:center;gap:18px;font-size:10.5px;flex-wrap:wrap;margin-top:4px}
+.rout-tbl{width:100%;border-collapse:collapse;font-size:10px}
+.rout-tbl th,.rout-tbl td{border:1px solid #7090a8;padding:5px 4px;text-align:center;word-break:break-word;vertical-align:middle;line-height:1.3}
+.rout-tbl thead th{background:#c8d8e8;font-weight:700;color:#0c1220}
+.rout-tbl tbody tr:nth-child(even){background:#f0f6fc}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:76px;left:50%;
+  transform:translateX(-50%) translateY(10px);
+  z-index:9000;background:var(--ink);color:white;
+  padding:11px 22px;border-radius:11px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow-md);opacity:0;
+  transition:.26s cubic-bezier(.22,.68,0,1.2);
+  pointer-events:none;white-space:nowrap;max-width:92vw
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.g{background:var(--green)}
+#toast.r{background:var(--red)}
+#toast.a{background:var(--amber)}
+@media(min-width:768px){#toast{bottom:22px}}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:767px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:none;box-shadow:var(--shadow-xl)}
+  #main{margin-left:0;padding-top:52px;padding-bottom:var(--botbar-h)}
+  #m-top{display:flex}
+  #m-nav{display:grid}
+  .topbar{display:none}
+  .stats{grid-template-columns:1fr 1fr}
+  .page{padding:14px 14px}
+  .a4{width:100%;padding:5mm 4mm}
+  .qp-page,.rp-page{width:100%;padding:6mm 4mm}
+  [style*="grid-template-columns:300px"]{display:block!important}
+  [style*="grid-template-columns:300px"] > *{margin-bottom:14px}
+}
+@media(max-width:560px){
+  .stats{grid-template-columns:1fr 1fr}
+  .rc-actions{flex-direction:column;gap:4px}
+}
+
+/* ═══════════════════════════════════════
+   PRINT MEDIA
+═══════════════════════════════════════ */
+@media print{
+
+  *{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+    box-sizing:border-box!important;
+  }
+
+  html,
+  body{
+    width:210mm!important;
+    min-height:297mm!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    background:#fff!important;
+
+    overflow:visible!important;
+  }
+
+  body{
+    font-size:11px!important;
+    color:#000!important;
+  }
+
+  /* hide ui */
+  #lock,
+  #sidebar,
+  #app>#sidebar,
+  #main .topbar,
+  #m-top,
+  #m-nav,
+  #sb-ov,
+  .stats,
+  .card,
+  .fbar,
+  .sumbar,
+  .sub-tabs,
+  .modal-ov,
+  .att-a4-ctrl,
+  .no-print{
+    display:none!important;
+  }
+
+  #app,
+  #main,
+  .page{
+    display:block!important;
+
+    width:100%!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    overflow:visible!important;
+
+    background:#fff!important;
+  }
+
+  .tab-view{
+    display:none!important;
+  }
+
+  .tab-view.active{
+    display:block!important;
+  }
+
+  /* =========================
+     Attendance A4 Page
+  ========================= */
+
+  .a4{
+    display:block!important;
+
+    width:190mm!important;
+
+    margin:0 auto!important;
+    padding:6mm 6mm 18mm!important;
+
+    background:#fff!important;
+
+    border:none!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+
+    overflow:visible!important;
+
+    page-break-after:always!important;
+  }
+
+  .a4:last-child{
+    page-break-after:auto!important;
+  }
+
+  /* =========================
+     Header
+  ========================= */
+
+  .ph{
+    margin-bottom:10px!important;
+
+    text-align:center!important;
+  }
+
+  .ph-badge{
+    display:inline-block!important;
+
+    padding:4px 12px!important;
+
+    margin-bottom:8px!important;
+
+    border:1px solid #5f7f99!important;
+    border-radius:20px!important;
+
+    font-size:10px!important;
+    font-weight:700!important;
+
+    color:#24425b!important;
+
+    background:#eef4f9!important;
+  }
+
+  .ph h2{
+    margin:0!important;
+
+    font-size:20px!important;
+    font-weight:800!important;
+
+    color:#17324a!important;
+  }
+
+  .ph h4{
+    margin:4px 0!important;
+
+    font-size:10px!important;
+    font-weight:500!important;
+
+    color:#4b6175!important;
+  }
+
+  .ph-title{
+    margin-top:8px!important;
+
+    font-size:13px!important;
+    font-weight:700!important;
+
+    color:#24425b!important;
+  }
+
+  .ph-meta{
+    margin-top:8px!important;
+
+    display:flex!important;
+    justify-content:center!important;
+    gap:18px!important;
+    flex-wrap:wrap!important;
+
+    font-size:10px!important;
+
+    color:#2c4358!important;
+  }
+
+  /* =========================
+     Table Wrapper
+  ========================= */
+
+  .att-wrap{
+    overflow:visible!important;
+
+    border:1px solid #7f9ab0!important;
+    border-radius:4px!important;
+  }
+
+  .att-tbl{
+    width:100%!important;
+
+    border-collapse:collapse!important;
+
+    table-layout:fixed!important;
+
+    font-size:9.5px!important;
+
+    background:#fff!important;
+  }
+
+  .att-tbl thead{
+    display:table-header-group!important;
+  }
+
+  .att-tbl tbody{
+    display:table-row-group!important;
+  }
+
+  .att-tbl tr{
+    page-break-inside:avoid!important;
+  }
+
+  .att-tbl th,
+  .att-tbl td{
+    border:1px solid #7f9ab0!important;
+
+    padding:4px 3px!important;
+
+    vertical-align:middle!important;
+
+    overflow:hidden!important;
+
+    color:#000!important;
+  }
+
+  .att-tbl th{
+    background:#e9f1f7!important;
+
+    font-size:9px!important;
+    font-weight:700!important;
+
+    text-align:center!important;
+  }
+
+  .att-tbl td{
+    height:34px!important;
+
+    text-align:center!important;
+  }
+
+  .att-tbl tbody tr:nth-child(even){
+    background:#f8fbfd!important;
+  }
+
+  /* =========================
+     Column Widths
+  ========================= */
+
+  .c-sl{
+    width:24px!important;
+  }
+
+  .c-roll{
+    width:58px!important;
+  }
+
+  .c-name{
+    width:150px!important;
+    min-width:150px!important;
+    max-width:150px!important;
+
+    text-align:left!important;
+
+    padding-left:7px!important;
+
+    white-space:normal!important;
+    overflow-wrap:break-word!important;
+    word-break:break-word!important;
+
+    line-height:1.3!important;
+
+    font-size:9.5px!important;
+  }
+
+  .c-name br{
+    display:none!important;
+  }
+
+  .c-gpa{
+    width:36px!important;
+  }
+
+  .c-sub{
+    width:42px!important;
+  }
+
+  .c-pct{
+    width:42px!important;
+  }
+
+  .c-sign{
+    width:52px!important;
+  }
+
+  /* =========================
+     Signature
+  ========================= */
+
+  .sig-wrap{
+    margin-top:50px!important;
+
+    display:flex!important;
+    justify-content:space-between!important;
+    align-items:flex-end!important;
+
+    gap:40px!important;
+
+    page-break-inside:avoid!important;
+
+    break-inside:avoid!important;
+  }
+
+  .sig-box{
+    width:180px!important;
+
+    text-align:center!important;
+
+    font-size:10px!important;
+
+    color:#000!important;
+  }
+
+  .sig-line{
+    border-top:1px solid #000!important;
+
+    margin-bottom:6px!important;
+
+    height:1px!important;
+    width:100%!important;
+  }
+
+  /* =========================
+     Question Paper
+  ========================= */
+
+  .qp-page{
+    width:190mm!important;
+
+    margin:0 auto!important;
+
+    padding:7mm!important;
+
+    background:#fff!important;
+
+    border:none!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+
+    page-break-after:always!important;
+  }
+
+  .qp-page:last-child{
+    page-break-after:auto!important;
+  }
+
+  /* =========================
+     Routine Page
+  ========================= */
+
+  .rp-page{
+    width:190mm!important;
+
+    margin:0 auto!important;
+
+    padding:6mm!important;
+
+    background:#fff!important;
+
+    border:none!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+
+    page-break-after:always!important;
+  }
+
+  .rp-page:last-child{
+    page-break-after:auto!important;
+  }
+
+  /* =========================
+     Page Setup
+  ========================= */
+
+  @page{
+    size:A4 portrait;
+    margin:8mm;
+  }
+
+}
+
+
+  /* print size */
+  @page{
+    size:A4 portrait;
+    margin:10mm 1mm 1mm 1mm;
+  }
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- ══ LOCK ══ -->
+<div id="lock">
+  <div class="l-orb"></div><div class="l-orb"></div><div class="l-orb"></div>
+  <div class="l-card">
+    <div class="l-badge">🔐 সুরক্ষিত সিস্টেম</div>
+    <div class="l-ring-wrap">
+      <div class="l-ring"></div><div class="l-ring"></div><div class="l-ring"></div>
+      <div class="l-core">   <img src="https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-cnpi-chapainawabganj/2024/12/d24884ba85bd4a638c87214b8f286ea1.png" style="width:38px"> </div>
+    </div>
+    <div class="l-title">চাঁপাইনবাবগঞ্জ পলিটেকনিক</div>
+    <div class="l-sub">ম্যানেজমেন্ট সিস্টেম<br>অনুমোদিত ব্যবহারকারী মাত্র</div>
+    <label class="l-lbl" for="l-inp">পাসকোড</label>
+    <div id="l-err">❌ ভুল পাসকোড! আবার চেষ্টা করুন।</div>
+    <div class="l-inp-wrap">
+      <input type="password" id="l-inp" placeholder="পাসকোড লিখুন…" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="l-eye" id="l-eye" onclick="toggleEye()">👁</button>
+    </div>
+    <button class="l-btn" id="l-btn" onclick="doLogin()">
+      <span id="l-txt">প্রবেশ করুন →</span>
+      <div class="l-spin" id="l-spin"></div>
+    </button>
+    <div class="l-stat"><div class="l-dot loading" id="l-dot"></div><span id="l-stxt">সার্ভার সংযোগ হচ্ছে…</span></div>
+    <div class="l-footer">© চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+<div id="sb-ov" onclick="closeSB()"></div>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">
+      <div class="sb-logo">🎓</div>
+      <div class="sb-name">CNPI Data Management System<small>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</small></div>
+    </div>
+    <div class="sb-live"><span class="sb-live-dot"></span>Realtime DB — সক্রিয়</div>
+  </div>
+  <div class="sb-scroll">
+    <span class="sb-sec">প্রধান মেনু</span>
+    <button class="nb active" onclick="gotoTab('attendance',this)" data-tab="attendance">
+      <div class="nb-ico">📋</div>উপস্থিতি ফরম<span class="nb-badge" id="nb-att">০</span>
+    </button>
+    <button class="nb" onclick="gotoTab('upload',this)" data-tab="upload">
+      <div class="nb-ico">📤</div>Excel আপলোড
+    </button>
+    <button class="nb" onclick="gotoTab('students',this)" data-tab="students">
+      <div class="nb-ico">👥</div>শিক্ষার্থী তালিকা<span class="nb-badge" id="nb-stu">০</span>
+    </button>
+    <span class="sb-sec">ক্লাস ম্যানেজমেন্ট</span>
+    <button class="nb" onclick="gotoTab('routine',this)" data-tab="routine">
+      <div class="nb-ico">📅</div>রুটিন ম্যানেজমেন্ট<span class="nb-badge" id="nb-rout">০</span>
+    </button>
+    <button class="nb" onclick="gotoTab('questions',this)" data-tab="questions">
+      <div class="nb-ico">📝</div>প্রশ্নপত্র তৈরি<span class="nb-badge" id="nb-qp">০</span>
+    </button>
+  </div>
+  <div class="sb-bot">
+    <button class="sb-logout" onclick="doLogout()">🔒 লগ আউট করুন</button>
+  </div>
+</nav>
+
+<!-- Mobile topbar -->
+<div id="m-top">
+  <button class="m-menu" onclick="toggleSB()">☰</button>
+  <div class="m-brand">CNPI Data Management System<small>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</small></div>
+  <button onclick="window.print()" style="background:none;border:none;color:#8fb0d0;font-size:21px;cursor:pointer;padding:4px">🖨️</button>
+</div>
+
+<!-- Main -->
+<div id="main">
+  <div class="topbar">
+    <div class="tb-title"><span class="tb-ico" id="tb-ico">📋</span><span id="tb-title">উপস্থিতি ফরম</span></div>
+    <button class="prt-btn" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+  </div>
+  <div class="page">
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="sc"><div class="sc-ico ico-b">👥</div><div><div class="sc-val" id="st-tot">০</div><div class="sc-lbl">মোট শিক্ষার্থী</div></div></div>
+      <div class="sc"><div class="sc-ico ico-g">🏫</div><div><div class="sc-val" id="st-dep">০</div><div class="sc-lbl">বিভাগ সংখ্যা</div></div></div>
+      <div class="sc"><div class="sc-ico ico-a">📅</div><div><div class="sc-val" id="st-rut">০</div><div class="sc-lbl">মোট রুটিন</div></div></div>
+      <div class="sc"><div class="sc-ico ico-p">📝</div><div><div class="sc-val" id="st-qpp">০</div><div class="sc-lbl">প্রশ্নপত্র</div></div></div>
+    </div>
+
+    <!-- ════ ATTENDANCE ════ -->
+    <div class="tab-view active" id="tab-attendance">
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start">
+        <div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title"><span class="card-ico">📋</span>ফরম জেনারেট</div></div>
+            <div class="card-bd">
+              <div class="fld"><label>টেকনোলজি</label>
+                <select class="ctrl" id="att-tech" onchange="onAttChange()">
+                  <option value="">— নির্বাচন করুন —</option>
+                  <option value="Food Technology">ফুড টেকনোলজি</option>
+                  <option value="Electrical Technology">ইলেকট্রিক্যাল টেকনোলজি</option>
+                  <option value="Computer Technology">কম্পিউটার টেকনোলজি</option>
+                  <option value="Mechatronics Technology">মেকাট্রনিক্স টেকনোলজি</option>
+                  <option value="Electronics Technology">ইলেকট্রনিক্স টেকনোলজি</option>
+                  <option value="RAC Technology">আরএসি টেকনোলজি</option>
+                </select>
+              </div>
+              <div class="fld"><label>সেমিস্টার</label>
+                <select class="ctrl" id="att-sem" onchange="onAttChange()">
+                  <option value="">— নির্বাচন করুন —</option>
+                  <option value="1st">১ম সেমিস্টার</option><option value="2nd">২য় সেমিস্টার</option>
+                  <option value="3rd">৩য় সেমিস্টার</option><option value="4th">৪র্থ সেমিস্টার</option>
+                  <option value="5th">৫ম সেমিস্টার</option><option value="6th">৬ষ্ঠ সেমিস্টার</option>
+                  <option value="7th">৭ম সেমিস্টার</option><option value="8th">৮ম সেমিস্টার</option>
+                </select>
+              </div>
+              <div class="fld"><label>বিষয় কোড</label><div class="chip-row" id="code-chips"><span class="chip-hint">টেকনোলজি ও সেমিস্টার নির্বাচন করুন</span></div></div>
+              <div class="fld"><label>সেশন (ঐচ্ছিক)</label><input class="ctrl" id="att-sess" placeholder="যেমন: ২০২৩-২৪"></div>
+              <div style="font-size:12px;color:var(--ink5);background:var(--ink10);padding:8px 11px;border-radius:var(--r-xs);margin-bottom:13px">শিক্ষার্থী: <strong id="att-cnt" style="color:var(--blue-h)">০ জন</strong></div>
+              <button class="btn btn-blue btn-full" onclick="genAtt()">📋 ফরম জেনারেট করুন</button>
+              <br></br>
+              <button class="btn btn-blue btn-full" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+            </div>
+          </div>
+        </div>
+        <!-- A4 -->
+        <div>
+          <div class="a4 visible" id="att-a4">
+            <div class="ph">
+              <h2>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</h2>
+              <h4>বারঘরিয়া, চাঁপাইনবাবগঞ্জ</h4>
+              <div class="ph-badge">উপস্থিতি ফরম</div>
+              <div class="ph-title" id="att-prt-title">টেকনোলজি ও সেমিস্টার নির্বাচন করুন</div>
+              <div class="ph-meta">
+                <div id="att-sess-wrap" style="display:none">সেশন: <strong id="att-sess-val"></strong></div>
+                <div>মোট: <strong id="att-cnt-prt">—</strong></div>
+                <div>তারিখ: <strong id="att-date">—</strong></div>
+              </div>
+            </div>
+            <div class="att-wrap">
+              <table class="att-tbl">
+                <thead>
+                  <tr>
+                    <th rowspan="2" class="c-sl">ক্রম</th>
+                    <th rowspan="2" class="c-roll">রোল নং</th>
+                    <th rowspan="2" class="c-name">শিক্ষার্থীর নাম</th>
+                    <th rowspan="2" class="c-gpa">CGPA</th>
+                    <th colspan="8" style="background:#a8c0d8;font-size:10px">বিষয় কোড ও উপস্থিতি %</th>
+                    <th rowspan="2" class="c-pct">গড়<br>%</th>
+                    <th rowspan="2" class="c-sign">স্বাক্ষর</th>
+                  </tr>
+                  <tr id="att-sub-hdr"></tr>
+                </thead>
+                <tbody id="att-tbody">
+                  <tr><td colspan="14" style="padding:20px;color:#aaa;text-align:center;font-size:12px">ফরম জেনারেট করুন</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="sig-wrap">
+              <div class="sig-box"><div class="sig-line"></div>ক্লাস শিক্ষকের স্বাক্ষর ও তারিখ</div>
+              <div class="sig-box"><div class="sig-line"></div>বিভাগীয় প্রধানের স্বাক্ষর ও তারিখ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ UPLOAD ════ -->
+    <div class="tab-view" id="tab-upload">
+      <div class="card">
+        <div class="card-hd"><div class="card-title"><span class="card-ico">📤</span>Excel / CSV আপলোড</div></div>
+        <div class="card-bd">
+          <div class="tmpl-hint"><span>📥 টেমপ্লেট ডাউনলোড করুন, তারপর পূরণ করে আপলোড করুন</span><button onclick="dlTmpl()">⬇ টেমপ্লেট</button></div>
+          <div class="drop" id="drop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="doDrop(event)">
+            <input type="file" accept=".xlsx,.xls,.csv" id="f-inp" onchange="onFile(event)">
+            <div class="drop-ico">📊</div>
+            <div class="drop-title">Excel / CSV ফাইল ড্র্যাগ করুন</div>
+            <div class="drop-hint">.xlsx · .xls · .csv সাপোর্ট করে</div>
+          </div>
+          <div id="up-st" class="statusbar"></div>
+          <div id="up-pv" style="display:none;margin-top:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+              <div style="font-size:13px;font-weight:700;color:var(--ink2)">📋 ডেটা প্রিভিউ</div>
+              <span class="bdg bdg-blue" id="pv-cnt"></span>
+            </div>
+            <div class="tbl-wrap" style="max-height:240px;overflow-y:auto">
+              <table class="tbl" id="pv-tbl"></table>
+            </div>
+            <div style="display:flex;gap:9px;margin-top:12px;justify-content:flex-end">
+              <button class="btn btn-ghost btn-sm" onclick="cancelUp()">বাতিল</button>
+              <button class="btn btn-green btn-sm" id="conf-btn" onclick="confirmUp()">✅ ডেটাবেইজে সেভ করুন</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ STUDENTS ════ -->
+    <div class="tab-view" id="tab-students">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hd">
+          <div class="card-title"><span class="card-ico">👥</span>শিক্ষার্থী তালিকা</div>
+          <button class="btn btn-red btn-sm" onclick="clearAll()">🗑️ সব মুছুন</button>
+        </div>
+        <div class="sumbar" id="sum-bar"><span style="font-size:12px;color:var(--ink6)">লোড হচ্ছে…</span></div>
+        <div style="padding:13px 18px 10px;border-bottom:1px solid var(--ink9)">
+          <div class="fbar">
+            <select id="f-tech" onchange="renderStudents()">
+              <option value="">সব টেকনোলজি</option>
+              <option value="Food Technology">ফুড</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option>
+              <option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option>
+              <option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option>
+            </select>
+            <select id="f-sem" onchange="renderStudents()">
+              <option value="">সব সেমিস্টার</option>
+              <option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option>
+              <option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option>
+            </select>
+          </div>
+          <input class="search-inp" id="f-q" placeholder="🔍 নাম বা রোল নম্বর দিয়ে খুঁজুন…" oninput="renderStudents()">
+          <div class="count-lbl" id="stu-cnt">লোড হচ্ছে…</div>
+        </div>
+        <div class="tbl-scroll"><div id="stu-tbl"><div class="tbl-empty">লোড হচ্ছে…</div></div></div>
+      </div>
+    </div>
+
+    <!-- ════ ROUTINE ════ -->
+    <div class="tab-view" id="tab-routine">
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><span class="card-ico">📅</span>রুটিন ম্যানেজমেন্ট</div>
+          <div style="display:flex;gap:7px">
+            <button class="btn btn-ghost btn-sm" onclick="dlRoutineXlsx()">⬇ Excel</button>
+            <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ প্রিন্ট</button>
+            <button class="btn btn-blue btn-sm" onclick="openRoutModal()">➕ নতুন রুটিন</button>
+          </div>
+        </div>
+        <div class="card-bd">
+          <div class="sub-tabs">
+            <button class="st-btn active" onclick="gotoSub('r-list',this)">📋 রুটিন তালিকা</button>
+            <button class="st-btn" onclick="gotoSub('r-teacher',this)">👨‍🏫 শিক্ষক ও বিষয়</button>
+            <button class="st-btn" onclick="gotoSub('r-gen',this)">⚡ বাল্ক জেনারেটর</button>
+            <button class="st-btn" onclick="gotoSub('r-preview',this)">👁 প্রিভিউ</button>
+          </div>
+
+          <!-- List -->
+          <div class="sub-view active" id="r-list">
+            <div class="fbar" style="margin-bottom:13px">
+              <select id="rf-tech" onchange="renderRoutines()"><option value="">সব টেকনোলজি</option><option value="Food Technology">ফুড</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option><option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option><option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option></select>
+              <select id="rf-sem" onchange="renderRoutines()"><option value="">সব সেমিস্টার</option><option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option><option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option></select>
+            </div>
+            <div id="r-list-body"><div class="tbl-empty">কোনো রুটিন নেই। নতুন তৈরি করুন।</div></div>
+          </div>
+
+          <!-- Teacher/Subject -->
+          <div class="sub-view" id="r-teacher">
+            <div style="display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start">
+              <div class="card" style="margin-bottom:0">
+                <div class="card-hd" style="padding:11px 15px"><div class="card-title" style="font-size:13px"><span>👨‍🏫</span>শিক্ষক / বিষয় যোগ</div></div>
+                <div class="card-bd" style="padding:14px">
+                  <div class="g2">
+                    <div class="fld"><label>শিক্ষকের নাম</label><input class="ctrl" id="t-name" placeholder="নাম"></div>
+                    <div class="fld"><label>সংক্ষিপ্ত নাম</label><input class="ctrl" id="t-short" placeholder="MR"></div>
+                    <div class="fld"><label>বিষয়ের নাম</label><input class="ctrl" id="t-subj" placeholder="বিষয়"></div>
+                    <div class="fld"><label>বিষয় কোড</label><input class="ctrl" id="t-code" placeholder="২৮৫১১"></div>
+                    <div class="fld"><label>ক্রেডিট</label><input class="ctrl" id="t-credit" type="text" placeholder="৩"></div>
+                    <div class="fld"><label>থিওরি ঘণ্টা</label><input class="ctrl" id="t-theory" type="text" placeholder="২"></div>
+                    <div class="fld"><label>প্র্যাকটিক্যাল ঘণ্টা</label><input class="ctrl" id="t-prac" type="text" placeholder="৩"></div>
+                    <div class="fld"><label>ক্লাসরুম</label><input class="ctrl" id="t-room" placeholder="২০৫"></div>
+                    <div class="fld"><label>ল্যাব রুম</label><input class="ctrl" id="t-lab" placeholder="ল্যাব-২"></div>
+                    <div class="fld"><label>টেকনোলজি</label>
+                      <select class="ctrl" id="t-tech"><option value="">—</option><option value="Food Technology">ফুড</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option><option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option><option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option></select>
+                    </div>
+                    <div class="fld"><label>সেমিস্টার</label>
+                      <select class="ctrl" id="t-sem"><option value="">—</option><option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option><option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option></select>
+                    </div>
+                  </div>
+                  <button class="btn btn-blue btn-full" onclick="saveTeacher()" style="margin-top:9px">💾 সংরক্ষণ করুন</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:11px">📋 সংরক্ষিত শিক্ষক/বিষয় তালিকা</div>
+                <div class="tbl-wrap" style="max-height:480px;overflow-y:auto"><div id="t-tbl"><div class="tbl-empty">কোনো ডেটা নেই</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bulk generator -->
+          <div class="sub-view" id="r-gen">
+            <div class="card" style="margin-bottom:0">
+              <div class="card-hd" style="padding:11px 15px"><div class="card-title" style="font-size:13px"><span>⚡</span>বাল্ক রুটিন জেনারেটর</div></div>
+              <div class="card-bd" style="padding:15px">
+                <div class="g4">
+                  <div class="fld"><label>টেকনোলজি</label><select class="ctrl" id="rg-tech"><option value="">—</option><option value="Food Technology">ফুড টেকনোলজি</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option><option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option><option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option></select></div>
+                  <div class="fld"><label>সেমিস্টার</label><select class="ctrl" id="rg-sem"><option value="">—</option><option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option><option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option></select></div>
+                  <div class="fld"><label>শিফট</label><select class="ctrl" id="rg-shift"><option value="Morning">সকাল (মর্নিং)</option><option value="Day">দিন (ডে)</option></select></div>
+                  <div class="fld"><label>গ্রুপ</label><select class="ctrl" id="rg-group"><option value="A">গ্রুপ-এ</option><option value="B">গ্রুপ-বি</option><option value="C">গ্রুপ-সি</option></select></div>
+                  <div class="fld"><label>শুরুর সময়</label><input class="ctrl" id="rg-start" type="time" value="08:00"></div>
+                  <div class="fld"><label>ক্লাস সময় (মিনিট)</label><input class="ctrl" id="rg-dur" type="text" placeholder="৫০"></div>
+                  <div class="fld"><label>বিরতি (মিনিট)</label><input class="ctrl" id="rg-brk" type="text" placeholder="১০"></div>
+                  <div class="fld"><label>সেশন</label><input class="ctrl" id="rg-sess" placeholder="২০২৩-২৪"></div>
+                </div>
+                <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:7px">
+                  <button class="btn btn-blue" onclick="bulkGen()">⚡ রুটিন জেনারেট ও সেভ করুন</button>
+                  <button class="btn btn-ghost" onclick="dlRoutineXlsx()">⬇ Excel ডাউনলোড</button>
+                </div>
+                <div id="gen-st" class="statusbar"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="sub-view" id="r-preview">
+            <div id="r-preview-body"><div class="tbl-empty">রুটিন জেনারেট করুন — তারপর এখানে প্রিভিউ দেখাবে।</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Printable routine -->
+      <div class="rp-page" id="rp-page">
+        <div class="rp-hd">
+          <h2>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</h2>
+          <h4>বারঘরিয়া, চাঁপাইনবাবগঞ্জ</h4>
+          <div class="rp-badge">ক্লাস রুটিন</div>
+          <div class="rp-meta" id="rp-meta"></div>
+        </div>
+        <div id="rp-tbl"></div>
+      </div>
+    </div>
+
+    <!-- ════ QUESTIONS ════ -->
+    <div class="tab-view" id="tab-questions">
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><span class="card-ico">📝</span>প্রশ্নপত্র তৈরি</div>
+          <div style="display:flex;gap:7px">
+            <button class="btn btn-ghost btn-sm" onclick="loadQPs()">📂 সংরক্ষিত</button>
+            <button class="btn btn-amber btn-sm" onclick="saveQP()">💾 সংরক্ষণ</button>
+            <button class="btn btn-blue btn-sm" onclick="printQP()">🖨️ প্রিন্ট</button>
+          </div>
+        </div>
+        <div class="card-bd">
+          <div class="g4" style="margin-bottom:16px">
+            <div class="fld"><label>টেকনোলজি</label><select class="ctrl" id="qp-tech"><option value="">—</option><option value="Food Technology">ফুড টেকনোলজি</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option><option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option><option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option></select></div>
+            <div class="fld"><label>সেমিস্টার</label><select class="ctrl" id="qp-sem"><option value="">—</option><option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option><option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option></select></div>
+            <div class="fld"><label>বিষয়ের নাম</label><input class="ctrl" id="qp-subj" placeholder="বিষয়ের নাম"></div>
+            <div class="fld"><label>বিষয় কোড</label><input class="ctrl" id="qp-code" placeholder="যেমন: ২৮৫১১"></div>
+            <div class="fld"><label>পরীক্ষার ধরন</label><select class="ctrl" id="qp-type"><option value="মিড-টার্ম পরীক্ষা">মিড-টার্ম পরীক্ষা</option><option value="ক্লাস টেস্ট">ক্লাস টেস্ট</option><option value="প্র্যাকটিক্যাল পরীক্ষা">প্র্যাকটিক্যাল পরীক্ষা</option><option value="নির্বাচনী পরীক্ষা">নির্বাচনী পরীক্ষা</option><option value="চূড়ান্ত পরীক্ষা">চূড়ান্ত পরীক্ষা</option></select></div>
+            <div class="fld"><label>মোট নম্বর</label><input class="ctrl" id="qp-total" type="text" value="১০০"></div>
+            <div class="fld"><label>তারিখ</label><input class="ctrl" id="qp-date" type="date"></div>
+            <div class="fld"><label>সময়</label><input class="ctrl" id="qp-time" placeholder="৩ ঘণ্টা"></div>
+          </div>
+
+          <!-- Section A -->
+          <div class="q-sec">
+            <div class="q-sec-hd">
+              <div class="q-sec-lbl">বিভাগ-ক: অতি সংক্ষিপ্ত প্রশ্ন</div>
+              <div class="q-sec-ctrl">
+                <span style="font-size:12px;color:var(--ink5)">প্রতিটির নম্বর:</span>
+                <input class="marks-inp" id="mA" type="text" value="২">
+                <button class="btn btn-ghost btn-xs" onclick="addQ('A')">➕ প্রশ্ন যোগ</button>
+              </div>
+            </div>
+            <div class="q-bd" id="qbA"><div class="q-empty">প্রশ্ন যোগ করুন</div></div>
+          </div>
+          <!-- Section B -->
+          <div class="q-sec">
+            <div class="q-sec-hd">
+              <div class="q-sec-lbl">বিভাগ-খ: সংক্ষিপ্ত প্রশ্ন</div>
+              <div class="q-sec-ctrl">
+                <span style="font-size:12px;color:var(--ink5)">প্রতিটির নম্বর:</span>
+                <input class="marks-inp" id="mB" type="text" value="১০">
+                <button class="btn btn-ghost btn-xs" onclick="addQ('B')">➕ প্রশ্ন যোগ</button>
+              </div>
+            </div>
+            <div class="q-bd" id="qbB"><div class="q-empty">প্রশ্ন যোগ করুন</div></div>
+          </div>
+          <!-- Section C -->
+          <div class="q-sec">
+            <div class="q-sec-hd">
+              <div class="q-sec-lbl">বিভাগ-গ: রচনামূলক প্রশ্ন</div>
+              <div class="q-sec-ctrl">
+                <span style="font-size:12px;color:var(--ink5)">প্রতিটির নম্বর:</span>
+                <input class="marks-inp" id="mC" type="text" value="১৫">
+                <button class="btn btn-ghost btn-xs" onclick="addQ('C')">➕ প্রশ্ন যোগ</button>
+              </div>
+            </div>
+            <div class="q-bd" id="qbC"><div class="q-empty">প্রশ্ন যোগ করুন</div></div>
+          </div>
+
+          <div id="qp-saved" style="display:none;margin-top:16px">
+            <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:10px">📂 সংরক্ষিত প্রশ্নপত্র</div>
+            <div class="tbl-wrap"><div id="qp-saved-tbl"><div class="tbl-empty">লোড হচ্ছে…</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QP print page -->
+      <div class="qp-page" id="qp-print" style="display:none;margin-top:18px">
+        <div class="qp-ph">
+          <h2>চাঁপাইনবাবগঞ্জ পলিটেকনিক ইনস্টিটিউট</h2>
+          <h4>বারঘরিয়া, চাঁপাইনবাবগঞ্জ</h4>
+          <div style="font-size:13px;font-weight:700;margin-top:5px" id="qp-ph-type"></div>
+          <div class="qp-info">
+            <div>বিষয়: <strong id="qp-ph-subj"></strong> (<span id="qp-ph-code"></span>)</div>
+            <div>পূর্ণমান: <strong id="qp-ph-total"></strong></div>
+            <div>সময়: <strong id="qp-ph-time"></strong></div>
+            <div>তারিখ: <strong id="qp-ph-date"></strong></div>
+          </div>
+        </div>
+        <div id="qp-print-body"></div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Mobile Bottom Nav -->
+<div id="m-nav">
+  <button class="mn-btn active" onclick="gotoTab('attendance',this)" data-tab="attendance"><span class="mn-ico">📋</span>উপস্থিতি</button>
+  <button class="mn-btn" onclick="gotoTab('upload',this)" data-tab="upload"><span class="mn-ico">📤</span>আপলোড</button>
+  <button class="mn-btn" onclick="gotoTab('students',this)" data-tab="students"><span class="mn-ico">👥</span>শিক্ষার্থী</button>
+  <button class="mn-btn" onclick="gotoTab('routine',this)" data-tab="routine"><span class="mn-ico">📅</span>রুটিন</button>
+  <button class="mn-btn" onclick="gotoTab('questions',this)" data-tab="questions"><span class="mn-ico">📝</span>প্রশ্ন</button>
+</div>
+
+<!-- Edit Student Modal -->
+<div class="modal-ov" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">✏️ শিক্ষার্থীর তথ্য সম্পাদনা<button class="modal-x" onclick="closeM('edit-modal')">✕</button></div>
+    <input type="hidden" id="em-id">
+    <div class="g2">
+      <div class="fld sp2"><label>রোল নম্বর</label><input class="ctrl" id="em-roll" placeholder="রোল নম্বর"></div>
+      <div class="fld sp2"><label>পূর্ণ নাম</label><input class="ctrl" id="em-name" placeholder="শিক্ষার্থীর নাম"></div>
+      <div class="fld"><label>CGPA / GPA</label><input class="ctrl" id="em-gpa" placeholder="৩.৫০"></div>
+      <div class="fld"><label>সেমিস্টার</label><select class="ctrl" id="em-sem"><option value="">—</option><option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option><option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option></select></div>
+      <div class="fld sp2"><label>টেকনোলজি</label><select class="ctrl" id="em-tech"><option value="">—</option><option value="Food Technology">ফুড টেকনোলজি</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option><option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option><option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option></select></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeM('edit-modal')">বাতিল</button><button class="btn btn-blue" onclick="saveStudent()">💾 সংরক্ষণ করুন</button></div>
+  </div>
+</div>
+
+<!-- Routine Modal -->
+<div class="modal-ov" id="rout-modal">
+  <div class="modal">
+    <div class="modal-title">📅 রুটিন তৈরি / সম্পাদনা<button class="modal-x" onclick="closeM('rout-modal')">✕</button></div>
+    <input type="hidden" id="rm-id">
+    <div class="g2">
+      <div class="fld"><label>টেকনোলজি</label><select class="ctrl" id="rm-tech"><option value="">—</option><option value="Food Technology">ফুড</option><option value="Electrical Technology">ইলেকট্রিক্যাল</option><option value="Computer Technology">কম্পিউটার</option><option value="Mechatronics Technology">মেকাট্রনিক্স</option><option value="Electronics Technology">ইলেকট্রনিক্স</option><option value="RAC Technology">আরএসি</option></select></div>
+      <div class="fld"><label>সেমিস্টার</label><select class="ctrl" id="rm-sem"><option value="">—</option><option value="1st">১ম</option><option value="2nd">২য়</option><option value="3rd">৩য়</option><option value="4th">৪র্থ</option><option value="5th">৫ম</option><option value="6th">৬ষ্ঠ</option><option value="7th">৭ম</option><option value="8th">৮ম</option></select></div>
+      <div class="fld"><label>শিফট</label><select class="ctrl" id="rm-shift"><option value="Morning">সকাল (মর্নিং)</option><option value="Day">দিন (ডে)</option></select></div>
+      <div class="fld"><label>গ্রুপ</label><select class="ctrl" id="rm-group"><option value="A">গ্রুপ-এ</option><option value="B">গ্রুপ-বি</option><option value="C">গ্রুপ-সি</option></select></div>
+      <div class="fld"><label>সেশন</label><input class="ctrl" id="rm-sess" placeholder="যেমন: ২০২৩-২৪"></div>
+      <div class="fld"><label>শুরুর সময়</label><input class="ctrl" id="rm-start" type="time" value="08:00"></div>
+    </div>
+    <div class="fld"><label>নোট</label><textarea class="ctrl" id="rm-note" rows="2" placeholder="যেকোনো তথ্য…"></textarea></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeM('rout-modal')">বাতিল</button><button class="btn btn-blue" onclick="saveRoutine()">💾 সংরক্ষণ</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════ BANGLA NUMBER UTILS ════════ */
+const BN_DIGITS=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+function toBn(n){return String(n).replace(/[0-9]/g,d=>BN_DIGITS[d])}
+function BN_ORD(n){const ord=["","১ম","২য়","৩য়","৪র্থ","৫ম","৬ষ্ঠ","৭ম","৮ম","৯ম","১০ম"];return ord[n]||toBn(n)+"।"}
+
+/* ════════ CONSTANTS ════════ */
+const TN={"Food Technology":"ফুড টেকনোলজি","Electrical Technology":"ইলেকট্রিক্যাল টেকনোলজি","Computer Technology":"কম্পিউটার টেকনোলজি","Mechatronics Technology":"মেকাট্রনিক্স টেকনোলজি","Electronics Technology":"ইলেকট্রনিক্স টেকনোলজি","RAC Technology":"আরএসি টেকনোলজি"};
+const SN={"1st":"১ম","2nd":"২য়","3rd":"৩য়","4th":"৪র্থ","5th":"৫ম","6th":"৬ষ্ঠ","7th":"৭ম","8th":"৮ম"};
+const DAYS=["রবিবার","সোমবার","মঙ্গলবার","বুধবার","বৃহস্পতিবার"];
+const SC={
+  "Food Technology":{"1st":["২১০১১","২৫৭১১","২৫৭১২","২৫৮১২","২৫৯১১","২৫৯১৩","২৬৯১১","২৬৯১২"],"2nd":["২৫৭২১","২৫৭২২","২৫৯১২","২৫৯২১","২৬৭১১","২৬৯২১","২৬৯২২","২৭০১১"],"3rd":["২৫৮১১","২৫৯২২","২৫৯৩১","২৮৫১১","২৬৮১১","২৬৯৩১","২৬৯৩২"],"4th":["২৫৮৩১","২৫৮৪১","২৬৯৪১","২৬৯৪২","২৬৯৪৩","২৬৯৪৪","২৬৯৪৫","২৭০৪১"],"5th":["২৫৮৫২","২৬৩৫৫","২৬৯৫১","২৬৯৫২","২৬৯৫৩","২৬৯৫৪","২৬৯৫৫"],"6th":["২৬৩৬৪","২৬৩৬৫","২৬৯৬১","২৬৯৬২","২৬৯৬৩","২৬৯৬৪","২৯০৪১"],"7th":["২৫৮৫১","২৫৮৫৩","২৬৯৭১","২৬৯৭২","২৬৯৭৩","২৬৯৭৪","২৬৯৭৫","২৬৯৭৬"],"8th":["২৬৯৮১"]},
+  "Electrical Technology":{"1st":["২১০১১","২৫৭১১","২৫৭১২","২৫৮১২","২৫৯১১","২৫৯১২","২৬৭১১","২৬৭১২"],"2nd":["২৫৭২১","২৫৭২২","২৫৯২১","২৫৯২২","২৬৭২১","২৬৭২২","২৬৮১১"],"3rd":["২৫৯৩১","২৫৯১৩","২৮৫১১","২৬৭৩১","২৬৭৩২","২৬৮৩৩"],"4th":["২৫৮১১","২৫৮৪১","২৬৭৪১","২৬৭৪২","২৬৭৪৩","২৬৮৪৫","২৭০৪৪"],"5th":["২৫৮৫১","২৫৮৫২","২৬৭৫১","২৬৭৫২","২৬৭৫৩","২৬৭৫৪","২৬৮৫৩"],"6th":["২৮৫৬৭","২৬৭৬১","২৬৭৬২","২৬৭৬৩","২৬৮৪২","২৯০৪১"],"7th":["২৫৮৩১","২৫৮৫৩","২৬৭৭১","২৬৭৭২","২৬৭৭৩","২৬৭৭৪","২৬৮৭৫"],"8th":["২৬৭৮১"]},
+  "Electronics Technology":{"1st":["২১০১১","২৫৭১১","২৫৭১২","২৫৯১১","২৫৯১২","২৬৭১১","২৬৮১১"],"2nd":["২৫৭২১","২৫৭২২","২৫৮১১","২৫৮১২","২৫৯১৩","২৫৯২১","২৬৭২১","২৬৮২১"],"3rd":["২৫৯২২","২৫৯৩১","২৮৫১১","২৬৭৩১","২৬৮৩১","২৬৮৩২"],"4th":["২৫৮৪১","২৬৭৪১","২৬৭৪২","২৬৮৪১","২৬৮৪২","২৬৮৪৩","২৬৮৪৪"],"5th":["২৫৮৫১","২৫৮৫২","২৮৫৬৭","২৬৭৫১","২৬৭৫২","২৬৮৫১","২৬৮৫২","২৮৬৫৪"],"6th":["২৬৭৬১","২৬৭৬৪","২৬৭৬৩","২৬৮৬১","২৬৮৬২","২৬৮৬৩","২৯০৪১"],"7th":["২৫৮৩১","২৫৮৫৩","২৬৭৭১","২৬৮৭১","২৬৮৭২","২৬৮৭৩","২৬৮৭৪"],"8th":["২৬৮৮১"]},
+  "RAC Technology":{"1st":["২১০১১","২৫৭১১","২৫৭১২","২৫৮১১","২৫৯১১","২৫৯১২","২৭০১১","২৭২১১"],"2nd":["২৫৭২১","২৫৭২২","২৫৮১২","২৫৯১৩","২৫৯২১","২৬৭১১","২৭০২১","২৭০৩১"],"3rd":["২৫৮৩১","২৫৯২২","২৫৯৩১","২৬২১১","২৬৮১১","২৭১৩১","২৭২৩১"],"4th":["২৫৮৪১","২৭০১২","২৭০৪১","২৭২৪১","২৭২৪২","২৯০৪১","২৮৫১১"],"5th":["২৫৮৫১","২৭০৪৩","২৭০৫১","২৭০৫২","২৭২৫১","২৭২৫২","২৮৫৬৭"],"6th":["২৫৮৫২","২৭০৫৫","২৭০৬১","২৭০৬৩","২৭০৬৫","২৭২৬১","২৭২৬২"],"7th":["২৫৮৫৩","২৭০৭৫","২৭২৭১","২৭২৭২","২৭২৭৩","২৭২৭৪","২৯২৩১"],"8th":["২৭২৮১"]},
+  "Computer Technology":{"1st":["২১০১১","২৫৭১১","২৫৭১২","২৫৯১১","২৫৯১২","২৮৫১১","২৬৭১১"],"2nd":["২৫৭২১","২৫৭২২","২৫৮১২","২৫৯১৩","২৫৯২১","২৮৫২১","২৮৫২২","২৬৮১১"],"3rd":["২৫৮১১","২৫৯২২","২৫৯৩১","২৮৫৩১","২৮৫৩২","২৮৫৩৩","২৬৮৩১"],"4th":["২৫৮৩১","২৮৫৪১","২৮৫৪২","২৮৫৪৩","২৮৫৪৪","২৬৮৪১","২৯০৪১"],"5th":["২৫৮৪১","২৮৫৫১","২৮৫৫২","২৮৫৫৩","২৮৫৫৪","২৮৫৫৫","২৮৫৫৬"],"6th":["২৫৮৫১","২৫৮৫২","২৮৫৬১","২৮৫৬২","২৮৫৬৩","২৮৫৬৪","২৮৫৬৫","২৮৫৬৬"],"7th":["২৫৮৫৩","২৮৫৭১","২৮৫৭২","২৮৫৭৩","২৮৫৭৪","২৮৫৭৫","২৮৫৭৬"],"8th":["২৮৫৮১"]},
+  "Mechatronics Technology":{"1st":["২১০১১","২৫৭১১","২৫৭১২","২৫৮১২","২৫৯১১","২৫৯১২","২৬৭১১","২৭০১১"],"2nd":["২৫৭২১","২৫৭২২","২৫৯২১","২৫৯২২","২৬৮১১","২৭০১২","২৭০২১"],"3rd":["২৫৮১১","২৫৮৩১","২৫৯১৩","২৫৯৩১","২৮৫১১","২৬৮২১","২৭০৩১","২৯২৩২"],"4th":["২৫৮৪১","২৮৫৬৭","২৭০৩২","২৭০৪১","২৭১৩১","২৯০৪১","২৯২৪১"],"5th":["২৫৮৫১","২৫৮৫২","২৬৮৪৫","২৭০৫১","২৭০৫৫","২৭১৫২","২৯২৫১"],"6th":["২৬৮৩৩","২৭০৬১","২৭০৬২","২৭০৬৩","২৯২৬১","২৯২৬২"],"7th":["২৫৮৫৩","২৭০৭১","২৭০৭৫","২৭১৭২","২৯২৭১","২৯২৭২","২৯২৭৩","২৯২৭৪"],"8th":["২৭০৮১"]}
+};
+
+/* ════════ FIREBASE ════════ */
+firebase.initializeApp({apiKey:"AIzaSyAUeWnciYUhVDDWqlWLXtchGzJ2PyWRAJk",authDomain:"dftprobd-f989c.firebaseapp.com",databaseURL:"https://dftprobd-f989c-default-rtdb.firebaseio.com",projectId:"dftprobd-f989c",appId:"1:57798842819:web:e3b6b5156c51c20d6b0576"});
+const db=firebase.database();
+const sRef=db.ref("cpi_students"),cfgRef=db.ref("cpi_settings"),rRef=db.ref("cpi_routines"),tRef=db.ref("cpi_teachers"),qRef=db.ref("cpi_questions");
+let students=[],routines=[],teachers=[],savedPass=null,pending=null,qData={A:[],B:[],C:[]};
+
+/* ════════ AUTH ════════ */
+const SK="cpi_v6";
+function setLD(t,m){document.getElementById("l-dot").className="l-dot "+t;document.getElementById("l-stxt").textContent=m}
+cfgRef.child("passcode").once("value",s=>{savedPass=s.val()||"dft2026@Form";if(!s.val())cfgRef.child("passcode").set("dft2026@Form");setLD("ok","সার্ভার সংযুক্ত — লগইন করুন")}).catch(()=>{savedPass="dft2026@Form";setLD("err","অফলাইন — ডিফল্ট পাসকোড")});
+function doLogin(){
+  const v=document.getElementById("l-inp").value;
+  if(!savedPass){setLD("loading","লোড হচ্ছে…");return}
+  const btn=document.getElementById("l-btn"),sp=document.getElementById("l-spin"),tx=document.getElementById("l-txt");
+  tx.textContent="যাচাই হচ্ছে…";sp.style.display="block";btn.disabled=true;
+  setTimeout(()=>{
+    sp.style.display="none";btn.disabled=false;tx.textContent="প্রবেশ করুন →";
+    if(v===savedPass){
+      sessionStorage.setItem(SK,"1");document.getElementById("lock").style.display="none";
+      document.getElementById("app").style.display="block";initDB();
+      document.getElementById("att-date").textContent=new Date().toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
+    } else {
+      document.getElementById("l-err").style.display="block";
+      const c=document.querySelector(".l-card");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake");
+      document.getElementById("l-inp").value="";document.getElementById("l-inp").focus();
+    }
+  },480);
+}
+function doLogout(){sessionStorage.removeItem(SK);location.reload()}
+function toggleEye(){const i=document.getElementById("l-inp");i.type=i.type==="password"?"text":"password";document.getElementById("l-eye").textContent=i.type==="password"?"👁":"🙈"}
+(function(){if(sessionStorage.getItem(SK)==="1"){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";initDB();document.getElementById("att-date").textContent=new Date().toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});}else setTimeout(()=>document.getElementById("l-inp").focus(),500)})();
+
+function initDB(){
+  sRef.on("value",s=>{students=[];const d=s.val();if(d)Object.entries(d).forEach(([k,v])=>students.push({...v,id:k}));updStats();renderSum();renderStudents()});
+  rRef.on("value",s=>{routines=[];const d=s.val();if(d)Object.entries(d).forEach(([k,v])=>routines.push({...v,id:k}));renderRoutines();const n=toBn(routines.length);document.getElementById("nb-rout").textContent=n;document.getElementById("st-rut").textContent=n});
+  tRef.on("value",s=>{teachers=[];const d=s.val();if(d)Object.entries(d).forEach(([k,v])=>teachers.push({...v,id:k}));renderTeachers()});
+  qRef.on("value",s=>{const n=s.val()?Object.keys(s.val()).length:0;const nb=toBn(n);document.getElementById("nb-qp").textContent=nb;document.getElementById("st-qpp").textContent=nb});
+}
+
+/* ════════ NAVIGATION ════════ */
+const TL={"attendance":["📋","উপস্থিতি ফরম"],"upload":["📤","Excel আপলোড"],"students":["👥","শিক্ষার্থী তালিকা"],"routine":["📅","রুটিন ম্যানেজমেন্ট"],"questions":["📝","প্রশ্নপত্র তৈরি"]};
+function gotoTab(name,el){
+  document.querySelectorAll(".tab-view").forEach(p=>p.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  document.querySelectorAll(".nb,.mn-btn").forEach(b=>b.classList.remove("active"));
+  if(el){el.classList.add("active");const op=el.classList.contains("nb")?".mn-btn":".nb";document.querySelectorAll(op+'[data-tab="'+name+'"]').forEach(b=>b.classList.add("active"));}
+  const lb=TL[name]||["📋",name];
+  document.getElementById("tb-ico").textContent=lb[0];document.getElementById("tb-title").textContent=lb[1];
+  if(window.innerWidth<768)closeSB();
+}
+function gotoSub(id,el){
+  const p=document.getElementById(id);if(!p)return;
+  const c=p.closest(".card-bd")||p.parentElement;
+  c.querySelectorAll(".sub-view").forEach(x=>x.classList.remove("active"));
+  p.classList.add("active");
+  c.querySelectorAll(".st-btn").forEach(b=>b.classList.remove("active"));
+  if(el)el.classList.add("active");
+}
+function toggleSB(){const sb=document.getElementById("sidebar"),ov=document.getElementById("sb-ov");sb.classList.toggle("open");ov.style.display=sb.classList.contains("open")?"block":"none"}
+function closeSB(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sb-ov").style.display="none"}
+function openM(id){document.getElementById(id).classList.add("open")}
+function closeM(id){document.getElementById(id).classList.remove("open")}
+document.getElementById("edit-modal").addEventListener("click",function(e){if(e.target===this)closeM("edit-modal")});
+document.getElementById("rout-modal").addEventListener("click",function(e){if(e.target===this)closeM("rout-modal")});
+
+/* ════════ STATS ════════ */
+function updStats(){
+  document.getElementById("st-tot").textContent=toBn(students.length);
+  document.getElementById("nb-stu").textContent=toBn(students.length);
+  document.getElementById("nb-att").textContent=toBn(students.length);
+  document.getElementById("st-dep").textContent=toBn(new Set(students.map(s=>s.technology).filter(Boolean)).size);
+  const t=document.getElementById("att-tech").value,s=document.getElementById("att-sem").value;
+  if(t&&s) document.getElementById("att-cnt").textContent=toBn(students.filter(x=>x.technology===t&&x.semester===s).length)+" জন";
+}
+
+/* ════════ ATTENDANCE ════════ */
+function onAttChange(){
+  const t=document.getElementById("att-tech").value,s=document.getElementById("att-sem").value;
+  const el=document.getElementById("code-chips");
+  if(!t||!s){el.innerHTML='<span class="chip-hint">টেকনোলজি ও সেমিস্টার নির্বাচন করুন</span>';document.getElementById("att-cnt").textContent="০ জন";return;}
+  const codes=(SC[t]&&SC[t][s])||[];
+  el.innerHTML=codes.length?codes.map(c=>`<span class="chip">${c}</span>`).join(''):'<span class="chip-hint">কোড নেই</span>';
+  document.getElementById("att-cnt").textContent=toBn(students.filter(x=>x.technology===t&&x.semester===s).length)+" জন";
+}
+function genAtt(){
+  const t=document.getElementById("att-tech").value,s=document.getElementById("att-sem").value;
+  const sess=document.getElementById("att-sess").value.trim();
+  if(!t||!s){toast("টেকনোলজি ও সেমিস্টার নির্বাচন করুন","r");return}
+  const list=students.filter(x=>x.technology===t&&x.semester===s).sort((a,b)=>parseInt(a.roll)-parseInt(b.roll));
+  const codes=(SC[t]&&SC[t][s])||[];
+  document.getElementById("att-prt-title").textContent=(TN[t]||t)+" — "+(SN[s]||s)+" সেমিস্টার";
+  const sw=document.getElementById("att-sess-wrap");
+  if(sess){document.getElementById("att-sess-val").textContent=sess;sw.style.display="";}else sw.style.display="none";
+  document.getElementById("att-cnt-prt").textContent=toBn(list.length)+" জন";
+  let hdr='';for(let j=0;j<8;j++)hdr+=`<th class="c-sub">${codes[j]||''}</th>`;
+  document.getElementById("att-sub-hdr").innerHTML=hdr;
+  const tb=document.getElementById("att-tbody");tb.innerHTML="";
+  if(!list.length){tb.innerHTML=`<tr><td colspan="14" style="padding:16px;color:#aaa;text-align:center;font-size:12px">কোনো শিক্ষার্থী পাওয়া যায়নি</td></tr>`;return}
+  list.forEach((x,i)=>{tb.innerHTML+=`<tr><td class="c-sl">${toBn(i+1)}</td><td class="c-roll mono">${x.roll||''}</td><td class="c-name">${x.name||''}</td><td class="c-gpa">${x.gpa||''}</td>${Array(8).fill('<td class="c-sub"></td>').join('')}<td class="c-pct"></td><td class="c-sign"></td></tr>`});
+  toast(toBn(list.length)+" জনের ফরম তৈরি হয়েছে","g");
+  document.getElementById("att-a4").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ════════ UPLOAD ════════ */
+function doDrop(e){e.preventDefault();document.getElementById("drop").classList.remove("over");const f=e.dataTransfer.files[0];if(f)parseFile(f)}
+function onFile(e){const f=e.target.files[0];if(f)parseFile(f)}
+function parseFile(file){
+  const st=document.getElementById("up-st");st.className="";st.style.display="none";document.getElementById("up-pv").style.display="none";
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const ext=file.name.split('.').pop().toLowerCase();let rows=[];
+      if(ext==="csv"){const lines=(new TextDecoder().decode(ev.target.result)).split('\n').map(l=>l.trim()).filter(Boolean);const hdr=lines[0].split(',').map(h=>h.trim().toLowerCase());for(let i=1;i<lines.length;i++){const c=lines[i].split(',').map(v=>v.trim().replace(/^"|"$/g,''));const o={};hdr.forEach((h,j)=>{o[h]=c[j]||''});rows.push(o);}
+      }else{const wb=XLSX.read(ev.target.result,{type:"array"});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});}
+      const g=(r,...ks)=>{for(const k of ks){const m=Object.keys(r).find(rk=>rk.toLowerCase().replace(/[\s_]/g,'')===k.toLowerCase().replace(/[\s_]/g,''));if(m&&r[m]!=='')return String(r[m]).trim();}return''};
+      pending=rows.map(r=>({roll:g(r,'roll','rollno','রোল'),name:g(r,'name','studentname','নাম'),gpa:g(r,'gpa','cgpa','গ্রেড'),technology:g(r,'technology','tech','department','টেকনোলজি'),semester:g(r,'semester','sem','সেমিস্টার')})).filter(s=>s.roll||s.name);
+      if(!pending.length)throw new Error("ভ্যালিড ডেটা পাওয়া যায়নি");
+      document.getElementById("pv-cnt").textContent=toBn(pending.length)+" রেকর্ড";
+      const vis=pending.slice(0,15);
+      let html=`<thead><tr><th>রোল</th><th>নাম</th><th>GPA</th><th>টেকনোলজি</th><th>সেমিস্টার</th></tr></thead><tbody>`;
+      vis.forEach(r=>{html+=`<tr><td class="mono">${r.roll||'—'}</td><td>${r.name||'—'}</td><td>${r.gpa||'—'}</td><td>${TN[r.technology]||r.technology||'—'}</td><td>${SN[r.semester]||r.semester||'—'}</td></tr>`});
+      if(pending.length>15)html+=`<tr><td colspan="5" style="text-align:center;color:var(--ink6);padding:8px;font-size:11.5px">… আরো ${toBn(pending.length-15)}টি রেকর্ড</td></tr>`;
+      document.getElementById("pv-tbl").innerHTML=html+"</tbody>";
+      document.getElementById("up-pv").style.display="block";
+      st.className="statusbar ok";st.textContent=`✅ ${toBn(pending.length)}টি রেকর্ড পাওয়া গেছে। নিচে প্রিভিউ যাচাই করুন।`;st.style.display="block";
+    }catch(err){st.className="statusbar err";st.textContent="❌ ত্রুটি: "+err.message;st.style.display="block";pending=null}
+  };reader.readAsArrayBuffer(file);
+}
+function cancelUp(){document.getElementById("up-pv").style.display="none";pending=null;document.getElementById("f-inp").value=""}
+function confirmUp(){
+  if(!pending)return;const btn=document.getElementById("conf-btn");btn.disabled=true;btn.textContent="সেভ হচ্ছে…";
+  const u={};pending.forEach(s=>{const k=s.roll?String(s.roll).replace(/[.#$/[\]\s]/g,'_'):"nr_"+Math.random().toString(36).substr(2,9);u[k]=s});
+  sRef.update(u).then(()=>{toast(toBn(pending.length)+" জনের ডেটা সেভ হয়েছে","g");cancelUp()}).catch(e=>toast("❌ "+e.message,"r")).finally(()=>{btn.disabled=false;btn.textContent="✅ ডেটাবেইজে সেভ করুন"});
+}
+function dlTmpl(){
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([["roll","name","gpa","technology","semester"],["213641","STUDENT NAME","3.50","Food Technology","2nd"],["213642","STUDENT NAME 2","3.75","Computer Technology","1st"]]);
+  ws['!cols']=[{wch:10},{wch:30},{wch:8},{wch:25},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,ws,"Students");XLSX.writeFile(wb,"student_template.xlsx");toast("টেমপ্লেট ডাউনলোড হয়েছে","g");
+}
+
+/* ════════ STUDENTS ════════ */
+function renderSum(){
+  const el=document.getElementById("sum-bar");
+  if(!students.length){el.innerHTML='<span style="font-size:12px;color:var(--ink6)">কোনো ডেটা নেই</span>';return}
+  const c={};students.forEach(s=>{const sem=s.semester||"অজানা";c[sem]=(c[sem]||0)+1});
+  el.innerHTML=Object.entries(c).sort().map(([sem,n])=>`<span class="sum-chip">${SN[sem]||sem}: ${toBn(n)} জন</span>`).join('');
+}
+function renderStudents(){
+  const tech=document.getElementById("f-tech").value,sem=document.getElementById("f-sem").value,q=(document.getElementById("f-q").value||"").toLowerCase().trim();
+  const list=students.filter(s=>(!tech||s.technology===tech)&&(!sem||s.semester===sem)&&(!q||(s.name||"").toLowerCase().includes(q)||(s.roll||"").toLowerCase().includes(q))).sort((a,b)=>parseInt(a.roll)-parseInt(b.roll));
+  document.getElementById("stu-cnt").textContent=`মোট ${toBn(students.length)} জন — দেখাচ্ছে ${toBn(list.length)} জন`;
+  if(!list.length){document.getElementById("stu-tbl").innerHTML='<div class="tbl-empty">কোনো শিক্ষার্থী পাওয়া যায়নি</div>';return}
+  let html=`<table class="tbl"><thead><tr><th style="width:36px">ক্রম</th><th>রোল</th><th>নাম</th><th>GPA</th><th>বিভাগ</th><th>সেমিস্টার</th><th style="width:100px;text-align:center">একশন</th></tr></thead><tbody>`;
+  list.forEach((s,i)=>{
+    const sj=JSON.stringify({id:s.id,roll:s.roll,name:s.name,gpa:s.gpa,technology:s.technology,semester:s.semester}).replace(/'/g,"&#39;");
+    html+=`<tr>
+      <td style="color:var(--ink6);font-size:11px;font-family:var(--mono)">${toBn(i+1)}</td>
+      <td class="mono">${s.roll||'—'}</td>
+      <td style="font-weight:600">${s.name||'—'}</td>
+      <td>${s.gpa||'—'}</td>
+      <td><span class="bdg bdg-amber">${TN[s.technology]||s.technology||'—'}</span></td>
+      <td><span class="bdg bdg-blue">${SN[s.semester]||s.semester||'—'}</span></td>
+      <td style="text-align:center"><div style="display:flex;gap:5px;justify-content:center">
+        <button onclick='openEdit(${sj})' style="background:var(--blue-bg);color:var(--blue-h);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600">✏️ এডিট</button>
+        <button onclick="delStu('${s.id}')" style="background:var(--red-bg);color:var(--red);border:none;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600">🗑️</button>
+      </div></td></tr>`;
+  });
+  document.getElementById("stu-tbl").innerHTML=html+'</tbody></table>';
+}
+function openEdit(s){document.getElementById("em-id").value=s.id;document.getElementById("em-roll").value=s.roll||'';document.getElementById("em-name").value=s.name||'';document.getElementById("em-gpa").value=s.gpa||'';document.getElementById("em-tech").value=s.technology||'';document.getElementById("em-sem").value=s.semester||'';openM("edit-modal")}
+function saveStudent(){
+  const id=document.getElementById("em-id").value;
+  const data={roll:document.getElementById("em-roll").value.trim(),name:document.getElementById("em-name").value.trim(),gpa:document.getElementById("em-gpa").value.trim(),technology:document.getElementById("em-tech").value,semester:document.getElementById("em-sem").value};
+  if(!data.name||!data.technology||!data.semester){toast("নাম, বিভাগ ও সেমিস্টার আবশ্যক","r");return}
+  sRef.child(id).update(data).then(()=>{toast("তথ্য আপডেট হয়েছে","g");closeM("edit-modal")}).catch(e=>toast("❌ "+e.message,"r"));
+}
+function delStu(id){if(!confirm("এই শিক্ষার্থীকে মুছবেন?"))return;sRef.child(id).remove().then(()=>toast("মুছে ফেলা হয়েছে")).catch(e=>toast("❌ "+e.message,"r"))}
+function clearAll(){if(!confirm("সব শিক্ষার্থীর ডেটা মুছবেন?\nএটি পূর্বাবস্থায় ফেরানো যাবে না!"))return;sRef.remove().then(()=>toast("সব ডেটা মুছে গেছে","g")).catch(e=>toast("❌ "+e.message,"r"))}
+
+/* ════════ ROUTINE ════════ */
+function openRoutModal(r){
+  document.getElementById("rm-id").value=r?r.id:'';document.getElementById("rm-tech").value=r?r.technology:'';document.getElementById("rm-sem").value=r?r.semester:'';
+  document.getElementById("rm-shift").value=r?r.shift:'Morning';document.getElementById("rm-group").value=r?r.group:'A';
+  document.getElementById("rm-sess").value=r?r.session:'';document.getElementById("rm-start").value=r?r.start:'08:00';document.getElementById("rm-note").value=r?r.note:'';
+  openM("rout-modal");
+}
+function saveRoutine(){
+  const id=document.getElementById("rm-id").value;
+  const data={technology:document.getElementById("rm-tech").value,semester:document.getElementById("rm-sem").value,shift:document.getElementById("rm-shift").value,group:document.getElementById("rm-group").value,session:document.getElementById("rm-sess").value,start:document.getElementById("rm-start").value,note:document.getElementById("rm-note").value,updatedAt:Date.now()};
+  if(!data.technology||!data.semester){toast("টেকনোলজি ও সেমিস্টার আবশ্যক","r");return}
+  (id?rRef.child(id):rRef.push()).set(data).then(()=>{toast("রুটিন সংরক্ষিত হয়েছে","g");closeM("rout-modal")}).catch(e=>toast("❌ "+e.message,"r"));
+}
+function renderRoutines(){
+  const ft=document.getElementById("rf-tech").value,fs=document.getElementById("rf-sem").value;
+  const list=routines.filter(r=>(!ft||r.technology===ft)&&(!fs||r.semester===fs));
+  const el=document.getElementById("r-list-body");
+  if(!list.length){el.innerHTML='<div class="tbl-empty">কোনো রুটিন নেই।</div>';return}
+  el.innerHTML=list.map(r=>{
+    const sj=JSON.stringify({id:r.id,technology:r.technology,semester:r.semester,shift:r.shift,group:r.group,session:r.session,start:r.start,note:r.note}).replace(/'/g,"&#39;");
+    return`<div class="rc">
+      <div class="rc-ico">📅</div>
+      <div class="rc-info">
+        <div class="rc-title">${TN[r.technology]||r.technology||'—'} — ${SN[r.semester]||r.semester||'—'} সেমিস্টার</div>
+        <div class="rc-sub">শিফট: ${r.shift==='Morning'?'সকাল':'দিন'} | গ্রুপ-${r.group||'এ'} ${r.session?'| সেশন: '+r.session:''} ${r.start?'| শুরু: '+r.start:''} ${r.note?'| '+r.note:''}</div>
+      </div>
+      <div class="rc-actions">
+        <button class="btn btn-ghost btn-xs" onclick='openRoutModal(${sj})'>✏️</button>
+        <button class="btn btn-red btn-xs" onclick="delRout('${r.id}')">🗑️</button>
+        <button class="btn btn-purple btn-xs" onclick='showRPreview(${sj})'>👁 প্রিভিউ</button>
+      </div>
+    </div>`}).join('');
+}
+function delRout(id){if(!confirm("রুটিন মুছবেন?"))return;rRef.child(id).remove().then(()=>toast("রুটিন মুছে গেছে")).catch(e=>toast("❌ "+e.message,"r"))}
+
+function saveTeacher(){
+  const data={name:document.getElementById("t-name").value.trim(),shortName:document.getElementById("t-short").value.trim(),subject:document.getElementById("t-subj").value.trim(),code:document.getElementById("t-code").value.trim(),credit:document.getElementById("t-credit").value,theory:document.getElementById("t-theory").value,practical:document.getElementById("t-prac").value,room:document.getElementById("t-room").value.trim(),lab:document.getElementById("t-lab").value.trim(),technology:document.getElementById("t-tech").value,semester:document.getElementById("t-sem").value};
+  if(!data.name||!data.subject){toast("শিক্ষকের নাম ও বিষয় আবশ্যক","r");return}
+  tRef.push(data).then(()=>{toast("সংরক্ষিত হয়েছে","g");["t-name","t-short","t-subj","t-code","t-credit","t-theory","t-prac","t-room","t-lab"].forEach(id=>{document.getElementById(id).value=''})}).catch(e=>toast("❌ "+e.message,"r"));
+}
+function renderTeachers(){
+  const el=document.getElementById("t-tbl");
+  if(!teachers.length){el.innerHTML='<div class="tbl-empty">কোনো ডেটা নেই</div>';return}
+  let html=`<table class="tbl"><thead><tr><th>শিক্ষক</th><th>বিষয়</th><th>কোড</th><th>ক্রেডিট</th><th>থিওরি</th><th>প্র্যাক</th><th>রুম</th><th>ল্যাব</th><th>বিভাগ</th><th>সেম</th><th></th></tr></thead><tbody>`;
+  teachers.forEach(t=>{html+=`<tr><td><strong>${t.name}</strong>${t.shortName?`<br><span style="font-size:10px;color:var(--ink6)">${t.shortName}</span>`:''}</td><td>${t.subject||'—'}</td><td class="mono">${t.code||'—'}</td><td>${t.credit||'—'}</td><td>${t.theory||'—'}</td><td>${t.practical||'—'}</td><td>${t.room||'—'}</td><td>${t.lab||'—'}</td><td><span class="bdg bdg-amber">${TN[t.technology]||t.technology||'—'}</span></td><td><span class="bdg bdg-blue">${SN[t.semester]||t.semester||'—'}</span></td><td><button onclick="delTeach('${t.id}')" style="background:var(--red-bg);color:var(--red);border:none;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:11.5px;font-family:var(--font)">🗑️</button></td></tr>`});
+  el.innerHTML=html+'</tbody></table>';
+}
+function delTeach(id){if(!confirm("মুছবেন?"))return;tRef.child(id).remove()}
+
+function buildGrid(tech,sem,start,dur,brk){
+  const rel=teachers.filter(t=>(!tech||t.technology===tech)&&(!sem||t.semester===sem));
+  const grid=DAYS.map((d,i)=>({day:d,slots:rel.filter((_,j)=>j%5===i).map(t=>({subject:t.subject,code:t.code,teacher:t.name,room:t.room||'—',type:parseInt(t.practical||0)>0?'প্র্যাকটিক্যাল':'থিওরি'}))}));
+  const toM=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+  const fromM=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+  const maxS=Math.max(...grid.map(d=>d.slots.length),0);
+  const slots=[];let cur=toM(start||'08:00');
+  for(let i=0;i<maxS;i++){slots.push(fromM(cur)+"–"+fromM(cur+dur));cur+=dur+brk}
+  return{grid,slots,maxS};
+}
+function showRPreview(r){
+  document.querySelectorAll(".sub-view").forEach(p=>p.classList.remove("active"));
+  document.getElementById("r-preview").classList.add("active");
+  document.querySelectorAll(".st-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".st-btn")[3]&&document.querySelectorAll(".st-btn")[3].classList.add("active");
+  const tech=r.technology,sem=r.semester,shift=r.shift,group=r.group,start=r.start||'08:00',dur=50,brk=10;
+  const{grid,slots,maxS}=buildGrid(tech,sem,start,dur,brk);
+  const meta=`<strong>${TN[tech]||tech}</strong> | ${SN[sem]||sem} সেমিস্টার | শিফট: ${shift==='Morning'?'সকাল':'দিন'} | গ্রুপ-${group} ${r.session?'| সেশন: '+r.session:''}`;
+  let html='<div class="tbl-empty">এই বিভাগে শিক্ষক/বিষয় যোগ করুন</div>';
+  if(maxS>0){
+    html=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12.5px"><thead><tr style="background:#c8d8e8"><th style="border:1px solid #7090a8;padding:8px 11px;white-space:nowrap">সময়</th>${DAYS.map(d=>`<th style="border:1px solid #7090a8;padding:8px 10px">${d}</th>`).join('')}</tr></thead><tbody>`;
+    for(let i=0;i<maxS;i++){
+      html+=`<tr style="${i%2?'background:#f0f6fc':'background:white'}"><td style="border:1px solid #7090a8;padding:7px 10px;font-size:11px;font-weight:700;color:var(--blue-h);white-space:nowrap">${slots[i]}</td>`;
+      grid.forEach(day=>{const sl=day.slots[i];if(sl){html+=`<td style="border:1px solid #7090a8;padding:7px 8px"><div style="font-weight:700;font-size:12.5px">${sl.subject}</div><div style="font-size:10.5px;color:var(--ink4)">${sl.teacher}</div><div style="font-size:10px;color:var(--ink6)">রুম: ${sl.room} | <span style="color:${sl.type==='থিওরি'?'var(--blue-h)':'var(--green)'}">${sl.type}</span></div></td>`;}else html+=`<td style="border:1px solid #7090a8;background:#f8fafc"></td>`;});
+      html+='</tr>';
+    }
+    html+='</tbody></table></div>';
+  }
+  document.getElementById("r-preview-body").innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:13px">📅 ${meta}</div>${html}`;
+  // build printable
+  document.getElementById("rp-meta").innerHTML=`<span>${TN[tech]||tech}</span><span>${SN[sem]||sem} সেমিস্টার</span><span>শিফট: ${shift==='Morning'?'সকাল':'দিন'}</span><span>গ্রুপ-${group}</span>${r.session?`<span>সেশন: ${r.session}</span>`:''}`;
+  if(maxS>0){
+    let t=`<div style="overflow:hidden;border-radius:4px;border:1.5px solid #7090a8"><table class="rout-tbl"><thead><tr><th>সময়</th>${DAYS.map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>`;
+    for(let i=0;i<maxS;i++){t+=`<tr><td style="font-weight:700;white-space:nowrap;font-size:9.5px">${slots[i]}</td>`;grid.forEach(day=>{const sl=day.slots[i];if(sl){t+=`<td><div style="font-weight:700">${sl.subject}</div><div style="font-size:9px">${sl.teacher}</div><div style="font-size:8.5px">রুম: ${sl.room}</div></td>`;}else t+=`<td></td>`;});t+='</tr>';}
+    document.getElementById("rp-tbl").innerHTML=t+'</tbody></table></div>';
+  }
+}
+function bulkGen(){
+  const tech=document.getElementById("rg-tech").value,sem=document.getElementById("rg-sem").value;
+  const shift=document.getElementById("rg-shift").value,group=document.getElementById("rg-group").value;
+  const start=document.getElementById("rg-start").value,sess=document.getElementById("rg-sess").value.trim();
+  const dur=parseInt(document.getElementById("rg-dur").value)||50,brk=parseInt(document.getElementById("rg-brk").value)||10;
+  if(!tech||!sem){toast("টেকনোলজি ও সেমিস্টার নির্বাচন করুন","r");return}
+  const rel=teachers.filter(t=>t.technology===tech&&t.semester===sem);
+  if(!rel.length){toast("এই বিভাগ/সেমিস্টারে শিক্ষক/বিষয় যোগ করুন","a");return}
+  const{grid}=buildGrid(tech,sem,start,dur,brk);
+  rRef.push({technology:tech,semester:sem,shift,group,session:sess,start,duration:dur,breakTime:brk,grid:JSON.stringify(grid),generatedAt:Date.now()}).then(()=>{
+    toast("রুটিন জেনারেট ও সেভ হয়েছে","g");
+    const gs=document.getElementById("gen-st");gs.className="statusbar ok";gs.textContent="✅ রুটিন সফলভাবে তৈরি ও ডেটাবেইজে সেভ হয়েছে।";gs.style.display="block";
+    showRPreview({technology:tech,semester:sem,shift,group,session:sess,start});
+  }).catch(e=>toast("❌ "+e.message,"r"));
+}
+function dlRoutineXlsx(){
+  const tech=document.getElementById("rg-tech").value,sem=document.getElementById("rg-sem").value;
+  const rel=teachers.filter(t=>(!tech||t.technology===tech)&&(!sem||t.semester===sem));
+  if(!rel.length){toast("শিক্ষক/বিষয় যোগ করুন অথবা টেকনোলজি নির্বাচন করুন","a");return}
+  const wb=XLSX.utils.book_new();
+  const rows=[["দিন","বিষয়","বিষয় কোড","শিক্ষক","ক্রেডিট","থিওরি ঘণ্টা","প্র্যাক ঘণ্টা","রুম","ল্যাব","ধরন"]];
+  DAYS.forEach((d,i)=>{rel.filter((_,j)=>j%5===i).forEach(t=>{rows.push([d,t.subject,t.code,t.name,t.credit,t.theory,t.practical,t.room||'—',t.lab||'—',parseInt(t.practical||0)>0?'প্র্যাকটিক্যাল':'থিওরি'])})});
+  const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:12},{wch:28},{wch:10},{wch:22},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws,"রুটিন");XLSX.writeFile(wb,"routine.xlsx");toast("Excel ডাউনলোড হয়েছে","g");
+}
+
+/* ════════ QUESTION PAPER ════════ */
+function addQ(sec){
+  const marks=document.getElementById("m"+sec).value||'—';
+  const id=Date.now();qData[sec].push({id,text:'',marks});renderQSec(sec);
+  setTimeout(()=>{const el=document.getElementById("qi-"+id);if(el){el.focus();el.style.height='auto';el.style.height=el.scrollHeight+'px'}},80);
+}
+function delQ(sec,id){qData[sec]=qData[sec].filter(q=>q.id!==id);renderQSec(sec)}
+function updQ(sec,id,val){const q=qData[sec].find(x=>x.id===id);if(q)q.text=val}
+function renderQSec(sec){
+  const bd=document.getElementById("qb"+sec);
+  if(!qData[sec].length){bd.innerHTML='<div class="q-empty">প্রশ্ন যোগ করুন</div>';return}
+  bd.innerHTML=qData[sec].map((q,i)=>`
+    <div class="q-item">
+      <span class="q-n">${toBn(i+1)}.</span>
+      <textarea class="q-inp" id="qi-${q.id}" rows="1" placeholder="প্রশ্ন লিখুন…" oninput="updQ('${sec}',${q.id},this.value);this.style.height='auto';this.style.height=this.scrollHeight+'px'">${q.text}</textarea>
+      <span class="q-mbdg">${q.marks} নম্বর</span>
+      <button class="q-del" onclick="delQ('${sec}',${q.id})" title="মুছুন">✕</button>
+    </div>`).join('');
+  qData[sec].forEach(q=>{const el=document.getElementById("qi-"+q.id);if(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}});
+}
+function buildQPrint(){
+  const subj=document.getElementById("qp-subj").value,code=document.getElementById("qp-code").value;
+  const type=document.getElementById("qp-type").value,total=document.getElementById("qp-total").value;
+  const date=document.getElementById("qp-date").value,time=document.getElementById("qp-time").value;
+  const tech=document.getElementById("qp-tech").value,sem=document.getElementById("qp-sem").value;
+  document.getElementById("qp-ph-type").textContent=type+(tech?` — ${TN[tech]||tech}`:'')+(sem?` (${SN[sem]||sem} সেমিস্টার)`:'');
+  document.getElementById("qp-ph-subj").textContent=subj||'—';document.getElementById("qp-ph-code").textContent=code||'—';
+  document.getElementById("qp-ph-total").textContent=total||'—';document.getElementById("qp-ph-time").textContent=time||'—';
+  document.getElementById("qp-ph-date").textContent=date?new Date(date).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'}):'—';
+  const secs=[{k:'A',l:'বিভাগ-ক: অতি সংক্ষিপ্ত প্রশ্ন'},{k:'B',l:'বিভাগ-খ: সংক্ষিপ্ত প্রশ্ন'},{k:'C',l:'বিভাগ-গ: রচনামূলক প্রশ্ন'}];
+  let body='';
+  secs.forEach(({k,l})=>{
+    if(!qData[k].length)return;
+    body+=`<div class="qp-stitle">${l}</div>`;
+    qData[k].forEach((q,i)=>{body+=`<div class="qp-q"><span class="qp-qn">${toBn(i+1)}.</span><span class="qp-qt">${q.text||'(প্রশ্ন লেখা হয়নি)'}</span><span class="qp-qm">${q.marks} নম্বর</span></div>`});
+  });
+  document.getElementById("qp-print-body").innerHTML=body||'<div style="text-align:center;color:#aaa;padding:24px;font-size:13px">প্রশ্ন যোগ করুন</div>';
+}
+function saveQP(){
+  const data={technology:document.getElementById("qp-tech").value,semester:document.getElementById("qp-sem").value,subject:document.getElementById("qp-subj").value.trim(),code:document.getElementById("qp-code").value.trim(),type:document.getElementById("qp-type").value,total:document.getElementById("qp-total").value,date:document.getElementById("qp-date").value,time:document.getElementById("qp-time").value,sections:{A:qData.A,B:qData.B,C:qData.C},savedAt:Date.now()};
+  if(!data.subject){toast("বিষয়ের নাম আবশ্যক","r");return}
+  buildQPrint();document.getElementById("qp-print").style.display="block";
+  qRef.push(data).then(()=>toast("প্রশ্নপত্র সংরক্ষিত হয়েছে","g")).catch(e=>toast("❌ "+e.message,"r"));
+}
+function printQP(){buildQPrint();document.getElementById("qp-print").style.display="block";setTimeout(()=>window.print(),200)}
+function loadQPs(){
+  const wrap=document.getElementById("qp-saved");
+  if(wrap.style.display==="block"){wrap.style.display="none";return}
+  wrap.style.display="block";document.getElementById("qp-saved-tbl").innerHTML='<div class="tbl-empty">লোড হচ্ছে…</div>';
+  qRef.once("value",snap=>{
+    const d=snap.val();
+    if(!d){document.getElementById("qp-saved-tbl").innerHTML='<div class="tbl-empty">কোনো সংরক্ষিত প্রশ্নপত্র নেই</div>';return}
+    const list=Object.entries(d).map(([k,v])=>({...v,id:k})).sort((a,b)=>b.savedAt-a.savedAt);
+    let html=`<table class="tbl"><thead><tr><th>বিষয়</th><th>কোড</th><th>বিভাগ</th><th>সেম</th><th>ধরন</th><th>তারিখ</th><th>একশন</th></tr></thead><tbody>`;
+    list.forEach(q=>{html+=`<tr><td style="font-weight:600">${q.subject||'—'}</td><td class="mono">${q.code||'—'}</td><td><span class="bdg bdg-amber">${TN[q.technology]||q.technology||'—'}</span></td><td><span class="bdg bdg-blue">${SN[q.semester]||q.semester||'—'}</span></td><td>${q.type||'—'}</td><td style="font-size:11.5px">${q.date||'—'}</td>
+    <td style="display:flex;gap:5px;padding:7px 10px">
+      <button onclick="loadQPData('${q.id}')" style="background:var(--blue-bg);color:var(--blue-h);border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600">লোড</button>
+      <button onclick="delQP('${q.id}')" style="background:var(--red-bg);color:var(--red);border:none;border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600">🗑️</button>
+    </td></tr>`});
+    document.getElementById("qp-saved-tbl").innerHTML=html+'</tbody></table>';
+  });
+}
+function loadQPData(id){
+  qRef.child(id).once("value",snap=>{
+    const q=snap.val();if(!q)return;
+    document.getElementById("qp-tech").value=q.technology||'';document.getElementById("qp-sem").value=q.semester||'';
+    document.getElementById("qp-subj").value=q.subject||'';document.getElementById("qp-code").value=q.code||'';
+    document.getElementById("qp-type").value=q.type||'মিড-টার্ম পরীক্ষা';document.getElementById("qp-total").value=q.total||'১০০';
+    document.getElementById("qp-date").value=q.date||'';document.getElementById("qp-time").value=q.time||'';
+    qData={A:(q.sections&&q.sections.A)||[],B:(q.sections&&q.sections.B)||[],C:(q.sections&&q.sections.C)||[]};
+    ['A','B','C'].forEach(s=>renderQSec(s));
+    document.getElementById("qp-saved").style.display="none";toast("প্রশ্নপত্র লোড হয়েছে","g");
+  });
+}
+function delQP(id){if(!confirm("মুছবেন?"))return;qRef.child(id).remove().then(()=>{toast("মুছে ফেলা হয়েছে");loadQPs()}).catch(e=>toast("❌ "+e.message,"r"))}
+
+/* ════════ TOAST ════════ */
+let _tt=null;
+function toast(msg,type=''){
+  const t=document.getElementById("toast");t.textContent=msg;
+  t.className='show'+(type?' '+type:'');
+  if(_tt)clearTimeout(_tt);_tt=setTimeout(()=>t.className='',3200);
+}
+
+document.addEventListener("mousemove",(e)=>{
+  document.documentElement.style.setProperty(
+    "--mx",
+    e.clientX + "px"
+  );
+
+  document.documentElement.style.setProperty(
+    "--my",
+    e.clientY + "px"
+  );
+});
+
+</script>
+</body>
+</html>
