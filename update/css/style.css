@@ -1,0 +1,10 @@
+:root{
+  --ink:#0c1220;
+  --blue:#1e5fd4;
+  --surface:#ffffff;
+  --bg:#eef3fa;
+}
+
+body{
+  background:var(--bg);
+}

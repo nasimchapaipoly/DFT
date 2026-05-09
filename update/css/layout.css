@@ -1,0 +1,8 @@
+#sidebar{
+  position:fixed;
+  width:248px;
+}
+
+#main{
+  margin-left:248px;
+}
