@@ -1,0 +1,57 @@
+[
+  {
+    "id": "n001",
+    "type": "update",
+    "icon": "🔔",
+    "title": "Welcome to NASIM-TV OTT Live",
+    "body": "Enjoy free live TV streaming — HD quality available 📺",
+    "date": "29 May 2026",
+    "unread": true
+  },
+  {
+    "id": "n002",
+    "type": "channels",
+    "icon": "📡",
+    "title": "Channels Updated",
+    "body": "New Bangla, Sports & International channels added. Please refresh to see the latest list.",
+    "date": "28 May 2026",
+    "unread": true
+  },
+  {
+    "id": "n003",
+    "type": "live",
+    "icon": "🔴",
+    "title": "LIVE NOW: IPL 2026 Semi Final",
+    "body": "Mumbai Indians vs CSK — Live on GTV & T Sports right now!",
+    "date": "28 May 2026",
+    "unread": true
+  },
+  {
+    "id": "n004",
+    "type": "telegram",
+    "icon": "✈️",
+    "title": "Join Our Telegram Channel",
+    "body": "Get instant updates, new channel links and support. Tap to join our Telegram group.",
+    "date": "27 May 2026",
+    "unread": false,
+    "link": "https://t.me/+3nozzGlckhE0NDk1"
+  },
+  {
+    "id": "n005",
+    "type": "notice",
+    "icon": "⚠️",
+    "title": "Stream Quality Notice",
+    "body": "Some streams may buffer during peak hours. Use the ⚙️ quality selector to lower resolution for smoother playback.",
+    "date": "26 May 2026",
+    "unread": false
+  },
+  {
+    "id": "n006",
+    "type": "event",
+    "icon": "🏏",
+    "title": "Upcoming: GT vs RR — IPL",
+    "body": "Gujarat Titans vs Rajasthan Royals tonight at 8:00 PM. Tune in on T Sports or GTV!",
+    "date": "29 May 2026",
+    "unread": false
+  }
+]

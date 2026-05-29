@@ -1,0 +1,156 @@
+[
+  {
+    "id": "ev001",
+    "sport": "CRICKET",
+    "league": "Indian Premier League 2026",
+    "team1": { "name": "Gujarat Titans", "short": "GT", "flag": "🏏" },
+    "team2": { "name": "Rajasthan Royals", "short": "RR", "flag": "🏏" },
+    "time": "08:00 PM",
+    "date": "29/05/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 8 Hours"
+  },
+  {
+    "id": "ev002",
+    "sport": "CRICKET",
+    "league": "Test Series | Ireland vs New Zealand",
+    "team1": { "name": "Ireland", "short": "IRE", "flag": "🇮🇪" },
+    "team2": { "name": "New Zealand", "short": "NZ", "flag": "🇳🇿" },
+    "time": "04:00 PM",
+    "date": "28/05/2026",
+    "status": "recent",
+    "countdown": "Match Ended"
+  },
+  {
+    "id": "ev003",
+    "sport": "FOOTBALL",
+    "league": "International Friendly Games",
+    "team1": { "name": "Egypt", "short": "EGY", "flag": "🇪🇬" },
+    "team2": { "name": "Russia", "short": "RUS", "flag": "🇷🇺" },
+    "time": "12:00 AM",
+    "date": "29/05/2026",
+    "status": "recent",
+    "countdown": "Match Ended"
+  },
+  {
+    "id": "ev004",
+    "sport": "FOOTBALL",
+    "league": "International Friendly Games",
+    "team1": { "name": "Ireland", "short": "IRL", "flag": "🇮🇪" },
+    "team2": { "name": "Qatar", "short": "QAT", "flag": "🇶🇦" },
+    "time": "12:45 AM",
+    "date": "29/05/2026",
+    "status": "recent",
+    "countdown": "Match Ended"
+  },
+  {
+    "id": "ev005",
+    "sport": "FOOTBALL",
+    "league": "UEFA Champions League Final",
+    "team1": { "name": "Real Madrid", "short": "RMA", "flag": "⚽" },
+    "team2": { "name": "Manchester City", "short": "MCI", "flag": "⚽" },
+    "time": "10:00 PM",
+    "date": "31/05/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 2 days"
+  },
+  {
+    "id": "ev006",
+    "sport": "BOXING",
+    "league": "WWE | Friday Night SmackDown",
+    "team1": { "name": "SmackDown", "short": "WWE", "flag": "🤼" },
+    "team2": { "name": "SmackDown", "short": "WWE", "flag": "🤼" },
+    "time": "06:00 AM",
+    "date": "30/05/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 18 Hours"
+  },
+  {
+    "id": "ev007",
+    "sport": "BOXING",
+    "league": "UFC Fight Night",
+    "team1": { "name": "Yadong Song", "short": "SON", "flag": "🥊" },
+    "team2": { "name": "Figueiredo", "short": "FIG", "flag": "🥊" },
+    "time": "03:00 PM",
+    "date": "30/05/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 1 day"
+  },
+  {
+    "id": "ev008",
+    "sport": "BOXING",
+    "league": "WWE | Monday Night RAW",
+    "team1": { "name": "WWE RAW", "short": "RAW", "flag": "🤼" },
+    "team2": { "name": "WWE RAW", "short": "RAW", "flag": "🤼" },
+    "time": "06:00 AM",
+    "date": "02/06/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 4 days"
+  },
+  {
+    "id": "ev009",
+    "sport": "MOTORSPORT",
+    "league": "MotoGP | Italian Grand Prix",
+    "team1": { "name": "MotoGP", "short": "MGP", "flag": "🏍️" },
+    "team2": { "name": "Qualifying", "short": "QUA", "flag": "🏍️" },
+    "time": "02:45 PM",
+    "date": "29/05/2026",
+    "status": "upcoming",
+    "countdown": "Starting Soon"
+  },
+  {
+    "id": "ev010",
+    "sport": "MOTORSPORT",
+    "league": "Formula 1 | Canadian Grand Prix",
+    "team1": { "name": "Formula 1", "short": "F1", "flag": "🏎️" },
+    "team2": { "name": "Race Day", "short": "F1", "flag": "🏁" },
+    "time": "07:00 PM",
+    "date": "08/06/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 10 days"
+  },
+  {
+    "id": "ev011",
+    "sport": "TENNIS",
+    "league": "Roland-Garros | French Open",
+    "team1": { "name": "Roland-Garros", "short": "FO", "flag": "🎾" },
+    "team2": { "name": "Finals", "short": "FNL", "flag": "🏆" },
+    "time": "03:00 PM",
+    "date": "08/06/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 10 days"
+  },
+  {
+    "id": "ev012",
+    "sport": "TENNIS",
+    "league": "Roland-Garros | Semi Finals",
+    "team1": { "name": "Alcaraz", "short": "ALC", "flag": "🇪🇸" },
+    "team2": { "name": "Sinner", "short": "SIN", "flag": "🇮🇹" },
+    "time": "04:30 PM",
+    "date": "30/05/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 1 day"
+  },
+  {
+    "id": "ev013",
+    "sport": "CRICKET",
+    "league": "IPL 2026 | Semi Final 1",
+    "team1": { "name": "Mumbai Indians", "short": "MI", "flag": "🔵" },
+    "team2": { "name": "CSK", "short": "CSK", "flag": "🟡" },
+    "time": "07:30 PM",
+    "date": "28/05/2026",
+    "status": "live",
+    "countdown": "🔴 LIVE NOW"
+  },
+  {
+    "id": "ev014",
+    "sport": "FOOTBALL",
+    "league": "Bangladesh Premier League",
+    "team1": { "name": "Bashundhara Kings", "short": "BK", "flag": "🇧🇩" },
+    "team2": { "name": "Sheikh Russel KC", "short": "SR", "flag": "🇧🇩" },
+    "time": "06:00 PM",
+    "date": "29/05/2026",
+    "status": "upcoming",
+    "countdown": "Starts in 4 Hours"
+  }
+]
