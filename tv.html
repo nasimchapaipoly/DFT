@@ -3,75 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFT Live Player</title>
+    <title>DFT Live TV</title>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dash-shaka-playback@latest/dist/dash-shaka-playback.min.js"></script>
     
     <style>
-        body {
+        body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            font-family: sans-serif;
+            overflow: hidden;
         }
-        .video-container {
-            width: 100%;
-            max-width: 854px;
-            aspect-ratio: 16 / 9;
-            background-color: #000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        #player {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw;
+            max-height: 100vh;
         }
-        video {
-            width: 100%;
-            height: 100%;
+        /* Make sure player interface scales cleanly on mobile screens */
+        .clappr-video {
+            background-color: #000 !important;
         }
     </style>
 </head>
 <body>
 
-    <div class="video-container" data-shaka-player-container>
-        <video autoplay muted data-shaka-player id="video"></video>
-    </div>
+    <div id="player"></div>
 
     <script>
-        async function initPlayer() {
-            const video = document.getElementById('video');
-            const videoContainer = document.querySelector('[data-shaka-player-container]');
-            
-            // Initialize Shaka Player
-            const player = new shaka.Player(video);
-            
-            // Setting up the UI controls overlay
-            const ui = new shaka.ui.Overlay(player, videoContainer, video);
-            
-            // The Target Secure Stream via an open reverse proxy to inject headers
-            const rawStreamUrl = "https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/ch299/default/index.mpd";
-            const workableUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawStreamUrl);
+        document.addEventListener("DOMContentLoaded", function() {
+            // Target live stream link
+            const targetMpd = "https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/ch299/default/index.mpd";
 
-            // Configure player networking to mask request routing
-            player.getNetworkingEngine().registerRequestFilter(function(type, request) {
-                // Mimic the authorized origins headers inside the request flow
-                request.headers['X-Requested-With'] = 'XMLHttpRequest';
+            // Initialize the Clappr player layout identical to third-party streaming web links
+            var player = new Clappr.Player({
+                source: targetMpd,
+                parentId: "#player",
+                plugins: [DashShakaPlayback],
+                shakaPlayback: {
+                    // Tell the internal player routing engine to force pass credential headers
+                    crossOrigin: 'anonymous'
+                },
+                preload: 'auto',
+                autoPlay: true,
+                muted: true, // Standard browser security requirement to allow autoplay execution
+                width: '100%',
+                height: '100%',
+                mimeType: 'application/dash+xml',
+                mediacontrol: { seekbar: '#007aff', buttons: '#ffffff' }
             });
-
-            try {
-                // Load the reworked playable link configuration
-                await player.load(workableUrl);
-                console.log('The live stream has loaded successfully!');
-            } catch (error) {
-                console.error('Playback Error Code:', error.code, error);
-            }
-        }
-
-        // Make sure browser engine supports media features before loading
-        document.addEventListener('shaka-ui-loaded', initPlayer);
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!window['shaka']) { console.error('Shaka player CDN failed to load.'); }
         });
     </script>
 
