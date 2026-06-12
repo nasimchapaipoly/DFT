@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nasim TV OTT - Premium Pro Ecosystem</title>
+
+<!-- Core Media Processing Engines and Component Stylesheets -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
+
+<!-- HLS.js Integration for Flawless IPTV .m3u8 Parsing -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<!-- Asynchronous Firebase Realtime Database Storage CDN Layers -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080e;
+  --panel:#0d111e;
+  --panel-light:#151b2e;
+  --bdr:#1d263f;
+  --accent:#007aff;
+  --accent-glow:rgba(0,122,255,0.4);
+  --orange:#ff6b00;
+  --orange-glow:rgba(255,107,0,0.3);
+  --live-green:#00b87c;
+  --sports-bdr:#10b981;
+  --err:#ff3b30;
+  --txt:#ffffff;
+  --mut:#6c7a9c;
+}
+html,body{
+  height:100%;
+  background:#000000;
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Precise Viewport Structural Wrapper */
+.app{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  width:100%;
+  max-width:480px;
+  margin:0 auto;
+  background:var(--bg);
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 0 50px rgba(0,0,0,0.85);
+}
+
+/* ── CINEMATIC APP SPLASH INTERFACE ── */
+.app-splash {
+  position:absolute;
+  inset:0;
+  background:#07090e;
+  z-index:2500;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  opacity:1;
+  visibility:visible;
+  transition:opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.4s;
+}
+.app-splash.hidden { opacity:0; visibility:hidden; pointer-events:none }
+.splash-container { display:flex; flex-direction:column; align-items:center; text-align:center; width:100% }
+.splash-logo-wrap { position:relative; width:120px; height:120px; display:flex; align-items:center; justify-content:center; margin-bottom:40px }
+.splash-glow-aura { position:absolute; width:160px; height:160px; background:radial-gradient(circle, rgba(255,107,0,0.18) 0%, rgba(0,0,0,0) 70%); border-radius:50%; animation: s-pulse 2s infinite alternate ease-in-out }
+.splash-logo-box { position:relative; width:80px; height:80px; background:#000; border-radius:14px; border:1px solid rgba(255,107,0,0.25); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 25px rgba(0,0,0,0.5) }
+.splash-logo-icon { font-size:32px; font-weight:900; color:var(--orange); line-height:1 }
+.splash-title { font-size:34px; font-weight:800; letter-spacing:1.5px; color:#ffffff; margin-bottom:10px }
+.splash-subtitle { font-size:12px; font-weight:700; color:#10b981; letter-spacing:3px; text-transform:uppercase; margin-bottom:40px }
+.splash-loader-line { width:120px; height:3px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden; position:relative }
+.splash-loader-bar { position:absolute; left:0; top:0; height:100%; width:40%; background:linear-gradient(90deg, var(--accent) 0%, var(--orange) 100%); animation: s-slide 1.4s infinite ease-in-out }
+.splash-error-view { display:none; flex-direction:column; align-items:center; gap:16px; margin-top:12px; z-index:10 }
+
+@keyframes s-pulse { 0% { transform: scale(0.95); opacity: 0.7 } 100% { transform: scale(1.05); opacity: 1 } }
+@keyframes s-slide { 0% { left: -45%; width: 35% } 50% { width: 55% } 100% { left: 105%; width: 35% } }
+
+/* ── APPLICATION STATUS HEADER BLOCK ── */
+.app-header{
+  height:58px;
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  padding:0 16px;
+  gap:14px;
+  border-bottom:1px solid rgba(255,255,255,0.02);
+  z-index:90;
+  flex-shrink:0;
+}
+.hdr-icon{ background:transparent; border:none; color:var(--txt); cursor:pointer; display:flex; align-items:center; justify-content:center }
+.hdr-icon svg{ width:22px; height:22px; fill:currentColor }
+.brand-title{ font-size:22px; font-weight:900; letter-spacing:0.2px; display:flex; align-items:center; gap:8px }
+.badge-ott{ background:var(--live-green); color:#000000; font-size:11px; font-weight:900; padding:3px 7px; border-radius:5px; text-transform:uppercase }
+.hdr-spacer{ flex:1 }
+.hdr-right-actions{ display:flex; align-items:center; gap:16px }
+.badge-container{ position:relative }
+.count-badge{ position:absolute; top:-5px; right:-5px; background:var(--err); color:#ffffff; font-size:9px; font-weight:700; width:15px; height:15px; border-radius:50%; display:flex; align-items:center; justify-content:center }
+.profile-avatar-emblem{ width:26px; height:26px; border-radius:50%; background:var(--orange); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:700; cursor:pointer }
+
+/* ── NAVIGATION SLIDER DRAWERS MENU ── */
+.drawer-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,0.6); z-index:150; opacity:0; pointer-events:none; transition:opacity 0.3s ease }
+.drawer-backdrop.show{ opacity:1; pointer-events:auto }
+.sidebar-drawer{ position:absolute; top:0; bottom:0; left:-300px; width:290px; background:#0f1424; z-index:161; display:flex; flex-direction:column; transition:left 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow:10px 0 30px rgba(0,0,0,0.5) }
+.sidebar-drawer.open{ left:0 }
+.drawer-header{ padding:20px; display:flex; flex-direction:column; width:100%; border-bottom:1px solid rgba(255,255,255,0.04) }
+.admin-profile-card { background:var(--orange); border-radius:18px; padding:18px; display:flex; flex-direction:column; gap:12px }
+.admin-avatar { width:40px; height:40px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:#fff }
+.admin-name { font-size:16px; font-weight:800; color:#fff }
+.admin-email { font-size:11px; color:rgba(255,255,255,0.85); margin-top:-4px }
+.drawer-scroll-body{ flex:1; overflow-y:auto; padding:12px 8px }
+.menu-item{ display:flex; align-items:center; gap:16px; padding:14px; color:#ffffff; font-size:15px; font-weight:600; border-radius:12px; cursor:pointer; background:transparent; border:none; width:100%; text-align:left; transition:all 0.15s ease }
+.menu-item.active { background:var(--panel-light); color:var(--orange) }
+.menu-item svg{ width:22px; height:22px; fill:currentColor; color:var(--mut) }
+.menu-item.active svg { color:var(--orange) }
+
+/* ── HIGH SPECs CONTROLLER MEDIA PLAYER ── */
+.video-wrap-outer{ position:relative; background:#000000; width:100%; flex-shrink:0 }
+.ambient-glow { position:absolute; inset:4px; background:transparent; box-shadow:0 0 40px rgba(0, 122, 255, 0); transition:box-shadow 0.8s ease; pointer-events:none; z-index:1 }
+.video-wrap{ position:relative; width:100%; aspect-ratio:16/9; background:#000000; overflow:hidden; user-select:none; z-index:2 }
+video{ width:100%; height:100%; display:block; object-fit:contain }
+
+.player-controls{
+  position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.9) 100%); display:flex; flex-direction:column; justify-content:space-between; padding:12px; opacity:0; transition:opacity 0.2s ease, visibility 0.2s; visibility:hidden; z-index:25;
+}
+.video-wrap:hover .player-controls, .player-controls.keep-visible{ opacity:1; visibility:visible }
+
+.gesture-zone-left, .gesture-zone-right{ position:absolute; top:15%; bottom:20%; width:30%; z-index:22 }
+.gesture-zone-left{ left:0 } .gesture-zone-right{ right:0 }
+.ripple-indicator{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); padding:12px 20px; border-radius:30px; font-size:11px; font-weight:800; color:#fff; pointer-events:none; opacity:0; transition:all 0.2s ease; z-index:23; display:flex; flex-direction:column; align-items:center; gap:4px }
+.ripple-left{ left:40px; transform:translateY(-50%) scale(0.7) }
+.ripple-right{ right:40px; transform:translateY(-50%) scale(0.7) }
+.ripple-indicator.animate-ripple{ opacity:1; transform:translateY(-50%) scale(1) }
+
+.ctrl-top-row{ display:flex; width:100%; align-items:flex-start; justify-content:space-between }
+.now-playing-meta-block{ display:flex; flex-direction:column; gap:2px }
+.np-lbl-caps{ font-size:9px; font-weight:900; text-transform:uppercase; color:var(--orange); letter-spacing:0.5px }
+.np-stream-title { font-size:13px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px }
+.top-right-badges-panel{ display:flex; align-items:center; gap:8px }
+.badge-drm-pill{ background:rgba(255,107,0,0.15); border:1px solid var(--orange); color:var(--orange); font-size:9px; font-weight:800; padding:3px 8px; border-radius:4px; text-transform:uppercase; display:flex; align-items:center; gap:4px }
+.badge-drm-pill::before{ content:''; width:4px; height:4px; background:var(--orange); border-radius:50% }
+
+.stats-board-overlay{ position:absolute; top:10px; left:10px; background:rgba(13, 17, 30, 0.9); border:1px solid var(--bdr); border-radius:10px; padding:10px; font-family:monospace; font-size:9px; color:var(--txt); z-index:28; pointer-events:none; display:none; line-height:1.4 }
+.stats-board-overlay.show{ display:block }
+.stats-line span{ color:var(--orange) }
+
+.ctrl-bottom-panel{ display:flex; flex-direction:column; width:100%; gap:4px }
+.seek-track-wrapper{ width:100%; display:flex; align-items:center; padding:4px 0 }
+.seek-bar{ width:100%; -webkit-appearance:none; appearance:none; height:4px; background:rgba(255,255,255,0.25); border-radius:2px; outline:none; cursor:pointer }
+.seek-bar::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:12px; height:12px; border-radius:50%; background:var(--orange); cursor:pointer }
+.ctrl-bottom-actions-grid{ display:flex; width:100%; align-items:center; justify-content:space-between }
+.hud-left-layout-group{ display:flex; align-items:center; gap:12px }
+.flat-hud-btn{ background:transparent; border:none; color:#ffffff; cursor:pointer; display:flex; align-items:center; justify-content:center }
+.hud-text-metric{ font-size:11px; font-weight:700 }
+.hud-sub-label-dim{ font-size:11px; font-weight:500; color:var(--mut) }
+.hud-right-layout-group{ display:flex; align-items:center; gap:14px }
+.green-accent-line{ height:3px; background:var(--orange); width:100%; z-index:21; flex-shrink:0 }
+
+/* Core Status Information Flags Overlays */
+.status-ov{ position:absolute; inset:0; background:rgba(6,8,14,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; z-index:30 }
+.status-ov.hidden{ display:none }
+.spinner{ width:30px; height:30px; border:3px solid rgba(255,255,255,0.05); border-top-color:var(--orange); border-radius:50%; animation:spin 0.65s linear infinite }
+@keyframes spin{to{transform:rotate(360deg)}}
+.err-notice-bold{ color:var(--err); font-weight:800; font-size:13px; margin-top:4px; text-transform:uppercase; text-align:center; }
+
+/* ── VIEW SWITCHABLE GRID CONTAINER LAYOUT PANELS ── */
+.view-panel{ display:none; flex-direction:column; flex:1; overflow-y:auto; padding:12px 12px 75px 12px; background:var(--bg); scrollbar-width:none }
+.view-panel::-webkit-scrollbar { display:none }
+.view-panel.active-view{ display:flex }
+
+.deck-filter-row{ display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-shrink:0 }
+.search-box-wrap{ position:relative; flex:1 }
+.search-box-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:15px; height:15px; fill:var(--mut) }
+.search-input{ width:100%; background:var(--panel); border:1px solid var(--bdr); border-radius:8px; padding:9px 12px 9px 36px; color:var(--txt); font-size:13px; outline:none }
+.search-sq-btn{ width:38px; height:38px; background:var(--panel); border:1px solid var(--bdr); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--txt); cursor:pointer }
+
+.sort-chips-line{ display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-shrink:0 }
+.sort-chip{ background:var(--panel); border:1px solid var(--bdr); color:var(--txt); font-size:12px; font-weight:700; padding:6px 16px; border-radius:6px; cursor:pointer }
+.sort-chip.active{ background:var(--orange); border-color:var(--orange) }
+.cat-row{ display:flex; gap:6px; overflow-x:auto; padding-bottom:12px; flex-shrink:0; scrollbar-width:none }
+.cat-row::-webkit-scrollbar{display:none}
+.cat-pill{ background:var(--panel); border:1px solid var(--bdr); color:var(--mut); border-radius:20px; padding:6px 16px; font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer }
+.cat-pill.active{ background:var(--orange); border-color:var(--orange); color:#ffffff }
+
+/* STRICT 3-COLUMN LOGO CARDS GRID FRAME */
+.ch-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; align-content:start }
+.ch-card{ background:#ffffff; border-radius:12px; padding:10px 6px; display:flex; flex-direction:column; align-items:center; justify-content:center; height:105px; width:100%; cursor:pointer; border:3px solid transparent; box-shadow:0 4px 8px rgba(0,0,0,0.15) }
+.ch-card.active{ border-color:var(--orange); box-shadow:0 0 10px rgba(255,107,0,0.3) }
+.ch-card-logo-container{ width:100%; height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; overflow:hidden }
+.ch-card-logo{ max-width:100%; max-height:100%; object-fit:contain }
+.ch-card-ph{ font-size:24px; color:#475569 }
+.ch-card-name{ font-size:10px; font-weight:700; color:#0f172a; text-align:center; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 2px }
+
+/* ── SPORTS SCHEDULER VIEW PANELS ── */
+.sports-icons-strip{ display:flex; gap:12px; overflow-x:auto; padding-bottom:12px; flex-shrink:0; scrollbar-width:none }
+.sports-icons-strip::-webkit-scrollbar { display:none }
+.sport-icon-btn{ position:relative; width:44px; height:44px; border-radius:50%; background:var(--panel); border:1px solid var(--bdr); display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; color:var(--txt) }
+.sport-icon-btn.active{ border-color:var(--sports-bdr); box-shadow:0 0 8px rgba(16,185,129,0.3) }
+.sport-icon-btn svg{ width:20px; height:20px; fill:currentColor }
+.match-card{ background:var(--panel); border:1px solid var(--bdr); border-radius:16px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; margin-bottom:10px; cursor:pointer }
+.match-header-meta{ display:flex; align-items:center; justify-content:center; gap:6px; font-size:11px; font-weight:700; color:var(--mut) }
+.match-body-teams{ display:flex; align-items:center; justify-content:space-between; position:relative }
+.team-side{ display:flex; align-items:center; gap:10px; width:40% }
+.team-side.left-side{ justify-content:flex-start }
+.team-side.right-side{ justify-content:flex-end; text-align:right }
+.team-badge-circle{ width:34px; height:34px; border-radius:50%; background:var(--panel-light); display:flex; align-items:center; justify-content:center; font-size:16px }
+.team-title-lbl{ font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.match-center-timeline{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px }
+.live-dot-indicator{ display:flex; align-items:center; gap:4px; font-size:10px; font-weight:800; color:var(--err); text-transform:uppercase }
+.live-dot-indicator::before{ content:''; width:5px; height:5px; border-radius:50%; background:var(--err) }
+.match-timer-clock{ font-size:14px; font-weight:700; font-family:monospace }
+
+/* ── ADMIN MANAGEMENT SUITE HOUSINGS ── */
+.admin-subnav-strip { display:flex; gap:14px; overflow-x:auto; padding-bottom:12px; margin-bottom:16px; border-bottom:1px solid var(--bdr); flex-shrink:0; scrollbar-width:none }
+.admin-subnav-strip::-webkit-scrollbar { display:none }
+.subnav-btn { background:transparent; border:none; color:var(--mut); font-size:14px; font-weight:700; padding:6px 12px; cursor:pointer; border-radius:8px; white-space:nowrap }
+.subnav-btn.active { background:var(--panel-light); color:var(--orange); box-shadow:inset 0 0 0 1px var(--bdr) }
+.stats-dashboard-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:16px }
+.stat-node-card { background:var(--panel); border:1px solid var(--bdr); border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:6px }
+.stat-node-label { font-size:12px; font-weight:600; color:var(--mut) }
+.stat-node-value { font-size:28px; font-weight:900 }
+.stat-node-value.value-orange { color:var(--orange) }
+.stat-node-value.value-green { color:var(--live-green) }
+.panel-card { background:var(--panel); border:1px solid var(--bdr); border-radius:16px; padding:16px; margin-bottom:16px; display:flex; flex-direction:column; gap:14px }
+.panel-card h3 { font-size:15px; font-weight:700 }
+.marquee-container { background:var(--bg); border:1px solid var(--bdr); border-radius:6px; padding:12px; color:var(--txt); font-size:13px; line-height:1.5; min-height:80px; position:relative }
+.marquee-lbl-ctx { position:absolute; top:-8px; left:10px; background:var(--panel); font-size:10px; color:var(--mut); padding:0 6px; border-radius:4px }
+.field-container { display:flex; flex-direction:column; gap:6px; width:100% }
+.field-container label { font-size:11px; font-weight:700; color:var(--mut); text-transform:uppercase }
+.form-input-field { width:100%; background:var(--panel-light); border:1px solid var(--bdr); border-radius:8px; padding:11px 14px; color:#fff; font-size:13px; outline:none }
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:4px 0 }
+.switch-control { position:relative; display:inline-block; width:44px; height:24px }
+.switch-control input { opacity:0; width:0; height:0 }
+.slider-thumb { position:absolute; inset:0; background-color:var(--panel-light); border:1px solid var(--bdr); border-radius:24px; cursor:pointer; transition:0.3s }
+.slider-thumb:before { position:absolute; content:""; height:16px; width:16px; left:3px; bottom:3px; background-color:#fff; border-radius:50%; transition:0.3s }
+input:checked + .slider-thumb { background-color:var(--orange); border-color:var(--orange) }
+input:checked + .slider-thumb:before { transform:translateX(20px) }
+.orange-action-btn { width:100%; background:var(--orange); color:#fff; border:none; border-radius:10px; padding:12px; font-size:14px; font-weight:700; cursor:pointer }
+.repo-header-block { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px }
+.repo-header-block h2 { font-size:18px; font-weight:800 }
+.mini-orange-btn { background:var(--orange); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer }
+.repo-item { background:var(--panel); border:1px solid var(--bdr); border-radius:12px; padding:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px }
+.repo-meta { display:flex; flex-direction:column; gap:4px; flex:1; min-width:0 }
+.repo-title { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.tag-row { display:flex; gap:6px; flex-wrap:wrap }
+.chip-tag { font-size:10px; font-weight:700; padding:3px 8px; border-radius:4px; text-transform:uppercase }
+.chip-tag.orange-tag { background:rgba(255,107,0,0.12); color:var(--orange); border:1px solid rgba(255,107,0,0.2) }
+.chip-tag.green-tag { background:rgba(0,184,124,0.12); color:var(--live-green); border:1px solid rgba(0,184,124,0.2) }
+.repo-actions { display:flex; align-items:center; gap:14px }
+.action-btn-icon { background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center }
+.action-btn-icon svg { width:18px; height:18px; fill:currentColor }
+.edit-pencil { color:var(--orange) } .delete-trash { color:var(--err) }
+.bulk-tab-strip { display:flex; background:var(--panel-light); padding:4px; border-radius:10px; margin-bottom:14px }
+.bulk-toggle-btn { flex:1; background:transparent; border:none; padding:8px; color:var(--mut); font-size:12px; font-weight:700; border-radius:8px; cursor:pointer }
+.bulk-toggle-btn.active { background:var(--orange); color:#fff }
+.radio-option { display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px }
+.radio-option input { accent-color:var(--orange) }
+
+/* ── DIALOG MODALS ── */
+.modal-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.85); z-index:1500; display:none; align-items:center; justify-content:center; padding:16px }
+.modal-overlay.show { display:flex }
+.modal-sheet-scrollable { background:var(--panel); border:1px solid var(--bdr); border-radius:20px; width:100%; max-height:85vh; overflow-y:auto; display:flex; flex-direction:column; padding:20px; gap:14px; scrollbar-width:none }
+.modal-sheet-scrollable::-webkit-scrollbar { display:none }
+.modal-sheet-scrollable h2 { font-size:16px; font-weight:800; color:var(--orange); border-bottom:1px solid var(--bdr); padding-bottom:8px }
+.checkbox-option-row { display:flex; align-items:flex-start; gap:12px; padding:4px 0; cursor:pointer }
+.checkbox-option-row input[type="checkbox"] { width:18px; height:18px; accent-color:var(--orange); flex-shrink:0 }
+.checkbox-option-row span { font-size:13px; font-weight:600 }
+.modal-row { display:flex; gap:8px; justify-content:flex-end; margin-top:4px }
+.btn-ok { padding:8px 14px; background:var(--orange); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer }
+.btn-cancel { padding:8px 12px; background:transparent; color:var(--mut); border:1px solid var(--bdr); border-radius:6px; font-size:12px; cursor:pointer }
+.empty-msg { grid-column:1/-1; text-align:center; color:var(--mut); font-size:12px; padding:40px 12px }
+
+/* ── APPLICATION FOOTER TABS ── */
+.app-bottom-navbar{
+  position:absolute; bottom:0; left:0; right:0; height:64px; background:rgba(13,17,30,0.96); border-top:1px solid var(--bdr); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); display:flex; align-items:center; justify-content:space-around; z-index:100; box-shadow:0 -5px 20px rgba(0,0,0,0.3);
+}
+.nav-tab-item{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:transparent; border:none; color:var(--mut); width:22%; height:100%; cursor:pointer; font-size:11px; font-weight:700; transition:all 0.15s ease }
+.nav-tab-item svg{ width:20px; height:20px; fill:currentColor }
+.nav-tab-item.active{ color:var(--orange) }
+</style>
+</head>
+<body>
+
+<div class="app">
+  
+  <!-- ── 1. SPLASH LOADER OVERLAY INTERFACE (Non-Blocking Hardware Accelerated Lifecycle) ── -->
+  <div class="app-splash" id="app-splash-screen">
+    <div class="splash-container">
+      <div class="splash-logo-wrap">
+        <div class="splash-glow-aura"></div>
+        <div class="splash-logo-box"><span class="splash-logo-icon">N</span></div>
+      </div>
+      <h1 class="splash-title">NASIM-TV</h1>
+      <p class="splash-subtitle" id="splash-sub-text">Live TV OTT Streaming</p>
+      
+      <div class="splash-loader-line" id="splash-loader-container">
+        <div class="splash-loader-bar"></div>
+      </div>
+
+      <div class="splash-error-view" id="splash-error-deck">
+        <button class="mini-orange-btn" onclick="window.location.reload()">Retry Connection</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="menu-backdrop" onclick="closeSidebarDrawer()"></div>
+
+  <!-- ── 2. SIDEBAR NAVIGATION DRAWER SHEET ── -->
+  <aside class="sidebar-drawer" id="app-drawer">
+    <div class="drawer-header">
+      <div class="admin-profile-card">
+        <div class="admin-avatar">N</div>
+        <div>
+          <div class="admin-name">Nasim TV Admin</div>
+          <div class="admin-email">nasimtvott@gmail.com</div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-scroll-body">
+      <button class="menu-item active" id="m-item-client" onclick="toggleViewContext('client')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Client Platform Home
+      </button>
+      <button class="menu-item" id="m-item-admin" onclick="requestAdminSuiteAccessRoute()">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Admin Suite Dashboard
+      </button>
+      <button class="menu-item" style="margin-top:auto; color:var(--err);" onclick="flushApplicationCacheStore()">
+        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Factory Cache Wipe
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── 3. MAIN TOP HEADER ── -->
+  <header class="app-header">
+    <button class="hdr-icon" onclick="openSidebarDrawer()">
+      <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </button>
+    <div class="brand-title">NASIM-TV <span class="badge-ott">OTT</span></div>
+    <div class="hdr-spacer"></div>
+    <div class="hdr-right-actions">
+      <button class="hdr-icon" onclick="requestAdminSuiteAccessRoute()"><svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l-.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg></button>
+      <div class="badge-container">
+        <button class="hdr-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1-1-1s-1 .17-1 1v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></button>
+        <span class="count-badge" id="app-notif-count">2</span>
+      </div>
+      <div class="profile-avatar-emblem" onclick="requestAdminSuiteAccessRoute()">N</div>
+    </div>
+  </header>
+
+  <!-- ── 4. VIDEO VIEWPORT CANVAS INTERFACE ── -->
+  <div class="video-wrap-outer">
+    <div class="ambient-glow" id="ambient-glow-layer"></div>
+    <div class="video-wrap" id="video-frame">
+      <video id="video" autoplay playsinline></video>
+      
+      <div class="gesture-zone-left" id="g-zone-l"></div>
+      <div class="gesture-zone-right" id="g-zone-r"></div>
+      <div class="ripple-indicator ripple-left" id="ripple-l"><span style="font-size:18px;">⏪</span><span>-10s</span></div>
+      <div class="ripple-indicator ripple-right" id="ripple-r"><span style="font-size:18px;">⏩</span><span>+10s</span></div>
+
+      <div class="stats-board-overlay" id="stats-panel">
+        <div class="stats-line">Resolution: <span id="stats-res">0x0</span></div>
+        <div class="stats-line">Est. Bandwidth: <span id="stats-speed">0 Kbps</span></div>
+        <div class="stats-line">Dropped Frames: <span id="stats-drops">0</span></div>
+        <div class="stats-line">Decoder: <span id="stats-engine">Hybrid Engine</span></div>
+      </div>
+
+      <div class="status-ov" id="status-overlay">
+        <div class="spinner" id="status-spinner"></div>
+        <div class="status-msg" id="status-text">Select a media track from index grid below</div>
+        <button id="status-retry-btn" style="display:none; margin-top:10px; padding:6px 14px; background:var(--orange); color:#fff; border:none; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer;" onclick="retryChannel()">Retry Connection</button>
+      </div>
+
+      <div class="player-controls" id="custom-controls">
+        <div class="ctrl-top-row">
+          <div class="now-playing-meta-block">
+            <span class="np-lbl-caps">Now Streaming</span>
+            <span class="np-stream-title" id="hud-stream-title">No Media Target Loaded</span>
+          </div>
+          <div class="top-right-badges-panel">
+            <div class="badge-drm-pill">Native DRM</div>
+            <button class="flat-hud-btn" id="btn-stats-toggle" onclick="toggleStatsBoard()" style="opacity:0.8"><svg style="width:18px; height:18px; fill:#fff" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="ctrl-bottom-panel">
+          <div class="seek-track-wrapper"><input type="range" class="seek-bar" id="ctrl-seek" min="0" max="100" value="0" step="0.1"></div>
+          <div class="ctrl-bottom-actions-grid">
+            <div class="hud-left-layout-group">
+              <button class="flat-hud-btn" onclick="togglePlay()" id="master-play-btn">
+                <svg style="width:20px; height:20px; fill:#fff" viewBox="0 0 24 24" id="play-svg"><path d="M8 5v14l11-7z"/></svg>
+                <svg style="width:20px; height:20px; fill:#fff; display:none;" viewBox="0 0 24 24" id="pause-svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </button>
+              <div class="now-playing-meta-block">
+                <span class="hud-text-metric" style="text-transform:uppercase; font-size:9px; color:var(--orange);">Video Engine</span>
+                <span class="hud-sub-label-dim" id="hud-speed-label">Speed: 1.0x</span>
+              </div>
+              <span class="time-lbl" id="hud-current-timestamp" style="font-size:11px; font-weight:700; margin-left:6px; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px;">ET: 00:00 AM</span>
+            </div>
+            <div class="hud-right-layout-group">
+              <span class="hud-green-indicator-text" id="hud-bitrate-quality" style="color:var(--live-green); font-size:11px; font-weight:700;">Auto 0 kbps</span>
+              <button class="flat-hud-btn" onclick="changeAspect()"><svg style="width:18px; height:18px; fill:#fff" viewBox="0 0 24 24"><path d="M19 19H5V5h14v14zM3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2z"/></svg></button>
+              <button class="flat-hud-btn" onclick="togglePip()"><svg style="width:18px; height:18px; fill:#fff" viewBox="0 0 24 24"><path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z"/></svg></button>
+              <button class="flat-hud-btn" onclick="toggleFullscreen()"><svg style="width:18px; height:18px; fill:#fff" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3z"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="green-accent-line"></div>
+  </div>
+
+  <!-- ── 5. VIEW CONTEXT 1: OTT CLIENT INTERFACE PANELS ── -->
+  <main class="view-panel active-view" id="view-panel-client">
+    
+    <div id="subview-client-home">
+      <div style="background: rgba(255,107,0,0.1); border: 1px solid var(--orange); padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 12px;" id="client-marquee-container">
+        <marquee scrollamount="4" id="client-marquee-text">Syncing database configurations...</marquee>
+      </div>
+      <div class="deck-filter-row">
+        <div class="search-box-wrap">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input class="search-input" type="text" id="iptv-search" placeholder="Search channel logo..." oninput="renderClientChannelsGrid()">
+        </div>
+        <select class="server-dropdown" id="server-select" style="max-width: 110px;" onchange="handleDropdownM3UTrigger(this.value)">
+          <option value="cloud">Cloud DB</option>
+        </select>
+      </div>
+      <div class="sort-chips-line">
+        <div class="sort-chip active" id="schip-new" onclick="setSortMode('new')">Newest</div>
+        <div class="sort-chip" id="schip-az" onclick="setSortMode('az')">A-Z</div>
+        <div class="sort-chip" id="schip-desc" onclick="setSortMode('za')">Z-A</div>
+      </div>
+      <div class="cat-row" id="client-category-row"></div>
+      
+      <!-- STRICT 3-COLUMN LOGO CARD FRAMEWORK MATRIX -->
+      <div class="ch-grid" id="client-channels-grid"></div>
+    </div>
+
+    <div id="subview-client-schedules" style="display: none;">
+      <div class="sports-icons-strip">
+        <div class="sport-icon-btn active" id="sbtn-all" onclick="filterSportsTimeline('ALL')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+        <div class="sport-icon-btn" id="sbtn-cric" onclick="filterSportsTimeline('CRICKET')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.93V14h-2v3.93c-2.4-.42-4.44-1.94-5.32-4.17l2.19-2.19C8.31 12.18 9 13.04 10 13.5v-1.71L7.54 9.25c-.39-.39-.39-1.02 0-1.41l.71-.71c.39-.39 1.02-.39 1.41 0L12 9.44l2.34-2.34c.39-.39 1.02-.39 1.41 0l.71.71c.39.39.39 1.02 0 1.41L14 11.79V13.5c1 .04 1.69-.82 2.12-1.93l2.19 2.19c-.88 2.23-2.92 3.75-5.31 4.17z"/></svg></div>
+      </div>
+      <div class="sports-feed-container" id="client-sports-feed-deck"></div>
+    </div>
+  </main>
+
+  <!-- ── 6. VIEW CONTEXT 2: OTT MASTER ADMIN SUITE ── -->
+  <main class="view-panel" id="view-panel-admin">
+    <nav class="admin-subnav-strip">
+      <button class="subnav-btn active" id="snav-overview" onclick="switchAdminSubtab('overview')">Overview</button>
+      <button class="subnav-btn" id="snav-channels" onclick="switchAdminTabChannels()">Channels</button>
+      <button class="subnav-btn" id="snav-schedules" onclick="switchAdminTabSchedules()">Schedules</button>
+      <button class="subnav-btn" id="snav-import" onclick="switchAdminSubtab('import')">Import/Export</button>
+    </nav>
+
+    <div id="stab-content-overview">
+      <div class="stats-dashboard-grid">
+        <div class="stat-node-card"><span class="stat-node-label">Total Users</span><span class="stat-node-value value-orange">2</span></div>
+        <div class="stat-node-card"><span class="stat-node-label">Total Channels</span><span class="stat-node-value value-green" id="stat-count-chan">0</span></div>
+        <div class="stat-node-card"><span class="stat-node-label">Matches</span><span class="stat-node-value value-green" id="stat-count-sched">0</span></div>
+      </div>
+      <div class="panel-card">
+        <h3>Announcement Board</h3>
+        <div class="field-container">
+          <textarea class="form-input-field" id="adm-marquee-input" style="height:60px; resize:none;"></textarea>
+        </div>
+        <div class="toggle-row"><span>Show Banner</span><label class="switch-control"><input type="checkbox" id="adm-marquee-toggle" checked><span class="slider-thumb"></span></label></div>
+        <button class="orange-action-btn" onclick="commitGlobalAnnouncementState()">Update</button>
+      </div>
+    </div>
+
+    <div id="stab-content-channels" style="display: none;">
+      <div class="repo-header-block"><h2>Channels</h2><button class="mini-orange-btn" onclick="openChannelEditorModal(null)">Add</button></div>
+      <div class="search-box-wrap"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" class="search-input-field" id="adm-chan-search" placeholder="Search..." oninput="renderAdminChannelsList()"></div>
+      <div class="repo-list" id="adm-channels-list-container"></div>
+    </div>
+
+    <div id="stab-content-schedules" style="display: none;">
+      <div class="repo-header-block"><h2>Schedules</h2><button class="mini-orange-btn" onclick="openScheduleEditorModal(null)">Add</button></div>
+      <div class="repo-list" id="adm-schedules-list-container"></div>
+    </div>
+
+    <div id="stab-content-import" style="display: none;">
+      <div class="bulk-tab-strip">
+        <button class="bulk-toggle-btn active" id="btoggle-chan" onclick="setBulkScope('chan')">Channels Repository</button>
+        <button class="bulk-toggle-btn" id="btoggle-sched" onclick="setBulkScope('sched')">Schedules & Events</button>
+      </div>
+      <div class="panel-card">
+        <h3>Bulk Parsing</h3>
+        <div style="display:flex; gap:12px; margin:8px 0;">
+          <button class="mini-orange-btn" onclick="document.getElementById('bulk-file').click()">Browse M3U</button>
+          <input type="file" id="bulk-file" style="display:none;" onchange="loadBulkFileContent(this)">
+          <input type="text" class="form-input-field" id="custom-m3u-url-input" placeholder="Paste .m3u URL" style="flex:1;">
+          <button class="mini-orange-btn" onclick="fetchCustomM3UFromAdminPanel()">Fetch</button>
+        </div>
+        <textarea class="form-input-field" id="bulk-payload-area" style="height:120px; resize:none;" placeholder="Paste raw logs..."></textarea>
+        <button class="orange-action-btn" onclick="processBulkImportTransaction()">Process Import</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 7. MODALS -->
+  <div class="modal-overlay" id="mod-admin-gatekeeper">
+    <div class="modal-sheet-scrollable" style="max-height: 320px;">
+      <h2>Admin Authentication</h2>
+      <div class="field-container"><label>Email</label><input type="email" class="form-input-field" id="auth-email"></div>
+      <div class="field-container" style="margin-top: 6px;"><label>Password</label><input type="password" class="form-input-field" id="auth-pass"></div>
+      <div class="modal-row" style="margin-top: 14px;">
+        <button class="btn-cancel" onclick="closeModal('mod-admin-gatekeeper')">Cancel</button>
+        <button class="btn-ok" onclick="commitSecureAdminLoginAuthentication()">Authorize</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="mod-chan-editor">
+    <div class="modal-sheet-scrollable">
+      <h2>Channel Editor</h2><input type="hidden" id="edit-c-id">
+      <div class="field-container"><label>Name</label><input type="text" class="form-input-field" id="edit-c-name"></div>
+      <div class="field-container"><label>Stream URL</label><input type="url" class="form-input-field" id="edit-c-url"></div>
+      <div class="field-container"><label>Logo URL</label><input type="text" class="form-input-field" id="edit-c-logo"></div>
+      <div class="field-container"><label>Category</label><input type="text" class="form-input-field" id="edit-c-group"></div>
+      <div class="modal-row"><button class="btn-cancel" onclick="closeModal('mod-chan-editor')">Cancel</button><button class="btn-ok" onclick="saveChannelNode()">Save</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="mod-sched-editor">
+    <div class="modal-sheet-scrollable">
+      <h2>Schedule Editor</h2><input type="hidden" id="edit-s-id">
+      <div class="field-container"><label>Title</label><input type="text" class="form-input-field" id="edit-s-title"></div>
+      <div style="display:flex; gap:8px;"><div class="field-container"><label>Team 1</label><input type="text" class="form-input-field" id="edit-s-t1"></div><div class="field-container" style="max-width:80px;"><label>Flag</label><input type="text" class="form-input-field" id="edit-s-f1"></div></div>
+      <div style="display:flex; gap:8px;"><div class="field-container"><label>Team 2</label><input type="text" class="form-input-field" id="edit-s-t2"></div><div class="field-container" style="max-width:80px;"><label>Flag</label><input type="text" class="form-input-field" id="edit-s-f2"></div></div>
+      <div class="field-container"><label>URL</label><input type="url" class="form-input-field" id="edit-s-url"></div>
+      <div class="modal-row"><button class="btn-cancel" onclick="closeModal('mod-sched-editor')">Cancel</button><button class="btn-ok" onclick="saveScheduleNode()">Save</button></div>
+    </div>
+  </div>
+
+  <!-- 8. BOTTOM NAVBAR -->
+  <footer class="app-bottom-navbar">
+    <button class="nav-tab-item active" id="fbtn-home" onclick="handleFooterNavigationRouting('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span></button>
+    <button class="nav-tab-item" id="fbtn-sched" onclick="handleFooterNavigationRouting('sched')"><svg viewBox="0 0 24 24"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg><span>Schedules</span></button>
+    <button class="nav-tab-item" id="fbtn-lib" onclick="handleFooterNavigationRouting('library')"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg><span>Library</span></button>
+    <button class="nav-tab-item" id="fbtn-me" onclick="handleFooterNavigationRouting('me')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg><span>Account</span></button>
+  </footer>
+
+</div>
+
+<script>
+// ── CONFIGURATION & STATE ──
+const firebaseConfig = {
+  apiKey: "AIzaSyBcbtrg-XVuiBqfKoKwjFrzUABpUun5Ex0",
+  authDomain: "nasimtvott-68afc.firebaseapp.com",
+  databaseURL: "https://nasimtvott-68afc-default-rtdb.firebaseio.com/",
+  projectId: "nasimtvott-68afc",
+  storageBucket: "nasimtvott-68afc.firebasestorage.app",
+  messagingSenderId: "216416040481",
+  appId: "1:216416040481:web:d3355f0e3445b430241560",
+  measurementId: "G-G31J65TZ7Y"
+};
+
+let db = null;
+let useLiveDatabaseCloud = false;
+let isAdminAuthenticated = false;
+
+let localChannelsMemory = [];
+let localSchedulesMemory = [];
+let localAnnouncementState = { text: "Welcome to NASIM-TV OTT Live TV Service!", enabled: true };
+
+const DEFAULT_PLAYLIST_M3U = "https://dft.pro.bd/nasim.m3u";
+let currentActiveSortMode = 'new';
+let currentActiveCategoryFilter = 'All';
+let currentActiveSportsFilter = 'ALL';
+let activeBulkScopeTarget = 'chan';
+let player = null;
+let hlsNativePlayerInstance = null;
+let controlsFadeTimeoutDuration = null;
+let activeStreamPointer = null;
+
+// 1. INSTANT LOCAL DATA HYDRATION
+(function preHydrateLocalCacheData() {
+  try {
+    const c = localStorage.getItem('nasim_cache_channels'); if(c) localChannelsMemory = JSON.parse(c);
+    const s = localStorage.getItem('nasim_cache_schedules'); if(s) localSchedulesMemory = JSON.parse(s);
+    const a = localStorage.getItem('nasim_cache_announcement'); if(a) localAnnouncementState = JSON.parse(a);
+  } catch(_) {}
+})();
+
+// 2. UNCONDITIONAL NON-BLOCKING 3-SECOND SPLASH LIFECYCLE
+function executeAppBootNetworkLifecycle() {
+  if (!navigator.onLine) {
+    document.getElementById('splash-sub-text').innerHTML = `<span style="color:var(--err); font-weight:bold;">Offline. Please connect.</span>`;
+    document.getElementById('splash-loader-container').style.display = "none";
+    document.getElementById('splash-error-deck').style.display = "flex";
+    return;
+  }
+
+  // Connect Database Asynchronously 
+  setTimeout(connectDatabaseInfrastructure, 10);
+  syncLocalStateToInterfaceLayouts();
+
+  // Force splash screen dismissal immediately after exactly 3000ms
+  setTimeout(() => {
+    const splash = document.getElementById('app-splash-screen');
+    if (splash) {
+      splash.style.opacity = '0';
+      setTimeout(() => splash.style.display = 'none', 400); 
+    }
+  }, 3000);
+}
+
+function connectDatabaseInfrastructure() {
+  if (firebaseConfig.apiKey) {
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      useLiveDatabaseCloud = true;
+      db.ref('channels').on('value', snap => {
+        if(snap.exists()) { localChannelsMemory = Object.values(snap.val()); syncLocalStateToInterfaceLayouts(); }
+        else { fetchAndInjectM3UPlaylistSource(DEFAULT_PLAYLIST_M3U); }
+      });
+      db.ref('schedules').on('value', snap => { if(snap.exists()) { localSchedulesMemory = Object.values(snap.val()); syncLocalStateToInterfaceLayouts(); } });
+      db.ref('announcement').on('value', snap => { if(snap.exists()) { localAnnouncementState = snap.val(); syncLocalStateToInterfaceLayouts(); } });
+    } catch (e) {
+      setupLocalMemoryFallbackRoutines();
+    }
+  } else {
+    setupLocalMemoryFallbackRoutines();
+  }
+}
+
+async function fetchAndInjectM3UPlaylistSource(url, fromAdmin = false) {
+  try {
+    let rawText = null;
+    try {
+      let r1 = await fetch(url); if(r1.ok) rawText = await r1.text();
+    } catch(e) {}
+    
+    if(!rawText) {
+      let r2 = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+      if(r2.ok) rawText = await r2.text();
+    }
+
+    if(rawText) {
+      const elements = parseM3U(rawText);
+      if(elements.length) {
+        localChannelsMemory = elements.map((c, i) => ({ id: 'ch_' + Date.now() + '_' + i, ...c }));
+        pushDataNodeToPersistence('channels', localChannelsMemory);
+        if(fromAdmin) alert(`Imported [${elements.length}] items.`);
+      }
+    }
+  } catch(e) { 
+    if(fromAdmin) alert("Failed to fetch M3U file.");
+  }
+}
+
+function setupLocalMemoryFallbackRoutines() {
+  if(!localChannelsMemory.length) { fetchAndInjectM3UPlaylistSource(DEFAULT_PLAYLIST_M3U); }
+  syncLocalStateToInterfaceLayouts();
+}
+
+function pushDataNodeToPersistence(path, data) {
+  if (useLiveDatabaseCloud) { db.ref(path).set(data); } 
+  else { localStorage.setItem(`nasim_cache_${path}`, JSON.stringify(data)); syncLocalStateToInterfaceLayouts(); }
+}
+
+function syncLocalStateToInterfaceLayouts() {
+  const marqTxt = document.getElementById('client-marquee-text');
+  const marqCon = document.getElementById('client-marquee-container');
+  if(marqTxt) marqTxt.textContent = localAnnouncementState.text || '';
+  if(marqCon) marqCon.style.display = localAnnouncementState.enabled ? 'block' : 'none';
+  
+  const aMarqIn = document.getElementById('adm-marquee-input');
+  if(aMarqIn) aMarqIn.value = localAnnouncementState.text || '';
+  
+  renderClientChannelsGrid();
+  renderClientSportsFeed();
+}
+
+/* ── ADMIN GATEKEEPER ── */
+function requestAdminSuiteAccessRoute() {
+  if (isAdminAuthenticated) { toggleViewContext('admin'); } 
+  else { document.getElementById('mod-admin-gatekeeper').classList.add('show'); }
+  closeSidebarDrawer();
+}
+
+function commitSecureAdminLoginAuthentication() {
+  if (document.getElementById('auth-email').value.trim() === "nasimtvott@gmail.com" && 
+      document.getElementById('auth-pass').value.trim() === "01990166355nN@") {
+    isAdminAuthenticated = true;
+    closeModal('mod-admin-gatekeeper');
+    toggleViewContext('admin');
+  } else {
+    alert('Access Denied. Incorrect credentials.');
+  }
+}
+
+function toggleViewContext(ctx) {
+  const cPanel = document.getElementById('view-panel-client');
+  const aPanel = document.getElementById('view-panel-admin');
+  if(ctx === 'client') {
+    cPanel.classList.add('active-view'); aPanel.classList.remove('active-view');
+  } else {
+    aPanel.classList.add('active-view'); cPanel.classList.remove('active-view');
+    renderAdminChannelsList(); renderAdminSchedulesList();
+  }
+}
+
+function handleFooterNavigationRouting(targetRoute) {
+  ['home', 'sched', 'lib', 'me'].forEach(t => document.getElementById(`fbtn-${t}`).classList.toggle('active', t === targetRoute));
+  if(targetRoute === 'home') {
+    toggleViewContext('client');
+    document.getElementById('subview-client-home').style.display = 'block';
+    document.getElementById('subview-client-schedules').style.display = 'none';
+  } else if (targetRoute === 'sched') {
+    toggleViewContext('client');
+    document.getElementById('subview-client-home').style.display = 'none';
+    document.getElementById('subview-client-schedules').style.display = 'block';
+  } else if (targetRoute === 'library') {
+    requestAdminSuiteAccessRoute();
+  } else if (targetRoute === 'me') {
+    openSidebarDrawer();
+  }
+}
+
+/* ── CLIENT UI RENDERERS ── */
+function setSortMode(mode) {
+  currentActiveSortMode = mode;
+  ['new', 'az', 'za'].forEach(m => document.getElementById(`schip-${m==='new'?'new':m==='az'?'asc':'desc'}`).classList.toggle('active', m === mode));
+  renderClientChannelsGrid();
+}
+
+function setCategoryFilterScope(cat) { currentActiveCategoryFilter = cat; renderClientChannelsGrid(); }
+
+function renderClientChannelsGrid() {
+  const grid = document.getElementById('client-channels-grid');
+  if (!grid) return;
+  const search = (document.getElementById('iptv-search').value || '').toLowerCase();
+  grid.innerHTML = '';
+
+  let channels = [...localChannelsMemory].filter(c => c.name.toLowerCase().includes(search));
+  const dynamicCats = ['All', ...new Set(localChannelsMemory.map(c => c.group || 'General'))];
+  const catRow = document.getElementById('client-category-row');
+  if (catRow) {
+    catRow.innerHTML = dynamicCats.map(c => `<button class="cat-pill ${c === currentActiveCategoryFilter ? 'active':''}" onclick="setCategoryFilterScope('${c}')">${c}</button>`).join('');
+  }
+
+  if(currentActiveCategoryFilter !== 'All') channels = channels.filter(c => (c.group || 'General') === currentActiveCategoryFilter);
+  if(currentActiveSortMode === 'az') channels.sort((a,b)=> a.name.localeCompare(b.name));
+  else if(currentActiveSortMode === 'za') channels.sort((a,b)=> b.name.localeCompare(a.name));
+
+  if(!channels.length) { grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1;">No channels found.</div>'; return; }
+
+  channels.forEach(chan => {
+    const card = document.createElement('div');
+    card.className = `ch-card ${activeStreamPointer && activeStreamPointer.id === chan.id ? 'active':''}`;
+    card.onclick = () => fireMediaStreamSourceEndpoint(chan);
+    const graphic = chan.logo ? `<img class="ch-card-logo" src="${chan.logo}" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><div class="ch-card-ph" style="display:none">📺</div>` : `<div class="ch-card-ph">📺</div>`;
+    card.innerHTML = `<div class="ch-card-logo-container">${graphic}</div><div class="ch-card-name">${chan.name}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+function filterSportsTimeline(sport) {
+  currentActiveSportsFilter = sport;
+  renderClientSportsFeed();
+}
+
+function renderClientSportsFeed() {
+  const deck = document.getElementById('client-sports-feed-deck');
+  if (!deck) return;
+  deck.innerHTML = '';
+  let matches = [...localSchedulesMemory];
+  if(currentActiveSportsFilter !== 'ALL') matches = matches.filter(m => m.sport === currentActiveSportsFilter);
+
+  if(!matches.length) { deck.innerHTML = '<div class="empty-msg">No matches found.</div>'; return; }
+  matches.forEach(m => {
+    deck.innerHTML += `
+      <div class="match-card" onclick="fireSportsDirectPlayback('${m.id}')">
+        <div class="match-header-meta"><span>⚾ ${m.sport}</span></div>
+        <div class="match-body-teams">
+          <div class="team-side left-side"><div class="team-badge-circle">${m.f1||'🏳️'}</div><span class="team-title-lbl">${m.t1}</span></div>
+          <div class="match-center-timeline"><span class="live-dot-indicator">LIVE</span><span class="match-timer-clock">VS</span></div>
+          <div class="team-side right-side"><span class="team-title-lbl">${m.t2}</span><div class="team-badge-circle">${m.f2||'🏳️'}</div></div>
+        </div>
+      </div>`;
+  });
+}
+
+/* ── VIDEO PLAYER ENGINE (HYBRID NATIVE/SHAKA/HLS.JS ALGORITHM) ── */
+async function initializeMediaEngineInfrastructure() {
+  try {
+    shaka.polyfill.installAll();
+    const node = document.getElementById('video');
+    player = new shaka.Player(node);
+    player.configure({ streaming: { bufferingGoal: 8, rebufferingGoal: 2 } });
+    
+    player.addEventListener('buffering', e => {
+      if(e.buffering) document.getElementById('status-overlay').classList.remove('hidden'); 
+      else document.getElementById('status-overlay').classList.add('hidden');
+    });
+
+    node.addEventListener('playing', () => { 
+        document.getElementById('status-overlay').classList.add('hidden');
+        document.getElementById('play-svg').style.display='none'; 
+        document.getElementById('pause-svg').style.display='block'; 
+        document.getElementById('ambient-glow-layer').style.boxShadow = "0 0 50px rgba(0,122,255,0.4)";
+    });
+    node.addEventListener('pause', () => { 
+        document.getElementById('play-svg').style.display='block'; 
+        document.getElementById('pause-svg').style.display='none'; 
+        document.getElementById('ambient-glow-layer').style.boxShadow = "0 0 40px rgba(0,0,0,0)";
+    });
+    
+    setInterval(() => {
+        if(!isNaN(node.duration) && node.duration>0) {
+            document.getElementById('ctrl-seek').value = (node.currentTime/node.duration)*100;
+        }
+    }, 1000);
+  } catch(err) { console.error(err); }
+
+  const frame = document.getElementById('video-frame');
+  const awake = () => {
+    frame.classList.add('controls-active'); clearTimeout(controlsFadeTimeoutDuration);
+    controlsFadeTimeoutDuration = setTimeout(() => frame.classList.remove('controls-active'), 3000);
+  };
+  frame.addEventListener('mousemove', awake); frame.addEventListener('touchstart', awake, {passive:true});
+}
+
+async function fireMediaStreamSourceEndpoint(chanObj) {
+  activeStreamPointer = chanObj; renderClientChannelsGrid();
+  document.getElementById('hud-stream-title').textContent = chanObj.name;
+  document.getElementById('status-overlay').classList.remove('hidden');
+  document.getElementById('status-text').textContent = 'Connecting...';
+  
+  const video = document.getElementById('video');
+  let url = chanObj.url.replace(/\r/g, '').trim(); 
+  
+  // Enforce HTTP structure
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'http://' + url;
+  }
+  
+  try {
+    if(player) await player.unload();
+    if(window.hlsPlayer) { window.hlsPlayer.destroy(); window.hlsPlayer = null; }
+    
+    // HYBRID FALLBACK PARSER
+    const isM3U8 = url.includes('.m3u8');
+    const isNativeSupported = video.canPlayType('application/vnd.apple.mpegurl');
+    
+    if (isM3U8) {
+        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            document.getElementById('stats-engine').textContent = "HLS.js Core";
+            window.hlsPlayer = new Hls({ debug: false });
+            window.hlsPlayer.loadSource(url);
+            window.hlsPlayer.attachMedia(video);
+            window.hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play().catch(e => console.log(e));
+            });
+            window.hlsPlayer.on(Hls.Events.ERROR, function(event, data) {
+                if (data.fatal) {
+                   document.getElementById('status-overlay').classList.remove('hidden');
+                   document.getElementById('status-text').innerHTML = `Stream format not supported or CORS blocked.<br><div class="err-notice-bold">contact with admin</div>`;
+                   window.hlsPlayer.destroy();
+                }
+            });
+        } else if (isNativeSupported) {
+            document.getElementById('stats-engine').textContent = "Apple Native";
+            video.src = url;
+            video.addEventListener('loadedmetadata', function() { video.play(); });
+        } else {
+            throw new Error("HLS not supported");
+        }
+    } else if (url.includes('.mp4') || url.includes('.mp3')) {
+        document.getElementById('stats-engine').textContent = "Native MP4";
+        video.src = url;
+        await video.play();
+    } else {
+        document.getElementById('stats-engine').textContent = "Shaka Engine";
+        await player.load(url);
+        await video.play();
+    }
+  } catch(e) { 
+     document.getElementById('status-overlay').classList.remove('hidden');
+     document.getElementById('status-text').innerHTML = `Stream format not supported.<br><div class="err-notice-bold">contact with admin</div>`;
+  }
+}
+
+async function fireSportsDirectPlayback(id) {
+  const match = localSchedulesMemory.find(m => m.id === id); if(!match) return;
+  fireMediaStreamSourceEndpoint({ id: match.id, name: `${match.t1} vs ${match.t2}`, url: match.url });
+}
+
+function togglePlay() { const v=document.getElementById('video'); if(v.paused) v.play(); else v.pause(); }
+function changeAspect() { const v=document.getElementById('video'); const m=['contain','cover','fill']; v.style.objectFit=m[(m.indexOf(v.style.objectFit||'contain')+1)%m.length]; }
+function toggleFullscreen() { const f=document.getElementById('video-frame'); if(!document.fullscreenElement) f.requestFullscreen(); else document.exitFullscreen(); }
+document.getElementById('ctrl-seek').addEventListener('input', e => { const v=document.getElementById('video'); if(!isNaN(v.duration) && v.duration>0) v.currentTime = (e.target.value/100)*v.duration; });
+function skipTime(d) { document.getElementById('video').currentTime += d; }
+
+/* ── ADMIN MANAGEMENT UTILS ── */
+function switchAdminSubtab(tab) {
+  ['overview', 'channels', 'schedules', 'import'].forEach(t => {
+    document.getElementById(`stab-content-${t}`).style.display = (t === tab) ? 'block' : 'none';
+    document.getElementById(`snav-${t}`).classList.toggle('active', t === tab);
+  });
+}
+function switchAdminTabChannels() { switchAdminSubtab('channels'); renderAdminChannelsList(); }
+function switchAdminTabSchedules() { switchAdminSubtab('schedules'); renderAdminSchedulesList(); }
+
+function commitGlobalAnnouncementState() {
+  localAnnouncementState.text = document.getElementById('adm-marquee-input').value.trim();
+  localAnnouncementState.enabled = document.getElementById('adm-marquee-toggle').checked;
+  pushDataNodeToPersistence('announcement', localAnnouncementState);
+  alert('Global announcement board updated.');
+}
+
+function renderAdminChannelsList() {
+  const container = document.getElementById('adm-channels-list-container');
+  const search = document.getElementById('adm-chan-search').value.toLowerCase();
+  container.innerHTML = '';
+  localChannelsMemory.filter(c => c.name.toLowerCase().includes(search)).forEach(c => {
+    container.innerHTML += `
+      <div class="repo-item">
+        <div class="repo-meta"><div class="repo-title">${c.name}</div><span class="chip-tag orange-tag">${c.group || 'General'}</span></div>
+        <div class="repo-actions">
+          <button class="action-btn-icon edit-pencil" onclick="openChannelEditorModal('${c.id}')">✏️</button>
+          <button class="action-btn-icon delete-trash" onclick="deleteChannelNode('${c.id}')">🗑️</button>
+        </div>
+      </div>`;
+  });
+}
+
+function openChannelEditorModal(id) {
+  document.getElementById('edit-c-id').value = id || '';
+  if(id) {
+    const c = localChannelsMemory.find(chan => chan.id === id);
+    document.getElementById('edit-c-name').value = c.name; document.getElementById('edit-c-url').value = c.url;
+    document.getElementById('edit-c-logo').value = c.logo; document.getElementById('edit-c-group').value = c.group;
+  } else {
+    document.getElementById('edit-c-name').value = ''; document.getElementById('edit-c-url').value = '';
+    document.getElementById('edit-c-logo').value = ''; document.getElementById('edit-c-group').value = 'General';
+  }
+  document.getElementById('mod-chan-editor').classList.add('show');
+}
+
+function saveChannelNode() {
+  const id = document.getElementById('edit-c-id').value || 'ch_' + Date.now();
+  const node = {
+    id, name: document.getElementById('edit-c-name').value.trim(), url: document.getElementById('edit-c-url').value.trim(),
+    logo: document.getElementById('edit-c-logo').value.trim(), group: document.getElementById('edit-c-group').value.trim()
+  };
+  if(!node.name || !node.url) return alert('Name and URL required.');
+  const idx = localChannelsMemory.findIndex(c => c.id === id);
+  if(idx >= 0) localChannelsMemory[idx] = node; else localChannelsMemory.push(node);
+  pushDataNodeToPersistence('channels', localChannelsMemory); closeModal('mod-chan-editor'); renderAdminChannelsList();
+}
+
+function deleteChannelNode(id) {
+  if(confirm("Confirm removal?")) { localChannelsMemory = localChannelsMemory.filter(c => c.id !== id); pushDataNodeToPersistence('channels', localChannelsMemory); renderAdminChannelsList(); }
+}
+
+function renderAdminSchedulesList() {
+  const container = document.getElementById('adm-schedules-list-container');
+  container.innerHTML = '';
+  localSchedulesMemory.forEach(m => {
+    container.innerHTML += `
+      <div class="repo-item">
+        <div class="repo-meta"><div class="repo-title">${m.title}</div><div style="font-size:11px; color:var(--mut);">${m.t1} vs ${m.t2}</div></div>
+        <div class="repo-actions">
+          <button class="action-btn-icon edit-pencil" onclick="openScheduleEditorModal('${m.id}')">✏️</button>
+          <button class="action-btn-icon delete-trash" onclick="deleteScheduleNode('${m.id}')">🗑️</button>
+        </div>
+      </div>`;
+  });
+}
+
+function openScheduleEditorModal(id) {
+  document.getElementById('edit-s-id').value = id || '';
+  if(id) {
+    const m = localSchedulesMemory.find(sched => sched.id === id);
+    document.getElementById('edit-s-title').value = m.title; document.getElementById('edit-s-t1').value = m.t1;
+    document.getElementById('edit-s-t2').value = m.t2; document.getElementById('edit-s-url').value = m.url;
+  } else {
+    document.getElementById('edit-s-title').value = ''; document.getElementById('edit-s-t1').value = '';
+    document.getElementById('edit-s-t2').value = ''; document.getElementById('edit-s-url').value = '';
+  }
+  document.getElementById('mod-sched-editor').classList.add('show');
+}
+
+function saveScheduleNode() {
+  const id = document.getElementById('edit-s-id').value || 'sc_' + Date.now();
+  const node = { id, title: document.getElementById('edit-s-title').value.trim(), t1: document.getElementById('edit-s-t1').value.trim(), t2: document.getElementById('edit-s-t2').value.trim(), url: document.getElementById('edit-s-url').value.trim(), sport: 'SPORTS' };
+  const idx = localSchedulesMemory.findIndex(s => s.id === id);
+  if(idx >= 0) localSchedulesMemory[idx] = node; else localSchedulesMemory.push(node);
+  pushDataNodeToPersistence('schedules', localSchedulesMemory); closeModal('mod-sched-editor'); renderAdminSchedulesList();
+}
+function deleteScheduleNode(id) { if(confirm("Wipe match?")) { localSchedulesMemory = localSchedulesMemory.filter(s => s.id !== id); pushDataNodeToPersistence('schedules', localSchedulesMemory); renderAdminSchedulesList(); } }
+
+function setBulkScope(scope) { activeBulkScopeTarget = scope; document.getElementById('btoggle-chan').classList.toggle('active', scope==='chan'); document.getElementById('btoggle-sched').classList.toggle('active', scope==='sched'); }
+function loadBulkFileContent(input) { const file = input.files[0]; if(!file) return; const r = new FileReader(); r.onload = e => { document.getElementById('bulk-payload-area').value = e.target.result; }; r.readAsText(file); }
+function fetchCustomM3UFromAdminPanel() { const url = document.getElementById('custom-m3u-url-input').value.trim(); if(!url) return alert("Supply URL."); fetchAndInjectM3UPlaylistSource(url, true); }
+
+function processBulkImportTransaction() {
+  const txt = document.getElementById('bulk-payload-area').value.trim(); if(!txt) return alert('Empty data payload.');
+  try {
+    if(activeBulkScopeTarget === 'chan') {
+      const parsed = parseM3U(txt);
+      parsed.forEach(c => { localChannelsMemory.push({ id: 'ch_'+Date.now()+'_'+Math.random().toString(36).substr(2,5), name: c.name, url: c.url.replace(/\r/g,''), logo: c.logo, group: c.group }); });
+      pushDataNodeToPersistence('channels', localChannelsMemory);
+    }
+    document.getElementById('bulk-payload-area').value = ''; alert(`Import successful.`);
+  } catch(e) { alert('Parsing error.'); }
+}
+
+function parseM3U(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const out = []; let cur = null;
+  for (const l of lines) {
+    if (l.startsWith('#EXTINF')) {
+      cur = {name:'Live Stream', group:'General', logo:'', url:''};
+      const n = l.match(/,(.+)$/); if (n) cur.name = n[1].trim();
+      const g = l.match(/group-title="([^"]*)"/i); if (g) cur.group = g[1] || 'General';
+      const lo = l.match(/tvg-logo="([^"]*)"/i); if (lo) cur.logo = lo[1];
+    } else if (cur && !l.startsWith('#')) { cur.url = l.replace(/\r/g,''); out.push(cur); cur = null; }
+  }
+  return out;
+}
+
+function openSidebarDrawer() { document.getElementById('app-drawer').classList.add('open'); document.getElementById('menu-backdrop').classList.add('show'); }
+function closeSidebarDrawer() { document.getElementById('app-drawer').classList.remove('open'); document.getElementById('menu-backdrop').classList.remove('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function flushApplicationCacheStore() { if(confirm("Wipe device cache?")) { localStorage.clear(); window.location.reload(); } }
+
+// Unconditional immediate boot entry isolated from network
+executeAppBootNetworkLifecycle();
+initializeMediaEngineInfrastructure();
+</script>
+</body>
+</html>
