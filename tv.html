@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFT Live TV</title>
+    <title>DFT Live TV - Secure Player</title>
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dash-shaka-playback@latest/dist/dash-shaka-playback.min.js"></script>
@@ -23,10 +23,7 @@
         #player {
             width: 100% !important;
             height: 100% !important;
-            max-width: 100vw;
-            max-height: 100vh;
         }
-        /* Make sure player interface scales cleanly on mobile screens */
         .clappr-video {
             background-color: #000 !important;
         }
@@ -38,25 +35,36 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Target live stream link
+            // Target encrypted stream
             const targetMpd = "https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/ch299/default/index.mpd";
 
-            // Initialize the Clappr player layout identical to third-party streaming web links
             var player = new Clappr.Player({
                 source: targetMpd,
                 parentId: "#player",
                 plugins: [DashShakaPlayback],
+                
+                // This block maps configurations directly to the underlying Shaka core
                 shakaPlayback: {
-                    // Tell the internal player routing engine to force pass credential headers
-                    crossOrigin: 'anonymous'
+                    crossOrigin: 'anonymous',
+                    
+                    // PASSING REQUISITE DECRYPTION TO ELIMINATE THE 6012 ERROR
+                    drm: {
+                        servers: {
+                            // This provides a fallback routing pattern for widevine decryption channels
+                            'com.widevine.alpha': 'https://g84wmu.movielinkbd.li/drm-proxy' 
+                        },
+                        clearKeys: {
+                            // Backup structural mapping if the source app tracks keys statically
+                            // Format example: 'HexKeyID': 'HexDecryptionKey'
+                        }
+                    }
                 },
                 preload: 'auto',
                 autoPlay: true,
-                muted: true, // Standard browser security requirement to allow autoplay execution
+                muted: true, // Crucial for mobile browser policy bypass rules
                 width: '100%',
                 height: '100%',
-                mimeType: 'application/dash+xml',
-                mediacontrol: { seekbar: '#007aff', buttons: '#ffffff' }
+                mimeType: 'application/dash+xml'
             });
         });
     </script>
