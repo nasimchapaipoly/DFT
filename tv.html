@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFT Live TV - Secure Player</title>
+    <title>DFT Live TV - Working Test</title>
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dash-shaka-playback@latest/dist/dash-shaka-playback.min.js"></script>
@@ -24,9 +24,6 @@
             width: 100% !important;
             height: 100% !important;
         }
-        .clappr-video {
-            background-color: #000 !important;
-        }
     </style>
 </head>
 <body>
@@ -35,33 +32,19 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Target encrypted stream
-            const targetMpd = "https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/ch299/default/index.mpd";
+            // Using an unencrypted public reference DASH stream to verify player logic
+            const workingTestMpd = "https://dash.akamaized.net/akamai/test/isoffm/Is there any way to change the aspect ratio on a dash.mpd";
 
             var player = new Clappr.Player({
-                source: targetMpd,
+                source: workingTestMpd,
                 parentId: "#player",
                 plugins: [DashShakaPlayback],
-                
-                // This block maps configurations directly to the underlying Shaka core
                 shakaPlayback: {
-                    crossOrigin: 'anonymous',
-                    
-                    // PASSING REQUISITE DECRYPTION TO ELIMINATE THE 6012 ERROR
-                    drm: {
-                        servers: {
-                            // This provides a fallback routing pattern for widevine decryption channels
-                            'com.widevine.alpha': 'https://g84wmu.movielinkbd.li/drm-proxy' 
-                        },
-                        clearKeys: {
-                            // Backup structural mapping if the source app tracks keys statically
-                            // Format example: 'HexKeyID': 'HexDecryptionKey'
-                        }
-                    }
+                    crossOrigin: 'anonymous'
                 },
                 preload: 'auto',
                 autoPlay: true,
-                muted: true, // Crucial for mobile browser policy bypass rules
+                muted: true, // Bypass mobile autoplay blocks
                 width: '100%',
                 height: '100%',
                 mimeType: 'application/dash+xml'
