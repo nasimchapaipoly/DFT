@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFT Live Player</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+        .video-container {
+            width: 100%;
+            max-width: 854px;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        video {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container" data-shaka-player-container>
+        <video autoplay muted data-shaka-player id="video"></video>
+    </div>
+
+    <script>
+        async function initPlayer() {
+            const video = document.getElementById('video');
+            const videoContainer = document.querySelector('[data-shaka-player-container]');
+            
+            // Initialize Shaka Player
+            const player = new shaka.Player(video);
+            
+            // Setting up the UI controls overlay
+            const ui = new shaka.ui.Overlay(player, videoContainer, video);
+            
+            // The Target Secure Stream via an open reverse proxy to inject headers
+            const rawStreamUrl = "https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/ch299/default/index.mpd";
+            const workableUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawStreamUrl);
+
+            // Configure player networking to mask request routing
+            player.getNetworkingEngine().registerRequestFilter(function(type, request) {
+                // Mimic the authorized origins headers inside the request flow
+                request.headers['X-Requested-With'] = 'XMLHttpRequest';
+            });
+
+            try {
+                // Load the reworked playable link configuration
+                await player.load(workableUrl);
+                console.log('The live stream has loaded successfully!');
+            } catch (error) {
+                console.error('Playback Error Code:', error.code, error);
+            }
+        }
+
+        // Make sure browser engine supports media features before loading
+        document.addEventListener('shaka-ui-loaded', initPlayer);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window['shaka']) { console.error('Shaka player CDN failed to load.'); }
+        });
+    </script>
+
+</body>
+</html>
