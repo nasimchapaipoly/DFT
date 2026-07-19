@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Live TV - Zero Latency</title>
+    <!-- HLS.js for optimized M3U8 playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <style>
+        :root {
+            --bg-color: #0a0b0f;
+            --surface-color: #14161c;
+            --surface-hover: #1f222b;
+            --primary-color: #007aff; 
+            --primary-glow: rgba(0, 122, 255, 0.3);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: #232630;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* --- STICKY PLAYER SECTION --- */
+        .player-section {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: #000;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        video, iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        video.active, iframe.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+            z-index: 10;
+        }
+
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .player-status {
+            padding: 12px 20px;
+            background-color: var(--surface-color);
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .speed-badge {
+            background: #22c55e;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        /* --- CONTENT SECTION --- */
+        .content-section {
+            flex-grow: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .search-container {
+            position: sticky;
+            top: 0;
+            padding: 10px 0 20px 0;
+            z-index: 50;
+            background: rgba(10, 11, 15, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 16px 24px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            color: var(--text-main);
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary-color);
+            background-color: #1a1d26;
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .channel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+
+        .channel-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-card:hover {
+            background-color: var(--surface-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border-color: #3a3f50;
+        }
+
+        .channel-card.active-channel {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 122, 255, 0.08);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+
+        .channel-logo-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: #2a2d39;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .channel-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .channel-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .channel-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f1f5f9;
+        }
+
+        .channel-type {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 6px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px #ef4444;
+        }
+        
+        .http-warning { color: #f59e0b; font-size: 0.8rem; display: block; margin-top: 4px; }
+
+        @media (max-width: 768px) {
+            .player-status { padding: 10px; font-size: 0.85rem; }
+            .content-section { padding: 10px 15px; }
+            .channel-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="player-section">
+        <div class="player-wrapper">
+            <div class="loader" id="loadingSpinner"></div>
+            <video id="videoPlayer" controls crossorigin playsinline></video>
+            <iframe id="iframePlayer" allowfullscreen allow="encrypted-media; autoplay"></iframe>
+        </div>
+        <div class="player-status" id="statusContainer">
+            <span id="statusText">Select a channel to start playing</span>
+            <span id="speedBadge" class="speed-badge">AUTO-SYNC</span>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Search channels, sports, movies..." onkeyup="filterChannels()">
+        </div>
+        <div class="channel-list" id="channelList"></div>
+    </div>
+
+    <script>
+        const channels = [
+            // Your exact links
+            { name: "BTV FHD Live (S1)", url: "https://s1.itcnbd.live/btv/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "SOMOY TV FHD Live", url: "https://s1.itcnbd.live/somoy/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "PTV FHD Live", url: "https://s1.itcnbd.live/PTV-Sports/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "TSports FHD Live (S1)", url: "https://s1.itcnbd.live/T-Sports-HD/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "United Sports 1", url: "https://s1.itcnbd.live/unite8-sports-1-hd/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "United Sports 2", url: "https://s1.itcnbd.live/unite-8-sports-2-hd/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "Sony Sports 1", url: "https://s2.itcnbd.live/server-2/stream/sony_sports_1_hd.m3u8", type: "hls" },
+            { name: "Sony Sports 2", url: "https://s2.itcnbd.live/server-2/stream/sony_sports_2_hd.m3u8", type: "hls" },
+            { name: "Sony Ten", url: "https://s2.itcnbd.live/server-2/stream/ten_cricket.m3u8", type: "hls" },
+            
+            // Note: 172.31.x.x are private IPs and require you to be on that specific ISP
+            { name: "BTV (ISP Token)", url: "http://172.31.169.169/live/BTV/tracks-v1a1/mono.m3u8?remote=no_check_ip&token=0a33cb0183e4a450c954522b7a65ad4372c77314-b1c8caeb99863ebc2f786d39cb724958-1784490577-1784468677", type: "hls" },
+            { name: "TSports (ISP Token)", url: "http://172.31.169.169/live/TSports/tracks-v1a1/mono.m3u8?remote=no_check_ip&token=2fdf7e312001aedc0e26a328993583e07fede6e7-f723e5865f3bfc6e653257f33232cf3d-1784490641-1784468741", type: "hls" },
+            { name: "Somoy TV (ISP Token)", url: "http://172.31.169.169/live/SOMOY/tracks-v1/mono.m3u8?remote=no_check_ip&token=5b359e0518081da00cbb61ebd9fe55de56b1e365-be2cfc3bfc26b15ed03c5827fac2ca32-1784490672-1784468772", type: "hls" },
+            
+            { name: "TSports (Delta)", url: "https://flussonic.deltainfonet.com/01_Tsports_HD/tracks-v1a1/mono.m3u8", type: "hls" },
+            { name: "Colatv Football", url: "https://live05.miekgo.app/live/78905744.m3u8", type: "hls" },
+            { name: "Online Football", url: "https://live1.streambylivepulse.com/live/channel1/playlist.m3u8?wsSecret=d279c6097dbca555ed36b0233713642d&wsABSTime=1784182720", type: "hls" },
+            { name: "Football (Iframe)", url: "https://tv.durbinlive.live/tolive/play.php?id=6a39a0247f1fe", type: "iframe" },
+            { name: "Football (Inplyr)", url: "https://live.inplyr.com/room/118206.m3u8", type: "hls" },
+            { name: "Tapmad Live", url: "https://saseries.akamaized.net/hls/live/2110097/2356jkiL-tapmad/master.m3u8", type: "hls" },
+            { name: "Fancode (Iframe)", url: "https://tv.durbinlive.live/tolive/play.php?id=69a0481847797", type: "iframe" },
+            { name: "CazeTV (Iframe)", url: "https://tv.durbinlive.live/tolive/play.php?id=6a3aea7f070b5", type: "iframe" },
+            { name: "Soco Live", url: "https://pull.niues.live/live/stream-9912060_lsd.m3u8?auth_key=1782936863-0-0-0a2bedcb893854dedd3b1d23e6f9fd7e", type: "hls" },
+            
+            // BDIX servers (HTTP)
+            { name: "BTV (BDIX 1)", url: "http://103.114.11.37:8081/BTV/tracks-v1a1/mono.m3u8?token=sdfgsdiufsildugfisdgfsdiuygf", type: "hls" },
+            { name: "BTV HD (BDIX 2)", url: "http://114.130.57.233:8080/BTV-HD/tracks-v1a1/mono.m3u8?token=SkQuhAXZxgBan1", type: "hls" },
+            { name: "Tsports (BDIX)", url: "http://103.165.93.31:8095/tsports/video.m3u8", type: "hls" },
+            { name: "Somoy TV (BDIX)", url: "http://103.114.11.37:8081/SOMOY-TV-BDIX/tracks-v1a1/mono.m3u8?token=sdfgsdiufsildugfisdgfsdiuygf", type: "hls" }
+        ];
+
+        let hlsInstance = null;
+        let currentPlayingUrl = "";
+
+        window.onload = () => { renderChannels(channels); };
+
+        function renderChannels(channelArray) {
+            const listContainer = document.getElementById('channelList');
+            listContainer.innerHTML = ""; 
+
+            channelArray.forEach(channel => {
+                const card = document.createElement('div');
+                card.className = 'channel-card';
+                if (channel.url === currentPlayingUrl) card.classList.add('active-channel');
+
+                const logoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(channel.name)}&background=1f222b&color=007aff&size=100&bold=true`;
+                const isHttp = channel.url.startsWith('http://');
+                
+                let typeIndicator = channel.type === 'hls' ? `<span class="live-dot"></span> LIVE` : `🔗 EMBED`;
+                if(isHttp) typeIndicator += `<span class="http-warning">⚠️ Requires local run</span>`;
+
+                card.innerHTML = `
+                    <div class="channel-logo-wrapper"><img src="${logoUrl}" alt="logo" class="channel-logo" loading="lazy"></div>
+                    <div class="channel-info">
+                        <span class="channel-title">${channel.name}</span>
+                        <span class="channel-type">${typeIndicator}</span>
+                    </div>
+                `;
+
+                card.onclick = () => playStream(channel.url, channel.type, channel.name);
+                listContainer.appendChild(card);
+            });
+        }
+
+        function filterChannels() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            renderChannels(channels.filter(c => c.name.toLowerCase().includes(query)));
+        }
+
+        function showSpinner(show) { document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none'; }
+        
+        function updateStatus(htmlMessage, showSpeed = false) {
+            document.getElementById('statusText').innerHTML = htmlMessage;
+            document.getElementById('speedBadge').style.display = showSpeed ? 'inline-block' : 'none';
+        }
+
+        function playStream(url, type, name) {
+            currentPlayingUrl = url;
+            const video = document.getElementById('videoPlayer');
+            const iframe = document.getElementById('iframePlayer');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            filterChannels(); 
+            showSpinner(true);
+
+            if (hlsInstance) {
+                hlsInstance.destroy();
+                hlsInstance = null;
+            }
+
+            // HTTP Check
+            if(url.startsWith('http://') && window.location.protocol === 'https:') {
+                updateStatus(`<span>❌ <b>Blocked:</b> Browser blocks HTTP links on HTTPS. Open this file locally.</span>`);
+                showSpinner(false);
+                return;
+            }
+
+            if (type === 'iframe') {
+                video.classList.remove('active'); video.pause(); video.removeAttribute('src'); 
+                iframe.src = url; iframe.classList.add('active');
+                updateStatus(`<span><span class="live-dot" style="margin-right:8px;"></span>Embed: <b>${name}</b></span>`);
+                setTimeout(() => showSpinner(false), 1000);
+            } 
+            else {
+                iframe.classList.remove('active'); iframe.src = ''; video.classList.add('active');
+                updateStatus(`<span>⏳ Connecting... (Auto-syncing to your internet speed)</span>`);
+
+                if (Hls.isSupported()) {
+                    // NETWORK SYNC & ZERO LATENCY CONFIG
+                    const config = {
+                        enableWorker: true,
+                        lowLatencyMode: true,           
+                        
+                        // Adaptive Bitrate & Sync Settings
+                        capLevelToPlayerSize: true,      // Don't waste mobile data on 4K for small screens
+                        startLevel: -1,                  // Auto-calculate best quality for current speed
+                        abrEwmaDefaultEstimate: 500000,  // Start estimate safely
+                        
+                        // Buffer & Latency Management
+                        liveSyncDurationCount: 2,        // Stay 2 chunks behind live edge
+                        maxLiveSyncPlaybackRate: 1.2,    // Gently speed up 20% to catch up if lagging
+                        maxBufferLength: 10,             // Dynamic max buffer (seconds)
+                        maxMaxBufferLength: 20,          // Absolute hard cap to save memory
+                        
+                        // Fix for some Tokenized/BDIX servers
+                        xhrSetup: function(xhr, u) {
+                            xhr.withCredentials = false; // Prevent CORS credential blocks
+                        }
+                    };
+
+                    hlsInstance = new Hls(config);
+                    hlsInstance.loadSource(url);
+                    hlsInstance.attachMedia(video);
+                    
+                    hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                        updateStatus(`<span><span class="live-dot" style="margin-right:8px;"></span>Live: <b>${name}</b></span>`, true);
+                        video.play().then(() => showSpinner(false)).catch(() => {
+                            updateStatus(`<span>⏸ Autoplay blocked. Click play.</span>`);
+                            showSpinner(false);
+                        });
+                    });
+
+                    // Update UI based on Network Switching
+                    hlsInstance.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                        const level = hlsInstance.levels[data.level];
+                        if(level) {
+                            const res = level.height ? `${level.height}p` : 'Auto';
+                            document.getElementById('speedBadge').innerText = `${res} SYNCED`;
+                        }
+                    });
+
+                    video.addEventListener('waiting', () => showSpinner(true));
+                    video.addEventListener('playing', () => showSpinner(false));
+
+                    hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+                        if (data.fatal) {
+                            showSpinner(false);
+                            switch (data.type) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    if(data.details === 'manifestLoadError') {
+                                        updateStatus(`<span>❌ <b>Failed:</b> Server CORS Block or ISP Route Missing (BDIX).</span>`);
+                                    } else {
+                                        updateStatus(`<span>⚠️ Network lag. Auto-reconnecting...</span>`);
+                                        hlsInstance.startLoad();
+                                    }
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    hlsInstance.recoverMediaError();
+                                    break;
+                                default:
+                                    updateStatus(`<span>❌ Stream offline or token rejected.</span>`);
+                                    hlsInstance.destroy();
+                                    break;
+                            }
+                        }
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = url;
+                    video.addEventListener('loadedmetadata', () => {
+                        updateStatus(`<span><span class="live-dot" style="margin-right:8px;"></span>Live: <b>${name}</b></span>`);
+                        video.play(); showSpinner(false);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
